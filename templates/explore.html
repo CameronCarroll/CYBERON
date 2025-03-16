@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore Cybernetics - Digital Garden</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <nav class="bg-blue-600 text-white shadow-md">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="text-xl font-bold">Cybernetics Digital Garden</div>
+                <div class="flex space-x-4">
+                    <a href="/" class="hover:underline">Home</a>
+                    <a href="/ontology" class="hover:underline">Visualize</a>
+                    <a href="/explore" class="hover:underline">Explore</a>
+                    <a href="/browse" class="hover:underline">Browse</a>
+                    <a href="/upload" class="hover:underline">Upload</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-6xl mx-auto">
+            <h1 class="text-3xl font-bold mb-6">Explore Cybernetics Concepts</h1>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Left sidebar - Search and filters -->
+                <div class="bg-white rounded-lg shadow-md p-4">
+                    <h2 class="text-xl font-bold mb-4">Search</h2>
+                    <div class="mb-6">
+                        <input type="text" id="search-input" 
+                               placeholder="Search concepts, people, or domains" 
+                               class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    
+                    <h3 class="font-bold mb-2">Filter by Type</h3>
+                    <div class="space-y-2 mb-6">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="type-filter mr-2" value="concept" checked>
+                            <span>Concepts</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="type-filter mr-2" value="person" checked>
+                            <span>People</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="type-filter mr-2" value="domain" checked>
+                            <span>Domains</span>
+                        </label>
+                    </div>
+                    
+                    <h3 class="font-bold mb-2">Central Concepts</h3>
+                    <div id="central-concepts" class="mb-6">
+                        <p class="text-gray-500 text-sm">Loading...</p>
+                    </div>
+                    
+                    <h3 class="font-bold mb-2">Find Connections</h3>
+                    <div class="space-y-3 mb-6">
+                        <div>
+                            <label class="block text-sm mb-1">From:</label>
+                            <select id="path-source" class="w-full px-2 py-1 border rounded">
+                                <option value="">Select a concept</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm mb-1">To:</label>
+                            <select id="path-target" class="w-full px-2 py-1 border rounded">
+                                <option value="">Select a concept</option>
+                            </select>
+                        </div>
+                        <button id="find-paths-btn" class="w-full bg-blue-600 text-white py-1 px-4 rounded hover:bg-blue-700">
+                            Find Paths
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Main content area -->
+                <div class="lg:col-span-2">
+                    <!-- Search results -->
+                    <div id="search-results" class="bg-white rounded-lg shadow-md p-4 mb-6 min-h-[200px]">
+                        <h2 class="text-xl font-bold mb-4">Search Results</h2>
+                        <p class="text-gray-500">Type in the search box to find concepts</p>
+                    </div>
+                    
+                    <!-- Paths between concepts -->
+                    <div id="paths-container" class="bg-white rounded-lg shadow-md p-4 mb-6 hidden">
+                        <h2 class="text-xl font-bold mb-4">Concept Paths</h2>
+                        <div id="paths-results"></div>
+                    </div>
+                    
+                    <!-- Concept details -->
+                    <div id="concept-details" class="bg-white rounded-lg shadow-md p-4 mb-6 hidden">
+                        <h2 class="text-xl font-bold mb-4">Concept Details</h2>
+                        <div id="concept-content"></div>
+                    </div>
+                    
+                    <!-- Evolution chains -->
+                    <div id="evolution-container" class="bg-white rounded-lg shadow-md p-4">
+                        <h2 class="text-xl font-bold mb-4">Concept Evolution Chains</h2>
+                        <div id="evolution-chains">
+                            <p class="text-gray-500">Loading evolution chains...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="bg-gray-800 text-white py-4 mt-8">
+        <div class="container mx-auto px-4 text-center">
+            <p>Cybernetics Digital Garden - A tool for exploring and reasoning about cybernetics concepts</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load central concepts
+            fetchCentralConcepts();
+            
+            // Load concept options for path finding
+            loadConceptOptions();
+            
+            // Load evolution chains
+            loadEvolutionChains();
+            
+            // Set up search input
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('input', debounce(performSearch, 300));
+            
+            // Set up find paths button
+            document.getElementById('find-paths-btn').addEventListener('click', findPaths);
+            
+            // Set up filters
+            document.querySelectorAll('.type-filter').forEach(checkbox => {
+                checkbox.addEventListener('change', performSearch);
+            });
+        });
+        
+        // Fetch central concepts
+        function fetchCentralConcepts() {
+            fetch('/api/concepts/central?count=5')
+                .then(response => response.json())
+                .then(data => {
+                    const centralConceptsEl = document.getElementById('central-concepts');
+                    if (data.central_entities && data.central_entities.length > 0) {
+                        const list = document.createElement('ul');
+                        list.className = 'space-y-1';
+                        
+                        data.central_entities.forEach(entity => {
+                            const item = document.createElement('li');
+                            const link = document.createElement('a');
+                            link.href = '#';
+                            link.textContent = entity.label;
+                            link.className = 'text-blue-600 hover:underline';
+                            link.dataset.id = entity.id;
+                            link.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                showConceptDetails(entity.id);
+                            });
+                            
+                            item.appendChild(link);
+                            list.appendChild(item);
+                        });
+                        
+                        centralConceptsEl.innerHTML = '';
+                        centralConceptsEl.appendChild(list);
+                    } else {
+                        centralConceptsEl.innerHTML = '<p class="text-gray-500 text-sm">No central concepts found</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching central concepts:', error);
+                    document.getElementById('central-concepts').innerHTML = 
+                        '<p class="text-red-500 text-sm">Error loading central concepts</p>';
+                });
+        }
+        
+        // Load concept options for path finding
+        function loadConceptOptions() {
+            fetch('/api/search?q=')
+                .then(response => response.json())
+                .then(data => {
+                    const sourceSelect = document.getElementById('path-source');
+                    const targetSelect = document.getElementById('path-target');
+                    
+                    if (data.results && data.results.length > 0) {
+                        // Sort by label
+                        const sortedResults = data.results.sort((a, b) => 
+                            a.label.localeCompare(b.label));
+                        
+                        sortedResults.forEach(entity => {
+                            const sourceOption = document.createElement('option');
+                            sourceOption.value = entity.id;
+                            sourceOption.textContent = entity.label;
+                            
+                            const targetOption = document.createElement('option');
+                            targetOption.value = entity.id;
+                            targetOption.textContent = entity.label;
+                            
+                            sourceSelect.appendChild(sourceOption);
+                            targetSelect.appendChild(targetOption);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading concept options:', error);
+                });
+        }
+        
+        // Load evolution chains
+        function loadEvolutionChains() {
+            fetch('/api/concepts/evolution')
+                .then(response => response.json())
+                .then(data => {
+                    const evolutionChainsEl = document.getElementById('evolution-chains');
+                    
+                    if (data.evolution_chains && data.evolution_chains.length > 0) {
+                        const chainsContainer = document.createElement('div');
+                        chainsContainer.className = 'space-y-4';
+                        
+                        data.evolution_chains.forEach((chain, index) => {
+                            if (chain.length < 2) return; // Skip single-node chains
+                            
+                            const chainEl = document.createElement('div');
+                            chainEl.className = 'p-3 border rounded';
+                            
+                            const title = document.createElement('h3');
+                            title.className = 'font-bold mb-2';
+                            title.textContent = `Evolution Chain ${index + 1}`;
+                            chainEl.appendChild(title);
+                            
+                            const pathContainer = document.createElement('div');
+                            pathContainer.className = 'flex flex-wrap items-center';
+                            
+                            chain.forEach((node, i) => {
+                                // Add node
+                                const nodeEl = document.createElement('div');
+                                nodeEl.className = 'px-3 py-1 bg-blue-100 rounded';
+                                
+                                const nodeLink = document.createElement('a');
+                                nodeLink.href = '#';
+                                nodeLink.textContent = node.label;
+                                nodeLink.className = 'hover:underline';
+                                nodeLink.dataset.id = node.id;
+                                nodeLink.addEventListener('click', (e) => {
+                                    e.preventDefault();
+                                    showConceptDetails(node.id);
+                                });
+                                
+                                nodeEl.appendChild(nodeLink);
+                                pathContainer.appendChild(nodeEl);
+                                
+                                // Add arrow if not the last node
+                                if (i < chain.length - 1) {
+                                    const arrow = document.createElement('div');
+                                    arrow.className = 'mx-2 text-gray-400';
+                                    arrow.innerHTML = '→';
+                                    pathContainer.appendChild(arrow);
+                                }
+                            });
+                            
+                            chainEl.appendChild(pathContainer);
+                            chainsContainer.appendChild(chainEl);
+                        });
+                        
+                        evolutionChainsEl.innerHTML = '';
+                        evolutionChainsEl.appendChild(chainsContainer);
+                    } else {
+                        evolutionChainsEl.innerHTML = '<p class="text-gray-500">No evolution chains found</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading evolution chains:', error);
+                    document.getElementById('evolution-chains').innerHTML = 
+                        '<p class="text-red-500">Error loading evolution chains</p>';
+                });
+        }
+        
+        // Perform search
+        function performSearch() {
+            const query = document.getElementById('search-input').value.trim();
+            const types = Array.from(document.querySelectorAll('.type-filter:checked'))
+                .map(checkbox => checkbox.value);
+            
+            const searchResultsEl = document.getElementById('search-results');
+            searchResultsEl.innerHTML = '<p class="text-gray-500">Searching...</p>';
+            
+            // If query is empty and no filters are applied, show default message
+            if (!query && types.length === 3) { // All types selected
+                searchResultsEl.innerHTML = '<p class="text-gray-500">Type in the search box to find concepts</p>';
+                return;
+            }
+            
+            fetch(`/api/search?q=${encodeURIComponent(query)}&types=${types.join(',')}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.results && data.results.length > 0) {
+                        const resultsContainer = document.createElement('div');
+                        resultsContainer.className = 'grid grid-cols-1 md:grid-cols-2 gap-3';
+                        
+                        data.results.forEach(result => {
+                            const resultEl = document.createElement('div');
+                            resultEl.className = 'p-3 border rounded hover:bg-gray-50';
+                            
+                            const nameEl = document.createElement('div');
+                            nameEl.className = 'font-bold';
+                            
+                            const link = document.createElement('a');
+                            link.href = '#';
+                            link.textContent = result.label;
+                            link.className = 'hover:underline';
+                            link.dataset.id = result.id;
+                            link.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                showConceptDetails(result.id);
+                            });
+                            
+                            nameEl.appendChild(link);
+                            resultEl.appendChild(nameEl);
+                            
+                            const typeEl = document.createElement('div');
+                            typeEl.className = 'text-sm text-gray-500';
+                            typeEl.textContent = result.type;
+                            resultEl.appendChild(typeEl);
+                            
+                            resultsContainer.appendChild(resultEl);
+                        });
+                        
+                        searchResultsEl.innerHTML = '';
+                        searchResultsEl.appendChild(document.createElement('h2'));
+                        searchResultsEl.lastChild.className = 'text-xl font-bold mb-4';
+                        searchResultsEl.lastChild.textContent = 'Search Results';
+                        searchResultsEl.appendChild(resultsContainer);
+                    } else {
+                        searchResultsEl.innerHTML = '';
+                        searchResultsEl.appendChild(document.createElement('h2'));
+                        searchResultsEl.lastChild.className = 'text-xl font-bold mb-4';
+                        searchResultsEl.lastChild.textContent = 'Search Results';
+                        searchResultsEl.appendChild(document.createElement('p'));
+                        searchResultsEl.lastChild.className = 'text-gray-500';
+                        searchResultsEl.lastChild.textContent = 'No results found';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error searching:', error);
+                    searchResultsEl.innerHTML = '';
+                    searchResultsEl.appendChild(document.createElement('h2'));
+                    searchResultsEl.lastChild.className = 'text-xl font-bold mb-4';
+                    searchResultsEl.lastChild.textContent = 'Search Results';
+                    searchResultsEl.appendChild(document.createElement('p'));
+                    searchResultsEl.lastChild.className = 'text-red-500';
+                    searchResultsEl.lastChild.textContent = 'Error performing search';
+                });
+        }
+        
+        // Find paths between concepts
+        function findPaths() {
+            const sourceId = document.getElementById('path-source').value;
+            const targetId = document.getElementById('path-target').value;
+            
+            if (!sourceId || !targetId) {
+                alert('Please select both source and target concepts');
+                return;
+            }
+            
+            const pathsContainer = document.getElementById('paths-container');
+            const pathsResults = document.getElementById('paths-results');
+            
+            pathsContainer.classList.remove('hidden');
+            pathsResults.innerHTML = '<p class="text-gray-500">Finding paths...</p>';
+            
+            fetch(`/api/paths?source=${sourceId}&target=${targetId}&max_length=3`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.paths && data.paths.length > 0) {
+                        const pathsList = document.createElement('div');
+                        pathsList.className = 'space-y-4';
+                        
+                        data.paths.forEach((path, index) => {
+                            const pathEl = document.createElement('div');
+                            pathEl.className = 'p-3 border rounded';
+                            
+                            const pathTitle = document.createElement('div');
+                            pathTitle.className = 'font-bold mb-2';
+                            pathTitle.textContent = `Path ${index + 1}`;
+                            pathEl.appendChild(pathTitle);
+                            
+                            const pathContainer = document.createElement('div');
+                            pathContainer.className = 'flex flex-wrap items-center';
+                            
+                            path.forEach((node, i) => {
+                                // Add node
+                                const nodeEl = document.createElement('div');
+                                nodeEl.className = 'px-3 py-1 bg-blue-100 rounded';
+                                
+                                const nodeLink = document.createElement('a');
+                                nodeLink.href = '#';
+                                nodeLink.textContent = node.label;
+                                nodeLink.className = 'hover:underline';
+                                nodeLink.dataset.id = node.id;
+                                nodeLink.addEventListener('click', (e) => {
+                                    e.preventDefault();
+                                    showConceptDetails(node.id);
+                                });
+                                
+                                nodeEl.appendChild(nodeLink);
+                                pathContainer.appendChild(nodeEl);
+                                
+                                // Add relationship if available
+                                if (node.relationship_to_next && i < path.length - 1) {
+                                    const relEl = document.createElement('div');
+                                    relEl.className = 'mx-2 text-gray-600 text-sm italic';
+                                    relEl.textContent = node.relationship_to_next;
+                                    pathContainer.appendChild(relEl);
+                                }
+                            });
+                            
+                            pathEl.appendChild(pathContainer);
+                            pathsList.appendChild(pathEl);
+                        });
+                        
+                        pathsResults.innerHTML = '';
+                        pathsResults.appendChild(pathsList);
+                    } else {
+                        pathsResults.innerHTML = 
+                            '<p class="text-gray-500">No paths found between these concepts</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error finding paths:', error);
+                    pathsResults.innerHTML = 
+                        '<p class="text-red-500">Error finding paths</p>';
+                });
+        }
+        
+        // Show concept details
+        function showConceptDetails(conceptId) {
+            const detailsContainer = document.getElementById('concept-details');
+            const contentEl = document.getElementById('concept-content');
+            
+            detailsContainer.classList.remove('hidden');
+            contentEl.innerHTML = '<p class="text-gray-500">Loading concept details...</p>';
+            
+            fetch(`/api/entity/${conceptId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        contentEl.innerHTML = `<p class="text-red-500">${data.error}</p>`;
+                        return;
+                    }
+                    
+                    const detailsEl = document.createElement('div');
+                    
+                    // Concept header
+                    const headerEl = document.createElement('div');
+                    headerEl.className = 'mb-4';
+                    
+                    const nameEl = document.createElement('h3');
+                    nameEl.className = 'text-2xl font-bold';
+                    nameEl.textContent = data.attributes.label || data.id;
+                    headerEl.appendChild(nameEl);
+                    
+                    const typeEl = document.createElement('div');
+                    typeEl.className = 'text-gray-600';
+                    typeEl.textContent = `Type: ${data.attributes.type || 'Unknown'}`;
+                    headerEl.appendChild(typeEl);
+                    
+                    detailsEl.appendChild(headerEl);
+                    
+                    // Relationships
+                    if (data.incoming.length > 0 || data.outgoing.length > 0) {
+                        const relsContainer = document.createElement('div');
+                        relsContainer.className = 'mt-4';
+                        
+                        // Incoming relationships
+                        if (data.incoming.length > 0) {
+                            const incomingEl = document.createElement('div');
+                            incomingEl.className = 'mb-3';
+                            
+                            const incomingTitle = document.createElement('h4');
+                            incomingTitle.className = 'font-bold mb-2';
+                            incomingTitle.textContent = 'Incoming Relationships';
+                            incomingEl.appendChild(incomingTitle);
+                            
+                            const incomingList = document.createElement('ul');
+                            incomingList.className = 'space-y-1 ml-4';
+                            
+                            data.incoming.forEach(rel => {
+                                const item = document.createElement('li');
+                                
+                                const sourceLink = document.createElement('a');
+                                sourceLink.href = '#';
+                                sourceLink.textContent = rel.label;
+                                sourceLink.className = 'text-blue-600 hover:underline';
+                                sourceLink.dataset.id = rel.id;
+                                sourceLink.addEventListener('click', (e) => {
+                                    e.preventDefault();
+                                    showConceptDetails(rel.id);
+                                });
+                                
+                                item.appendChild(sourceLink);
+                                item.appendChild(document.createTextNode(` ${rel.relationship} → This`));
+                                
+                                incomingList.appendChild(item);
+                            });
+                            
+                            incomingEl.appendChild(incomingList);
+                            relsContainer.appendChild(incomingEl);
+                        }
+                        
+                        // Outgoing relationships
+                        if (data.outgoing.length > 0) {
+                            const outgoingEl = document.createElement('div');
+                            
+                            const outgoingTitle = document.createElement('h4');
+                            outgoingTitle.className = 'font-bold mb-2';
+                            outgoingTitle.textContent = 'Outgoing Relationships';
+                            outgoingEl.appendChild(outgoingTitle);
+                            
+                            const outgoingList = document.createElement('ul');
+                            outgoingList.className = 'space-y-1 ml-4';
+                            
+                            data.outgoing.forEach(rel => {
+                                const item = document.createElement('li');
+                                
+                                item.appendChild(document.createTextNode(`This ${rel.relationship} → `));
+                                
+                                const targetLink = document.createElement('a');
+                                targetLink.href = '#';
+                                targetLink.textContent = rel.label;
+                                targetLink.className = 'text-blue-600 hover:underline';
+                                targetLink.dataset.id = rel.id;
+                                targetLink.addEventListener('click', (e) => {
+                                    e.preventDefault();
+                                    showConceptDetails(rel.id);
+                                });
+                                
+                                item.appendChild(targetLink);
+                                outgoingList.appendChild(item);
+                            });
+                            
+                            outgoingEl.appendChild(outgoingList);
+                            relsContainer.appendChild(outgoingEl);
+                        }
+                        
+                        detailsEl.appendChild(relsContainer);
+                    }
+                    
+                    // Set content
+                    contentEl.innerHTML = '';
+                    contentEl.appendChild(detailsEl);
+                })
+                .catch(error => {
+                    console.error('Error fetching concept details:', error);
+                    contentEl.innerHTML = 
+                        '<p class="text-red-500">Error loading concept details</p>';
+                });
+        }
+        
+        // Utility function: Debounce
+        function debounce(func, wait) {
+            let timeout;
+            return function() {
+                const context = this;
+                const args = arguments;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    func.apply(context, args);
+                }, wait);
+            };
+        }
+    </script>
+</body>
+</html>

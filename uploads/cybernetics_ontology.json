@@ -1,0 +1,130 @@
+{
+  "metadata": {
+    "created_at": "2025-03-16T13:55:21.195642",
+    "last_updated": "2025-03-16T13:55:21.195676",
+    "entity_count": 4
+  },
+  "entities": {
+    "wiener": {
+      "id": "wiener",
+      "name": "Norbert Wiener",
+      "type": "person",
+      "description": "Mathematician who coined the term 'cybernetics'",
+      "relationships": [
+        {
+          "target": "cybernetics",
+          "type": "developed_by",
+          "description": "Coined term in his 1948 book",
+          "strength": 10
+        },
+        {
+          "target": "feedback",
+          "type": "developed_by",
+          "description": "Formalized feedback theory",
+          "strength": 9
+        }
+      ],
+      "timeframe": null,
+      "tags": [
+        "first_order",
+        "founding_figure",
+        "information_theory"
+      ],
+      "references": [],
+      "metadata": {},
+      "birth_year": 1894,
+      "death_year": 1964,
+      "contributions": [
+        "Feedback theory",
+        "Cybernetics founding",
+        "Information theory"
+      ],
+      "institutions": [
+        "MIT"
+      ]
+    },
+    "ashby": {
+      "id": "ashby",
+      "name": "W. Ross Ashby",
+      "type": "person",
+      "description": "Pioneer in systems theory and cybernetics",
+      "relationships": [
+        {
+          "target": "cybernetics",
+          "type": "influenced",
+          "description": "Expanded theoretical foundations",
+          "strength": 8
+        }
+      ],
+      "timeframe": null,
+      "tags": [
+        "first_order",
+        "founding_figure",
+        "systems_theory"
+      ],
+      "references": [],
+      "metadata": {},
+      "birth_year": 1903,
+      "death_year": 1972,
+      "contributions": [
+        "Law of requisite variety",
+        "Homeostasis",
+        "Design for a Brain"
+      ],
+      "institutions": [
+        "Barnwood House Hospital",
+        "University of Illinois"
+      ]
+    },
+    "cybernetics": {
+      "id": "cybernetics",
+      "name": "Cybernetics",
+      "type": "concept",
+      "description": "The science of control and communication in the animal and the machine",
+      "relationships": [
+        {
+          "target": "feedback",
+          "type": "part_of",
+          "description": "Fundamental concept in cybernetics",
+          "strength": 10
+        }
+      ],
+      "timeframe": {
+        "start_year": 1948,
+        "end_year": null,
+        "period_name": "Modern era"
+      },
+      "tags": [
+        "interdisciplinary",
+        "core_concept"
+      ],
+      "references": [],
+      "metadata": {},
+      "related_concepts": [],
+      "formalized_by": [
+        "wiener"
+      ]
+    },
+    "feedback": {
+      "id": "feedback",
+      "name": "Feedback Loops",
+      "type": "concept",
+      "description": "Circular processes where outputs are fed back as inputs",
+      "relationships": [],
+      "timeframe": null,
+      "tags": [
+        "universal_mechanism",
+        "core_principle"
+      ],
+      "references": [],
+      "metadata": {},
+      "related_concepts": [
+        "homeostasis",
+        "control_theory"
+      ],
+      "formalized_by": [
+        "wiener"
+      ]
+    }
+  }
+}

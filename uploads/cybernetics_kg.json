@@ -1,0 +1,180 @@
+{
+  "directed": true,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "type": "person",
+      "era": "1940s-1960s",
+      "contributions": [
+        "feedback theory",
+        "cybernetics founding"
+      ],
+      "description": "Mathematician who coined the term 'cybernetics'",
+      "id": "Norbert Wiener"
+    },
+    {
+      "type": "person",
+      "era": "1940s-1970s",
+      "contributions": [
+        "law of requisite variety",
+        "homeostasis"
+      ],
+      "description": "Pioneer in systems theory and cybernetics",
+      "id": "W. Ross Ashby"
+    },
+    {
+      "type": "person",
+      "era": "1940s-1970s",
+      "contributions": [
+        "information theory"
+      ],
+      "description": "Developed mathematical theory of communication",
+      "id": "Claude Shannon"
+    },
+    {
+      "type": "concept",
+      "category": "foundations",
+      "description": "The study of control and communication in systems",
+      "properties": {},
+      "id": "Cybernetics"
+    },
+    {
+      "type": "concept",
+      "category": "foundations",
+      "description": "Focus on observed systems",
+      "properties": {},
+      "id": "First-order cybernetics"
+    },
+    {
+      "type": "concept",
+      "category": "foundations",
+      "description": "Including the observer in the system",
+      "properties": {},
+      "id": "Second-order cybernetics"
+    },
+    {
+      "type": "concept",
+      "category": "foundations",
+      "description": "Circular causal processes",
+      "properties": {},
+      "id": "Feedback loops"
+    },
+    {
+      "type": "concept",
+      "category": "foundations",
+      "description": "Self-regulation to maintain stability",
+      "properties": {},
+      "id": "Homeostasis"
+    },
+    {
+      "type": "concept",
+      "category": "information_theory",
+      "description": "Mathematical study of encoding and transmission of information",
+      "properties": {},
+      "id": "Information Theory"
+    },
+    {
+      "type": "concept",
+      "category": "information_theory",
+      "description": "Measure of uncertainty or randomness",
+      "properties": {},
+      "id": "Entropy"
+    },
+    {
+      "type": "concept",
+      "category": "cognitive",
+      "description": "Computational systems inspired by biological neural networks",
+      "properties": {},
+      "id": "Neural Networks"
+    },
+    {
+      "type": "concept",
+      "category": "ai",
+      "description": "Neural network architecture based on self-attention mechanisms",
+      "properties": {},
+      "id": "Transformers"
+    },
+    {
+      "type": "concept",
+      "category": "ai",
+      "description": "AI systems trained on vast text corpora for language tasks",
+      "properties": {},
+      "id": "Large Language Models"
+    }
+  ],
+  "links": [
+    {
+      "type": "created",
+      "properties": {},
+      "source": "Norbert Wiener",
+      "target": "Cybernetics"
+    },
+    {
+      "type": "formalized",
+      "properties": {},
+      "source": "W. Ross Ashby",
+      "target": "Homeostasis"
+    },
+    {
+      "type": "developed",
+      "properties": {},
+      "source": "Claude Shannon",
+      "target": "Information Theory"
+    },
+    {
+      "type": "evolved_into",
+      "properties": {},
+      "source": "Cybernetics",
+      "target": "First-order cybernetics"
+    },
+    {
+      "type": "includes_concept",
+      "properties": {},
+      "source": "Cybernetics",
+      "target": "Feedback loops"
+    },
+    {
+      "type": "includes_concept",
+      "properties": {},
+      "source": "Cybernetics",
+      "target": "Homeostasis"
+    },
+    {
+      "type": "influenced",
+      "properties": {},
+      "source": "Cybernetics",
+      "target": "Neural Networks"
+    },
+    {
+      "type": "evolved_into",
+      "properties": {},
+      "source": "First-order cybernetics",
+      "target": "Second-order cybernetics"
+    },
+    {
+      "type": "defines_concept",
+      "properties": {},
+      "source": "Information Theory",
+      "target": "Entropy"
+    },
+    {
+      "type": "provides_foundation_for",
+      "properties": {},
+      "source": "Information Theory",
+      "target": "Neural Networks"
+    },
+    {
+      "type": "evolved_into",
+      "properties": {},
+      "source": "Neural Networks",
+      "target": "Transformers"
+    },
+    {
+      "type": "enables",
+      "properties": {},
+      "source": "Transformers",
+      "target": "Large Language Models"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Ontology - Cybernetics Digital Garden</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <nav class="bg-blue-600 text-white shadow-md">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="text-xl font-bold">Cybernetics Digital Garden</div>
+                <div class="flex space-x-4">
+                    <a href="/" class="hover:underline">Home</a>
+                    <a href="/ontology" class="hover:underline">Visualize</a>
+                    <a href="/explore" class="hover:underline">Explore</a>
+                    <a href="/browse" class="hover:underline">Browse</a>
+                    <a href="/upload" class="hover:underline">Upload</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-md mx-auto">
+            <h1 class="text-3xl font-bold mb-6">Upload Ontology File</h1>
+            
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <form action="/upload" method="post" enctype="multipart/form-data">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2" for="ontology_file">
+                            Select your ontology text file:
+                        </label>
+                        <input class="w-full border border-gray-300 p-2 rounded" type="file" name="ontology_file" id="ontology_file">
+                    </div>
+                    <div class="mt-6">
+                        <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+                            Upload and Process
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

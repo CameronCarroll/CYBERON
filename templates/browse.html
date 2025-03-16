@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Ontology Structure - Cybernetics Digital Garden</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <nav class="bg-blue-600 text-white shadow-md">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="text-xl font-bold">Cybernetics Digital Garden</div>
+                <div class="flex space-x-4">
+                    <a href="/" class="hover:underline">Home</a>
+                    <a href="/ontology" class="hover:underline">Visualize</a>
+                    <a href="/explore" class="hover:underline">Explore</a>
+                    <a href="/browse" class="hover:underline">Browse</a>
+                    <a href="/upload" class="hover:underline">Upload</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-6xl mx-auto">
+            <h1 class="text-3xl font-bold mb-6">Browse Ontology Structure</h1>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <!-- Left sidebar - Section navigation -->
+                <div class="bg-white rounded-lg shadow-md p-4">
+                    <h2 class="text-xl font-bold mb-4">Sections</h2>
+                    <div class="space-y-2">
+                        {% for section_num, section_data in ontology.items() %}
+                        <div>
+                            <a href="#section-{{ section_num }}" class="text-blue-600 hover:underline font-medium">
+                                {{ section_num }}. {{ section_data.title }}
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="mb-4">
+                        <input type="text" id="search-content" 
+                               placeholder="Search content..." 
+                               class="w-full px-2 py-1 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    
+                    <button id="expand-all-btn" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 mb-2">
+                        Expand All
+                    </button>
+                    
+                    <button id="collapse-all-btn" class="w-full bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-700">
+                        Collapse All
+                    </button>
+                </div>
+                
+                <!-- Main content area -->
+                <div class="lg:col-span-3">
+                    <div id="content-container" class="space-y-6">
+                        {% for section_num, section_data in ontology.items() %}
+                        <div id="section-{{ section_num }}" class="bg-white rounded-lg shadow-md overflow-hidden">
+                            <div class="section-header bg-blue-100 p-4 cursor-pointer hover:bg-blue-200" 
+                                 onclick="toggleSection('section-content-{{ section_num }}')">
+                                <h2 class="text-xl font-bold">{{ section_num }}. {{ section_data.title }}</h2>
+                            </div>
+                            
+                            <div id="section-content-{{ section_num }}" class="p-4 section-content">
+                                {% if section_data.subsections %}
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {% for subsection_name, items in section_data.subsections.items() %}
+                                    <div class="border rounded p-3">
+                                        <h3 class="font-bold mb-2">{{ subsection_name }}</h3>
+                                        <ul class="ml-4 space-y-1 list-disc">
+                                            {% for item in items %}
+                                            <li class="searchable-item">
+                                                <a href="#" class="entity-link hover:underline" 
+                                                   onclick="showEntityDetails('{{ item|replace("'", "\\'") }}'); return false;">
+                                                    {{ item }}
+                                                </a>
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% else %}
+                                <p class="text-gray-500">No subsections found in this section.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Entity details modal -->
+                    <div id="entity-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+                        <div class="bg-white rounded-lg shadow-lg max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
+                            <div class="p-4 border-b">
+                                <div class="flex justify-between items-center">
+                                    <h3 class="text-xl font-bold" id="entity-modal-title">Entity Details</h3>
+                                    <button onclick="closeEntityModal()" class="text-gray-500 hover:text-gray-800">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <div id="entity-modal-content" class="space-y-3">
+                                    <!-- Content will be loaded dynamically -->
+                                    <p class="text-gray-500">Loading entity details...</p>
+                                </div>
+                            </div>
+                            <div class="p-4 border-t bg-gray-50">
+                                <button onclick="closeEntityModal()" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="bg-gray-800 text-white py-4 mt-8">
+        <div class="container mx-auto px-4 text-center">
+            <p>Cybernetics Digital Garden - A tool for exploring and reasoning about cybernetics concepts</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up search functionality
+            const searchInput = document.getElementById('search-content');
+            searchInput.addEventListener('input', performSearch);
+            
+            // Set up expand/collapse buttons
+            document.getElementById('expand-all-btn').addEventListener('click', expandAllSections);
+            document.getElementById('collapse-all-btn').addEventListener('click', collapseAllSections);
+            
+            // Collapse all sections by default except the first one
+            const sectionContents = document.querySelectorAll('.section-content');
+            for (let i = 1; i < sectionContents.length; i++) {
+                sectionContents[i].style.display = 'none';
+            }
+        });
+        
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section.style.display === 'none') {
+                section.style.display = 'block';
+            } else {
+                section.style.display = 'none';
+            }
+        }
+        
+        function expandAllSections() {
+            const sectionContents = document.querySelectorAll('.section-content');
+            sectionContents.forEach(section => {
+                section.style.display = 'block';
+            });
+        }
+        
+        function collapseAllSections() {
+            const sectionContents = document.querySelectorAll('.section-content');
+            sectionContents.forEach(section => {
+                section.style.display = 'none';
+            });
+        }
+        
+        function performSearch() {
+            const searchTerm = document.getElementById('search-content').value.toLowerCase();
+            const searchableItems = document.querySelectorAll('.searchable-item');
+            
+            if (searchTerm === '') {
+                // Show all items if search is empty
+                searchableItems.forEach(item => {
+                    item.style.display = '';
+                });
+                return;
+            }
+            
+            // Show/hide items based on search term
+            searchableItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    item.style.display = '';
+                    
+                    // Expand parent sections
+                    let parent = item.closest('.section-content');
+                    if (parent) {
+                        parent.style.display = 'block';
+                    }
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // Expand all sections when searching
+            if (searchTerm !== '') {
+                expandAllSections();
+            }
+        }
+        
+        function showEntityDetails(entityName) {
+            // Show modal
+            document.getElementById('entity-modal').classList.remove('hidden');
+            document.getElementById('entity-modal-title').textContent = entityName;
+            
+            // Reset content
+            document.getElementById('entity-modal-content').innerHTML = '<p class="text-gray-500">Loading entity details...</p>';
+            
+            // Search for entity in API
+            fetch(`/api/search?q=${encodeURIComponent(entityName)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.results && data.results.length > 0) {
+                        // Find closest match
+                        const entity = data.results.find(r => r.label === entityName) || data.results[0];
+                        
+                        // Fetch entity details
+                        return fetch(`/api/entity/${entity.id}`);
+                    } else {
+                        throw new Error('Entity not found');
+                    }
+                })
+                .then(response => response.json())
+                .then(details => {
+                    if (details.error) {
+                        throw new Error(details.error);
+                    }
+                    
+                    const contentEl = document.getElementById('entity-modal-content');
+                    
+                    // Build entity details view
+                    let html = `
+                        <div class="mb-3">
+                            <span class="inline-block px-2 py-1 bg-gray-200 rounded text-sm">
+                                ${details.attributes.type || 'unknown'}
+                            </span>
+                        </div>
+                    `;
+                    
+                    // Incoming connections
+                    if (details.incoming && details.incoming.length > 0) {
+                        html += `<h4 class="font-bold mb-2">Incoming Connections</h4><ul class="space-y-1 ml-4">`;
+                        details.incoming.forEach(conn => {
+                            html += `
+                                <li>
+                                    <a href="#" onclick="showEntityDetails('${conn.label.replace(/'/g, "\\'")}'); return false;" class="text-blue-600 hover:underline">
+                                        ${conn.label}
+                                    </a>
+                                    <span class="text-gray-600"> ${conn.relationship} → This</span>
+                                </li>
+                            `;
+                        });
+                        html += `</ul>`;
+                    }
+                    
+                    // Outgoing connections
+                    if (details.outgoing && details.outgoing.length > 0) {
+                        html += `<h4 class="font-bold mt-4 mb-2">Outgoing Connections</h4><ul class="space-y-1 ml-4">`;
+                        details.outgoing.forEach(conn => {
+                            html += `
+                                <li>
+                                    <span class="text-gray-600">This ${conn.relationship} → </span>
+                                    <a href="#" onclick="showEntityDetails('${conn.label.replace(/'/g, "\\'")}'); return false;" class="text-blue-600 hover:underline">
+                                        ${conn.label}
+                                    </a>
+                                </li>
+                            `;
+                        });
+                        html += `</ul>`;
+                    }
+                    
+                    // Set content
+                    contentEl.innerHTML = html;
+                })
+                .catch(error => {
+                    document.getElementById('entity-modal-content').innerHTML = 
+                        `<p class="text-red-500">Error: ${error.message}</p>`;
+                });
+        }
+        
+        function closeEntityModal() {
+            document.getElementById('entity-modal').classList.add('hidden');
+        }
+        
+        // Close modal when clicking outside of it
+        document.getElementById('entity-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEntityModal();
+            }
+        });
+    </script>
+</body>
+</html>

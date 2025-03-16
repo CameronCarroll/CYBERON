@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cybernetics Digital Garden</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <nav class="bg-blue-600 text-white shadow-md">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="text-xl font-bold">Cybernetics Digital Garden</div>
+                <div class="flex space-x-4">
+                    <a href="/" class="hover:underline">Home</a>
+                    <a href="/viz/ontology" class="hover:underline">Visualize</a>
+                    <a href="/viz/explore" class="hover:underline">Explore</a>
+                    <a href="/browse" class="hover:underline">Browse</a>
+                    <a href="/upload" class="hover:underline">Upload</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-3xl font-bold mb-6 text-center">Welcome to your Cybernetics Digital Garden</h1>
+            
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <p class="mb-4">
+                    This digital garden provides a programmatic interface to explore and reason about your cybernetics ontology.
+                    Using knowledge graph technology and network analysis, you can discover relationships between concepts,
+                    trace the evolution of ideas, and find connections between different domains.
+                </p>
+                
+                <p class="mb-4">
+                    Whether you're learning about cybernetics or researching specific concepts within the field,
+                    this tool helps you navigate the complex web of ideas, people, and theories that make up
+                    the rich history and applications of cybernetic thinking.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {% if engine_loaded %}
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-bold mb-3">Explore the Ontology</h2>
+                    <p class="mb-4">Visualize and interact with the knowledge graph.</p>
+                    <a href="/viz/ontology" class="inline-block bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+                        View Visualization
+                    </a>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-bold mb-3">Browse Content</h2>
+                    <p class="mb-4">Navigate the structured content of the ontology.</p>
+                    <a href="/browse" class="inline-block bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+                        Browse Structure
+                    </a>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-bold mb-3">Explore Connections</h2>
+                    <p class="mb-4">Find relationships and paths between concepts.</p>
+                    <a href="/explore" class="inline-block bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+                        Explore Connections
+                    </a>
+                </div>
+                {% else %}
+                <div class="bg-white rounded-lg shadow-md p-6 col-span-full">
+                    <h2 class="text-xl font-bold mb-3">Get Started</h2>
+                    <p class="mb-4">Upload your ontology text file to begin exploring.</p>
+                    <a href="/upload" class="inline-block bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+                        Upload Ontology
+                    </a>
+                </div>
+                {% endif %}
+                
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-bold mb-3">Update Content</h2>
+                    <p class="mb-4">Upload a new or updated ontology file.</p>
+                    <a href="/upload" class="inline-block bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+                        Upload Ontology
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="bg-gray-800 text-white py-4 mt-8">
+        <div class="container mx-auto px-4 text-center">
+            <p>Cybernetics Digital Garden - A tool for exploring and reasoning about cybernetics concepts</p>
+        </div>
+    </footer>
+</body>
+</html>

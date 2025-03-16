@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cybernetics Ontology Visualization</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/force-graph"></script>
+    <style>
+        #graph-container {
+            width: 100%;
+            height: 70vh;
+        }
+        .node-tooltip {
+            position: absolute;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+            pointer-events: none;
+            font-size: 14px;
+            max-width: 250px;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <nav class="bg-blue-600 text-white shadow-md">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="text-xl font-bold">Cybernetics Digital Garden</div>
+                <div class="flex space-x-4">
+                    <a href="/" class="hover:underline">Home</a>
+                    <a href="/viz/ontology" class="hover:underline">Visualize</a>
+                    <a href="/viz/explore" class="hover:underline">Explore</a>
+                    <a href="/browse" class="hover:underline">Browse</a>
+                    <a href="/upload" class="hover:underline">Upload</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-7xl mx-auto">
+            <h1 class="text-3xl font-bold mb-6">Cybernetics Ontology Visualization</h1>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <!-- Sidebar with controls -->
+                <div class="bg-white rounded-lg shadow-md p-4">
+                    <h2 class="text-xl font-bold mb-4">Ontology Statistics</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="font-bold mb-1">Entities</h3>
+                            <p>Total: <span class="font-mono">{{ summary.node_count }}</span></p>
+                            <ul class="ml-4 space-y-1">
+                                {% for type, count in summary.entity_types.items() %}
+                                <li>{{ type }}: <span class="font-mono">{{ count }}</span></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-bold mb-1">Relationships</h3>
+                            <p>Total: <span class="font-mono">{{ summary.edge_count }}</span></p>
+                            <ul class="ml-4 space-y-1">
+                                {% for type, count in summary.relationship_types.items() %}
+                                <li>{{ type }}: <span class="font-mono">{{ count }}</span></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-bold mb-1">Central Entities</h3>
+                            <ul class="ml-4 space-y-1">
+                                {% for entity in summary.central_entities %}
+                                <li>
+                                    <a href="#" class="text-blue-600 hover:underline entity-link" 
+                                       data-id="{{ entity.id }}">{{ entity.label }}</a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <h2 class="text-xl font-bold mb-4">Controls</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block font-bold mb-1">Search:</label>
+                            <input type="text" id="search-node" placeholder="Type to search nodes..." 
+                                   class="w-full px-2 py-1 border rounded">
+                        </div>
+                        
+                        <div>
+                            <label class="block font-bold mb-1">Node Types:</label>
+                            <div class="space-y-1">
+                                {% for type in summary.entity_types.keys() %}
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="node-type-filter mr-2" 
+                                           value="{{ type }}" checked>
+                                    <span>{{ type }}</span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block font-bold mb-1">Link Types:</label>
+                            <select id="link-type-filter" class="w-full px-2 py-1 border rounded">
+                                <option value="all">All Types</option>
+                                {% for type in summary.relationship_types.keys() %}
+                                <option value="{{ type }}">{{ type }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block font-bold mb-1">Physics:</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="toggle-physics" checked>
+                                    <span class="ml-2">Enable Physics</span>
+                                </label>
+                                
+                                <div>
+                                    <label class="block text-sm">Link Distance:</label>
+                                    <input type="range" id="link-distance" min="50" max="300" value="100" 
+                                           class="w-full">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm">Charge Strength:</label>
+                                    <input type="range" id="charge-strength" min="-500" max="-50" value="-100" 
+                                           class="w-full">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button id="reset-view" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+                            Reset View
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Main graph area -->
+                <div class="lg:col-span-3">
+                    <div class="bg-white rounded-lg shadow-md p-2">
+                        <div id="graph-container" class="border rounded"></div>
+                    </div>
+                    
+                    <!-- Node details panel -->
+                    <div id="node-details" class="mt-6 bg-white rounded-lg shadow-md p-4 hidden">
+                        <h2 class="text-xl font-bold mb-2" id="node-details-title">Node Details</h2>
+                        <div id="node-details-content"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="node-tooltip" class="node-tooltip"></div>
+    
+    <footer class="bg-gray-800 text-white py-4 mt-8">
+        <div class="container mx-auto px-4 text-center">
+            <p>Cybernetics Digital Garden - A tool for exploring and reasoning about cybernetics concepts</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let graph;
+            let graphData = { nodes: [], links: [] };
+            let selectedNode = null;
+            
+            // Create tooltip element
+            const tooltip = document.getElementById('node-tooltip');
+            
+            // Fetch graph data
+            console.log('Fetching graph data...');
+            // Using full URL to avoid path issues
+            fetch(window.location.origin + '/api/graph-data')
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Received data:', data);
+                    // Store initial data
+                    graphData = {
+                        nodes: data.nodes.map(node => ({
+                            ...node,
+                            id: node.id,
+                            name: node.label,
+                            val: 1 // Size
+                        })),
+                        links: data.links.map(link => ({
+                            ...link,
+                            source: link.source,
+                            target: link.target
+                        }))
+                    };
+                    
+                    initGraph(graphData);
+                    setupEventListeners();
+                })
+                .catch(error => {
+                    console.error('Error loading graph data:', error);
+                    document.getElementById('graph-container').innerHTML = 
+                        '<div class="flex h-full items-center justify-center"><p class="text-red-500">Error loading graph data: ' + error.message + '</p></div>';
+                });
+            
+            // Initialize the graph
+            function initGraph(data) {
+                // Node colors by type
+                const nodeColors = {
+                    person: '#ff6347',    // tomato
+                    concept: '#4682b4',   // steelblue
+                    domain: '#2e8b57',    // seagreen
+                    category: '#9932cc',  // darkorchid
+                    default: '#999999'    // gray
+                };
+                
+                // Create the graph
+                graph = ForceGraph()
+                    .graphData(data)
+                    .nodeId('id')
+                    .nodeVal('val')
+                    .nodeLabel('name')
+                    .nodeColor(node => nodeColors[node.type] || nodeColors.default)
+                    .linkLabel('label')
+                    .linkDirectionalArrowLength(3.5)
+                    .linkDirectionalArrowRelPos(1)
+                    .linkCurvature(0.25)
+                    .onNodeClick(handleNodeClick)
+                    .onNodeHover(handleNodeHover)
+                    .linkWidth(link => link === highlightedLink ? 2 : 1)
+                    .linkColor(link => link === highlightedLink ? '#ff9900' : '#cccccc')
+                    .nodeCanvasObject((node, ctx, globalScale) => {
+                        // Node drawing logic
+                        const label = node.name || node.id;
+                        const fontSize = 12/globalScale;
+                        ctx.font = `${fontSize}px Sans-Serif`;
+                        
+                        // Node circle
+                        ctx.beginPath();
+                        const size = node === selectedNode ? 8 : 5;
+                        ctx.arc(node.x, node.y, size, 0, 2 * Math.PI);
+                        ctx.fillStyle = nodeColors[node.type] || nodeColors.default;
+                        ctx.fill();
+                        
+                        // Draw border for selected node
+                        if (node === selectedNode) {
+                            ctx.strokeStyle = '#000000';
+                            ctx.lineWidth = 2/globalScale;
+                            ctx.stroke();
+                        }
+                        
+                        // Text label (only if zoomed in enough)
+                        if (globalScale > 0.7 || node === selectedNode) {
+                            // Text background for readability
+                            const textWidth = ctx.measureText(label).width;
+                            const bckgDimensions = [textWidth, fontSize].map(n => n + fontSize * 0.5);
+                            
+                            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                            ctx.fillRect(
+                                node.x - bckgDimensions[0] / 2,
+                                node.y + size + 2,
+                                bckgDimensions[0],
+                                bckgDimensions[1]
+                            );
+                            
+                            // Text label
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+                            ctx.fillStyle = '#000';
+                            ctx.fillText(
+                                label,
+                                node.x,
+                                node.y + size + 2 + bckgDimensions[1]/2
+                            );
+                        }
+                    })
+                    (document.getElementById('graph-container'));
+                
+                // Set initial physics
+                graph.d3Force('link').distance(100);
+                graph.d3Force('charge').strength(-100);
+            }
+            
+            // Track highlighted link
+            let highlightedLink = null;
+            
+            // Handle node hover for tooltip
+            function handleNodeHover(node) {
+                if (node) {
+                    const label = node.name || node.id;
+                    const type = node.type || 'unknown';
+                    
+                    tooltip.innerHTML = `
+                        <div><strong>${label}</strong></div>
+                        <div class="text-sm text-gray-600">${type}</div>
+                    `;
+                    
+                    // Position the tooltip near the mouse
+                    const mousePos = d3.pointer(event, document.body);
+                    tooltip.style.left = (mousePos[0] + 10) + 'px';
+                    tooltip.style.top = (mousePos[1] + 10) + 'px';
+                    tooltip.style.opacity = 0.9;
+                } else {
+                    tooltip.style.opacity = 0;
+                }
+            }
+            
+            // Handle node click
+            function handleNodeClick(node) {
+                if (selectedNode === node) {
+                    // Clicking the same node again deselects it
+                    selectedNode = null;
+                    highlightedLink = null;
+                    document.getElementById('node-details').classList.add('hidden');
+                } else {
+                    selectedNode = node;
+                    showNodeDetails(node);
+                    
+                    // Center view on clicked node
+                    graph.centerAt(node.x, node.y, 1000);
+                    graph.zoom(1.5, 1000);
+                }
+                
+                // Force a re-render to show selection state
+                graph.nodeCanvasObject(graph.nodeCanvasObject());
+            }
+            
+            // Show node details in panel
+            function showNodeDetails(node) {
+                fetch(`${window.location.origin}/api/entity/${node.id}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const detailsPanel = document.getElementById('node-details');
+                        const detailsTitle = document.getElementById('node-details-title');
+                        const detailsContent = document.getElementById('node-details-content');
+                        
+                        detailsPanel.classList.remove('hidden');
+                        detailsTitle.textContent = node.name || node.id;
+                        
+                        if (data.error) {
+                            detailsContent.innerHTML = `<p class="text-red-500">${data.error}</p>`;
+                            return;
+                        }
+                        
+                        // Create a details view
+                        let html = `
+                            <div class="mb-4">
+                                <span class="inline-block px-2 py-1 bg-gray-200 rounded text-sm">
+                                    ${data.attributes.type || 'unknown'}
+                                </span>
+                            </div>
+                        `;
+                        
+                        // Incoming connections
+                        if (data.incoming && data.incoming.length > 0) {
+                            html += `<h3 class="font-bold mt-4 mb-2">Incoming Connections</h3><ul class="space-y-1 ml-4">`;
+                            data.incoming.forEach(conn => {
+                                html += `
+                                    <li>
+                                        <a href="#" class="text-blue-600 hover:underline entity-link" data-id="${conn.id}">
+                                            ${conn.label}
+                                        </a>
+                                        <span class="text-gray-600"> ${conn.relationship} → This</span>
+                                    </li>
+                                `;
+                            });
+                            html += `</ul>`;
+                        }
+                        
+                        // Outgoing connections
+                        if (data.outgoing && data.outgoing.length > 0) {
+                            html += `<h3 class="font-bold mt-4 mb-2">Outgoing Connections</h3><ul class="space-y-1 ml-4">`;
+                            data.outgoing.forEach(conn => {
+                                html += `
+                                    <li>
+                                        <span class="text-gray-600">This ${conn.relationship} → </span>
+                                        <a href="#" class="text-blue-600 hover:underline entity-link" data-id="${conn.id}">
+                                            ${conn.label}
+                                        </a>
+                                    </li>
+                                `;
+                            });
+                            html += `</ul>`;
+                        }
+                        
+                        detailsContent.innerHTML = html;
+                        
+                        // Add event listeners to entity links
+                        detailsContent.querySelectorAll('.entity-link').forEach(link => {
+                            link.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                const entityId = e.target.dataset.id;
+                                selectNodeById(entityId);
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching node details:', error);
+                        document.getElementById('node-details-content').innerHTML = 
+                            '<p class="text-red-500">Error loading node details</p>';
+                    });
+            }
+            
+            // Select a node by ID
+            function selectNodeById(nodeId) {
+                const node = graphData.nodes.find(n => n.id === nodeId);
+                if (node) {
+                    handleNodeClick(node);
+                }
+            }
+            
+            // Set up event listeners for controls
+            function setupEventListeners() {
+                // Node search
+                const searchInput = document.getElementById('search-node');
+                searchInput.addEventListener('input', debounce(e => {
+                    const searchTerm = e.target.value.toLowerCase();
+                    if (searchTerm.length > 0) {
+                        const matchedNode = graphData.nodes.find(node => 
+                            (node.name && node.name.toLowerCase().includes(searchTerm)) || 
+                            node.id.toLowerCase().includes(searchTerm)
+                        );
+                        
+                        if (matchedNode) {
+                            selectNodeById(matchedNode.id);
+                        }
+                    }
+                }, 300));
+                
+                // Node type filters
+                document.querySelectorAll('.node-type-filter').forEach(checkbox => {
+                    checkbox.addEventListener('change', updateFilters);
+                });
+                
+                // Link type filter
+                document.getElementById('link-type-filter').addEventListener('change', updateFilters);
+                
+                // Physics controls
+                document.getElementById('toggle-physics').addEventListener('change', e => {
+                    if (e.target.checked) {
+                        graph.d3AlphaTarget(0.1).d3ReheatSimulation();
+                        setTimeout(() => graph.d3AlphaTarget(0), 2000);
+                    } else {
+                        graph.d3AlphaTarget(0);
+                    }
+                });
+                
+                document.getElementById('link-distance').addEventListener('input', e => {
+                    const distance = parseInt(e.target.value);
+                    graph.d3Force('link').distance(distance);
+                    graph.d3ReheatSimulation();
+                });
+                
+                document.getElementById('charge-strength').addEventListener('input', e => {
+                    const strength = parseInt(e.target.value);
+                    graph.d3Force('charge').strength(strength);
+                    graph.d3ReheatSimulation();
+                });
+                
+                // Reset view button
+                document.getElementById('reset-view').addEventListener('click', () => {
+                    graph.zoomToFit(400);
+                    selectedNode = null;
+                    highlightedLink = null;
+                    document.getElementById('node-details').classList.add('hidden');
+                    graph.nodeCanvasObject(graph.nodeCanvasObject());
+                });
+                
+                // Entity links in the sidebar
+                document.querySelectorAll('.entity-link').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const entityId = e.target.dataset.id;
+                        selectNodeById(entityId);
+                    });
+                });
+            }
+            
+            // Update filters based on current settings
+            function updateFilters() {
+                // Get selected node types
+                const selectedTypes = Array.from(document.querySelectorAll('.node-type-filter:checked'))
+                    .map(checkbox => checkbox.value);
+                
+                // Get selected link type
+                const selectedLinkType = document.getElementById('link-type-filter').value;
+                
+                // Filter nodes and links
+                const filteredNodes = graphData.nodes.filter(node => 
+                    selectedTypes.includes(node.type || 'unknown')
+                );
+                
+                const filteredLinks = graphData.links.filter(link => {
+                    // Check if both source and target nodes are visible
+                    const sourceNode = typeof link.source === 'object' ? link.source : 
+                        filteredNodes.find(n => n.id === link.source);
+                    const targetNode = typeof link.target === 'object' ? link.target : 
+                        filteredNodes.find(n => n.id === link.target);
+                    
+                    if (!sourceNode || !targetNode) return false;
+                    
+                    // Check link type if specific type is selected
+                    if (selectedLinkType !== 'all') {
+                        return link.label === selectedLinkType;
+                    }
+                    
+                    return true;
+                });
+                
+                // Update graph data
+                graph.graphData({
+                    nodes: filteredNodes,
+                    links: filteredLinks
+                });
+                
+                // Reset selection
+                selectedNode = null;
+                highlightedLink = null;
+                document.getElementById('node-details').classList.add('hidden');
+            }
+            
+            // Utility function: Debounce
+            function debounce(func, wait) {
+                let timeout;
+                return function() {
+                    const context = this;
+                    const args = arguments;
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(context, args), wait);
+                };
+            }
+        });
+    </script>
+</body>
+</html>

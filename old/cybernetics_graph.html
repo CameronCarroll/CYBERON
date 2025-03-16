@@ -1,0 +1,175 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 750px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+             #config {
+                 float: left;
+                 width: 400px;
+                 height: 600px;
+             }
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+            <div id="config"></div>
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#ff6347", "id": "Norbert Wiener", "label": "Norbert Wiener", "shape": "dot", "title": "Mathematician who coined the term \u0027cybernetics\u0027"}, {"color": "#ff6347", "id": "W. Ross Ashby", "label": "W. Ross Ashby", "shape": "dot", "title": "Pioneer in systems theory and cybernetics"}, {"color": "#ff6347", "id": "Claude Shannon", "label": "Claude Shannon", "shape": "dot", "title": "Developed mathematical theory of communication"}, {"color": "#66c2a5", "id": "Cybernetics", "label": "Cybernetics", "shape": "dot", "title": "The study of control and communication in systems"}, {"color": "#66c2a5", "id": "First-order cybernetics", "label": "First-order cybernetics", "shape": "dot", "title": "Focus on observed systems"}, {"color": "#66c2a5", "id": "Second-order cybernetics", "label": "Second-order cybernetics", "shape": "dot", "title": "Including the observer in the system"}, {"color": "#66c2a5", "id": "Feedback loops", "label": "Feedback loops", "shape": "dot", "title": "Circular causal processes"}, {"color": "#66c2a5", "id": "Homeostasis", "label": "Homeostasis", "shape": "dot", "title": "Self-regulation to maintain stability"}, {"color": "#fc8d62", "id": "Information Theory", "label": "Information Theory", "shape": "dot", "title": "Mathematical study of encoding and transmission of information"}, {"color": "#fc8d62", "id": "Entropy", "label": "Entropy", "shape": "dot", "title": "Measure of uncertainty or randomness"}, {"color": "#e78ac3", "id": "Neural Networks", "label": "Neural Networks", "shape": "dot", "title": "Computational systems inspired by biological neural networks"}, {"color": "#a6d854", "id": "Transformers", "label": "Transformers", "shape": "dot", "title": "Neural network architecture based on self-attention mechanisms"}, {"color": "#a6d854", "id": "Large Language Models", "label": "Large Language Models", "shape": "dot", "title": "AI systems trained on vast text corpora for language tasks"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Norbert Wiener", "title": "created", "to": "Cybernetics"}, {"arrows": "to", "from": "W. Ross Ashby", "title": "formalized", "to": "Homeostasis"}, {"arrows": "to", "from": "Claude Shannon", "title": "developed", "to": "Information Theory"}, {"arrows": "to", "from": "Cybernetics", "title": "evolved_into", "to": "First-order cybernetics"}, {"arrows": "to", "from": "Cybernetics", "title": "includes_concept", "to": "Feedback loops"}, {"arrows": "to", "from": "Cybernetics", "title": "includes_concept", "to": "Homeostasis"}, {"arrows": "to", "from": "Cybernetics", "title": "influenced", "to": "Neural Networks"}, {"arrows": "to", "from": "First-order cybernetics", "title": "evolved_into", "to": "Second-order cybernetics"}, {"arrows": "to", "from": "Information Theory", "title": "defines_concept", "to": "Entropy"}, {"arrows": "to", "from": "Information Theory", "title": "provides_foundation_for", "to": "Neural Networks"}, {"arrows": "to", "from": "Neural Networks", "title": "evolved_into", "to": "Transformers"}, {"arrows": "to", "from": "Transformers", "title": "enables", "to": "Large Language Models"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": true
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "barnesHut": {
+            "avoidOverlap": 0,
+            "centralGravity": 0.3,
+            "damping": 0.09,
+            "gravitationalConstant": -80000,
+            "springConstant": 0.001,
+            "springLength": 200
+        },
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+                  // if this network requires displaying the configure window,
+                  // put it in its div
+                  options.configure["container"] = document.getElementById("config");
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

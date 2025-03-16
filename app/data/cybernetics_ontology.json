@@ -1,0 +1,3022 @@
+{
+  "structured_ontology": {
+    "1": {
+      "title": "Historical Evolution and Convergence",
+      "subsections": {
+        "Early convergence (1940s-1950s): Macy Conferences and shared origins": [
+          "Divergence period (1956-1980s): Rise of symbolic AI and separate paths",
+          "Modern re-convergence (1990s-present): Neural networks to transformers"
+        ],
+        "Shared intellectual lineage: Wiener, McCulloch, von Neumann": [
+          "Parallel innovators: Shannon (information), Turing (computation)",
+          "Contemporary bridging figures"
+        ],
+        "Timeline of critical developments": [
+          "Historical case studies of cybernetic influence on AI",
+          "Paradigm shifts and technological breakthroughs"
+        ]
+      }
+    },
+    "2": {
+      "title": "Foundations of Cybernetics",
+      "subsections": {
+        "First-order cybernetics (1940s-1960s)": [
+          "Second-order cybernetics (1970s-1990s)",
+          "Third-order cybernetics (2000s-present)"
+        ],
+        "Norbert Wiener": [
+          "W. Ross Ashby",
+          "Gregory Bateson",
+          "Heinz von Foerster",
+          "Margaret Mead",
+          "Warren McCulloch",
+          "Stafford Beer",
+          "Claude Shannon"
+        ],
+        "Feedback loops": [
+          "Homeostasis",
+          "Self-regulation",
+          "Variety and the law of requisite variety",
+          "Entropy and negentropy"
+        ]
+      }
+    },
+    "3": {
+      "title": "Information Theory: From Shannon to Transformers",
+      "subsections": {
+        "Shannon's mathematical theory of communication": [
+          "Entropy, channel capacity, and noise",
+          "Information as uncertainty reduction"
+        ],
+        "Neural information coding and transmission": [
+          "Sensory processing as information filtering",
+          "Biological feedback loops as information systems"
+        ],
+        "Embeddings as information representation": [
+          "Attention mechanisms as information filters",
+          "Entropy reduction in language model training",
+          "Information bottlenecks in deep learning"
+        ]
+      }
+    },
+    "4": {
+      "title": "Systems Theory Integration",
+      "subsections": {
+        "Ludwig von Bertalanffy's contributions": [
+          "Emergence and complexity",
+          "System boundaries and environments"
+        ],
+        "Self-organization": [
+          "Autopoiesis (Maturana & Varela)",
+          "Emergence and emergent properties",
+          "Attractors and phase space"
+        ],
+        "Dynamical systems fundamentals": [
+          "Stability and robustness",
+          "System optimization",
+          "Cybernetic principles in AI control mechanisms"
+        ]
+      }
+    },
+    "5": {
+      "title": "Cognitive Cybernetics",
+      "subsections": {
+        "Cybernetic roots of connectionism": [
+          "Perceptrons and early neural networks",
+          "McCulloch-Pitts neurons and Hebbian learning",
+          "Evolution from cybernetic models to modern deep learning"
+        ],
+        "Brain as prediction engine": [
+          "Error minimization and Bayesian inference",
+          "Active inference and free energy principle",
+          "Predictive processing in AI systems"
+        ],
+        "Constructivism": [
+          "Embodied cognition",
+          "Enactivism",
+          "Computational theories of mind"
+        ],
+        "Integrated Information Theory (IIT)": [
+          "Global Workspace Theory",
+          "Cybernetic approaches to consciousness",
+          "Information integration in artificial systems"
+        ]
+      }
+    },
+    "6": {
+      "title": "AI Through a Cybernetic Lens",
+      "subsections": {
+        "Supervised learning as goal-directed feedback": [
+          "Reinforcement learning as cybernetic control",
+          "Unsupervised learning as self-organization",
+          "Feedback loops in algorithmic learning"
+        ],
+        "Attention mechanisms as control processes": [
+          "Self-attention as information filtering",
+          "Positional encoding as systemic context",
+          "Transformer feedback mechanisms"
+        ],
+        "LLMs as stochastic controllers": [
+          "Token prediction as cybernetic process",
+          "Emergent capabilities from system complexity",
+          "Next-token prediction as predictive processing"
+        ],
+        "Recursive self-improvement": [
+          "Intelligence augmentation vs. artificial general intelligence",
+          "Alignment as a cybernetic control problem",
+          "Capabilities vs. control debates"
+        ]
+      }
+    },
+    "7": {
+      "title": "Cybernetic Perspectives on AI Alignment and Safety",
+      "subsections": {
+        "Feedback mechanisms in value alignment": [
+          "RLHF as cybernetic steering",
+          "Robust control for AI safety"
+        ],
+        "Safe operating parameters": [
+          "AI containment as boundary management",
+          "Regulated exploration vs. exploitation"
+        ],
+        "Complexity matching for robust AI": [
+          "Diversity requirements for safe generalization",
+          "Environmental variety and AI adaptation"
+        ],
+        "Unforeseen behaviors in complex AI": [
+          "Cascading failures and system resilience",
+          "Monitoring and intervention mechanisms"
+        ]
+      }
+    },
+    "8": {
+      "title": "Embodied Cybernetics",
+      "subsections": {
+        "Sensorimotor coupling": [
+          "Subsumption architecture (Rodney Brooks)",
+          "Embodied cognition in robotics",
+          "Soft robotics and morphological computation"
+        ],
+        "Brain-computer interfaces": [
+          "Extended mind thesis",
+          "Augmented cognition",
+          "Cyborg theory"
+        ],
+        "Biological control systems": [
+          "Engineered homeostasis",
+          "Genetic circuits and biological feedback"
+        ]
+      }
+    },
+    "9": {
+      "title": "Social Cybernetics",
+      "subsections": {
+        "Viable System Model (Beer)": [
+          "Management cybernetics",
+          "Team Syntegrity",
+          "Organizational learning"
+        ],
+        "Niklas Luhmann's social systems": [
+          "Communication as social autopoiesis",
+          "Structural coupling in social contexts"
+        ],
+        "Scale-free networks": [
+          "Small-world networks",
+          "Information cascades and social diffusion",
+          "Digital social networks as cybernetic systems",
+          "Feedback loops in social media dynamics"
+        ]
+      }
+    },
+    "10": {
+      "title": "Ecological Cybernetics",
+      "subsections": {
+        "Earth as a cybernetic system": [
+          "Gaia hypothesis",
+          "Climate feedback loops",
+          "Ecosystem stability and resilience"
+        ],
+        "Circular economy": [
+          "Biomimicry",
+          "Regenerative design",
+          "Permacomputing and sustainable computing"
+        ],
+        "Modeling ecological systems with AI": [
+          "Feedback-driven resource management",
+          "Climate prediction as cybernetic modeling"
+        ]
+      }
+    },
+    "11": {
+      "title": "Computational Cybernetics",
+      "subsections": {
+        "Computation as control": [
+          "Information theory and entropy",
+          "Algorithmic information theory",
+          "Quantum information theory"
+        ],
+        "Agent-based modeling": [
+          "System dynamics",
+          "Cellular automata",
+          "Digital twins",
+          "AI-enhanced complex systems modeling"
+        ],
+        "Resilient systems design": [
+          "Adversarial dynamics",
+          "Risk homeostasis in security",
+          "Anti-fragile computing",
+          "AI in security as cybernetic defense"
+        ]
+      }
+    },
+    "12": {
+      "title": "Philosophical Extensions",
+      "subsections": {
+        "Observer-dependent knowledge": [
+          "Constructivist epistemology",
+          "Radical constructivism",
+          "Cybernetic epistemology"
+        ],
+        "Information ethics": [
+          "Machine ethics",
+          "Responsibility in complex systems",
+          "Distributed moral agency",
+          "Human-AI ethical symbiosis"
+        ],
+        "Process philosophy connections": [
+          "Systems ontology",
+          "Pancomputationalism",
+          "Information-based reality theories"
+        ]
+      }
+    },
+    "13": {
+      "title": "Ethical and Societal Implications",
+      "subsections": {
+        "Co-evolutionary development": [
+          "Distributed agency and responsibility",
+          "Balance of control in human-AI systems"
+        ],
+        "Feedback loops in algorithmic bias": [
+          "Systemic approaches to AI fairness",
+          "Cybernetic interventions for equitable AI"
+        ],
+        "Labor market disruption models": [
+          "Wealth distribution dynamics",
+          "Societal adaptation feedback mechanisms"
+        ],
+        "Regulatory feedback systems": [
+          "Adaptive governance for emerging technologies",
+          "Systemic risk management"
+        ]
+      }
+    },
+    "14": {
+      "title": "Applications & Case Studies",
+      "subsections": {
+        "Homeostatic control in medicine": [
+          "Cybernetic models of disease",
+          "Neural interfaces and prosthetics",
+          "Precision medicine as feedback control"
+        ],
+        "Learning as feedback": [
+          "Educational cybernetics",
+          "Adaptive learning systems",
+          "Knowledge management"
+        ],
+        "Smart cities": [
+          "Traffic as a self-organizing system",
+          "Urban metabolism",
+          "Resilient infrastructure"
+        ],
+        "Market behavior as cybernetic process": [
+          "Financial feedback loops",
+          "Economic homeostasis mechanisms"
+        ]
+      }
+    },
+    "15": {
+      "title": "Future Directions",
+      "subsections": {
+        "Quantum control theory": [
+          "Quantum neural networks",
+          "Quantum feedback"
+        ],
+        "Neuromorphic computing": [
+          "Reservoir computing",
+          "Physical neural networks"
+        ],
+        "Self-improving systems through cybernetic principles": [
+          "Control theory for artificial general intelligence",
+          "Cybernetic approaches to intelligence augmentation"
+        ],
+        "Transhumanism": [
+          "Mind uploading theories",
+          "Distributed consciousness",
+          "Cybernetic immortality"
+        ]
+      }
+    }
+  },
+  "knowledge_graph": {
+    "nodes": [
+      {
+        "id": "section_1",
+        "label": "Historical Evolution and Convergence",
+        "type": "domain"
+      },
+      {
+        "id": "historical_evolution_and_convergence_early_convergence__1940s_1950s___macy_conferences_and_shared_origins",
+        "label": "Early convergence (1940s-1950s): Macy Conferences and shared origins",
+        "type": "category"
+      },
+      {
+        "id": "divergence_period__1956_1980s___rise_of_symbolic_ai_and_separate_paths",
+        "label": "Divergence period (1956-1980s): Rise of symbolic AI and separate paths",
+        "type": "concept"
+      },
+      {
+        "id": "modern_re_convergence__1990s_present___neural_networks_to_transformers",
+        "label": "Modern re-convergence (1990s-present): Neural networks to transformers",
+        "type": "concept"
+      },
+      {
+        "id": "historical_evolution_and_convergence_shared_intellectual_lineage__wiener__mcculloch__von_neumann",
+        "label": "Shared intellectual lineage: Wiener, McCulloch, von Neumann",
+        "type": "category"
+      },
+      {
+        "id": "parallel_innovators__shannon__information___turing__computation_",
+        "label": "Parallel innovators: Shannon (information), Turing (computation)",
+        "type": "concept"
+      },
+      {
+        "id": "contemporary_bridging_figures",
+        "label": "Contemporary bridging figures",
+        "type": "concept"
+      },
+      {
+        "id": "historical_evolution_and_convergence_timeline_of_critical_developments",
+        "label": "Timeline of critical developments",
+        "type": "category"
+      },
+      {
+        "id": "historical_case_studies_of_cybernetic_influence_on_ai",
+        "label": "Historical case studies of cybernetic influence on AI",
+        "type": "concept"
+      },
+      {
+        "id": "paradigm_shifts_and_technological_breakthroughs",
+        "label": "Paradigm shifts and technological breakthroughs",
+        "type": "concept"
+      },
+      {
+        "id": "section_2",
+        "label": "Foundations of Cybernetics",
+        "type": "domain"
+      },
+      {
+        "id": "foundations_of_cybernetics_first_order_cybernetics__1940s_1960s_",
+        "label": "First-order cybernetics (1940s-1960s)",
+        "type": "category"
+      },
+      {
+        "id": "second_order_cybernetics__1970s_1990s_",
+        "label": "Second-order cybernetics (1970s-1990s)",
+        "type": "concept"
+      },
+      {
+        "id": "third_order_cybernetics__2000s_present_",
+        "label": "Third-order cybernetics (2000s-present)",
+        "type": "concept"
+      },
+      {
+        "id": "foundations_of_cybernetics_norbert_wiener",
+        "label": "Norbert Wiener",
+        "type": "category"
+      },
+      {
+        "id": "w__ross_ashby",
+        "label": "W. Ross Ashby",
+        "type": "concept"
+      },
+      {
+        "id": "gregory_bateson",
+        "label": "Gregory Bateson",
+        "type": "concept"
+      },
+      {
+        "id": "heinz_von_foerster",
+        "label": "Heinz von Foerster",
+        "type": "concept"
+      },
+      {
+        "id": "margaret_mead",
+        "label": "Margaret Mead",
+        "type": "concept"
+      },
+      {
+        "id": "warren_mcculloch",
+        "label": "Warren McCulloch",
+        "type": "concept"
+      },
+      {
+        "id": "stafford_beer",
+        "label": "Stafford Beer",
+        "type": "concept"
+      },
+      {
+        "id": "claude_shannon",
+        "label": "Claude Shannon",
+        "type": "concept"
+      },
+      {
+        "id": "foundations_of_cybernetics_feedback_loops",
+        "label": "Feedback loops",
+        "type": "category"
+      },
+      {
+        "id": "homeostasis",
+        "label": "Homeostasis",
+        "type": "concept"
+      },
+      {
+        "id": "self_regulation",
+        "label": "Self-regulation",
+        "type": "concept"
+      },
+      {
+        "id": "variety_and_the_law_of_requisite_variety",
+        "label": "Variety and the law of requisite variety",
+        "type": "concept"
+      },
+      {
+        "id": "entropy_and_negentropy",
+        "label": "Entropy and negentropy",
+        "type": "concept"
+      },
+      {
+        "id": "section_3",
+        "label": "Information Theory: From Shannon to Transformers",
+        "type": "domain"
+      },
+      {
+        "id": "information_theory__from_shannon_to_transformers_shannon_s_mathematical_theory_of_communication",
+        "label": "Shannon's mathematical theory of communication",
+        "type": "category"
+      },
+      {
+        "id": "entropy__channel_capacity__and_noise",
+        "label": "Entropy, channel capacity, and noise",
+        "type": "concept"
+      },
+      {
+        "id": "information_as_uncertainty_reduction",
+        "label": "Information as uncertainty reduction",
+        "type": "concept"
+      },
+      {
+        "id": "information_theory__from_shannon_to_transformers_neural_information_coding_and_transmission",
+        "label": "Neural information coding and transmission",
+        "type": "category"
+      },
+      {
+        "id": "sensory_processing_as_information_filtering",
+        "label": "Sensory processing as information filtering",
+        "type": "concept"
+      },
+      {
+        "id": "biological_feedback_loops_as_information_systems",
+        "label": "Biological feedback loops as information systems",
+        "type": "concept"
+      },
+      {
+        "id": "information_theory__from_shannon_to_transformers_embeddings_as_information_representation",
+        "label": "Embeddings as information representation",
+        "type": "category"
+      },
+      {
+        "id": "attention_mechanisms_as_information_filters",
+        "label": "Attention mechanisms as information filters",
+        "type": "concept"
+      },
+      {
+        "id": "entropy_reduction_in_language_model_training",
+        "label": "Entropy reduction in language model training",
+        "type": "concept"
+      },
+      {
+        "id": "information_bottlenecks_in_deep_learning",
+        "label": "Information bottlenecks in deep learning",
+        "type": "concept"
+      },
+      {
+        "id": "section_4",
+        "label": "Systems Theory Integration",
+        "type": "domain"
+      },
+      {
+        "id": "systems_theory_integration_ludwig_von_bertalanffy_s_contributions",
+        "label": "Ludwig von Bertalanffy's contributions",
+        "type": "category"
+      },
+      {
+        "id": "emergence_and_complexity",
+        "label": "Emergence and complexity",
+        "type": "concept"
+      },
+      {
+        "id": "system_boundaries_and_environments",
+        "label": "System boundaries and environments",
+        "type": "concept"
+      },
+      {
+        "id": "systems_theory_integration_self_organization",
+        "label": "Self-organization",
+        "type": "category"
+      },
+      {
+        "id": "autopoiesis__maturana___varela_",
+        "label": "Autopoiesis (Maturana & Varela)",
+        "type": "concept"
+      },
+      {
+        "id": "emergence_and_emergent_properties",
+        "label": "Emergence and emergent properties",
+        "type": "concept"
+      },
+      {
+        "id": "attractors_and_phase_space",
+        "label": "Attractors and phase space",
+        "type": "concept"
+      },
+      {
+        "id": "systems_theory_integration_dynamical_systems_fundamentals",
+        "label": "Dynamical systems fundamentals",
+        "type": "category"
+      },
+      {
+        "id": "stability_and_robustness",
+        "label": "Stability and robustness",
+        "type": "concept"
+      },
+      {
+        "id": "system_optimization",
+        "label": "System optimization",
+        "type": "concept"
+      },
+      {
+        "id": "cybernetic_principles_in_ai_control_mechanisms",
+        "label": "Cybernetic principles in AI control mechanisms",
+        "type": "concept"
+      },
+      {
+        "id": "section_5",
+        "label": "Cognitive Cybernetics",
+        "type": "domain"
+      },
+      {
+        "id": "cognitive_cybernetics_cybernetic_roots_of_connectionism",
+        "label": "Cybernetic roots of connectionism",
+        "type": "category"
+      },
+      {
+        "id": "perceptrons_and_early_neural_networks",
+        "label": "Perceptrons and early neural networks",
+        "type": "concept"
+      },
+      {
+        "id": "mcculloch_pitts_neurons_and_hebbian_learning",
+        "label": "McCulloch-Pitts neurons and Hebbian learning",
+        "type": "concept"
+      },
+      {
+        "id": "evolution_from_cybernetic_models_to_modern_deep_learning",
+        "label": "Evolution from cybernetic models to modern deep learning",
+        "type": "concept"
+      },
+      {
+        "id": "cognitive_cybernetics_brain_as_prediction_engine",
+        "label": "Brain as prediction engine",
+        "type": "category"
+      },
+      {
+        "id": "error_minimization_and_bayesian_inference",
+        "label": "Error minimization and Bayesian inference",
+        "type": "concept"
+      },
+      {
+        "id": "active_inference_and_free_energy_principle",
+        "label": "Active inference and free energy principle",
+        "type": "concept"
+      },
+      {
+        "id": "predictive_processing_in_ai_systems",
+        "label": "Predictive processing in AI systems",
+        "type": "concept"
+      },
+      {
+        "id": "cognitive_cybernetics_constructivism",
+        "label": "Constructivism",
+        "type": "category"
+      },
+      {
+        "id": "embodied_cognition",
+        "label": "Embodied cognition",
+        "type": "concept"
+      },
+      {
+        "id": "enactivism",
+        "label": "Enactivism",
+        "type": "concept"
+      },
+      {
+        "id": "computational_theories_of_mind",
+        "label": "Computational theories of mind",
+        "type": "concept"
+      },
+      {
+        "id": "cognitive_cybernetics_integrated_information_theory__iit_",
+        "label": "Integrated Information Theory (IIT)",
+        "type": "category"
+      },
+      {
+        "id": "global_workspace_theory",
+        "label": "Global Workspace Theory",
+        "type": "concept"
+      },
+      {
+        "id": "cybernetic_approaches_to_consciousness",
+        "label": "Cybernetic approaches to consciousness",
+        "type": "concept"
+      },
+      {
+        "id": "information_integration_in_artificial_systems",
+        "label": "Information integration in artificial systems",
+        "type": "concept"
+      },
+      {
+        "id": "section_6",
+        "label": "AI Through a Cybernetic Lens",
+        "type": "domain"
+      },
+      {
+        "id": "ai_through_a_cybernetic_lens_supervised_learning_as_goal_directed_feedback",
+        "label": "Supervised learning as goal-directed feedback",
+        "type": "category"
+      },
+      {
+        "id": "reinforcement_learning_as_cybernetic_control",
+        "label": "Reinforcement learning as cybernetic control",
+        "type": "concept"
+      },
+      {
+        "id": "unsupervised_learning_as_self_organization",
+        "label": "Unsupervised learning as self-organization",
+        "type": "concept"
+      },
+      {
+        "id": "feedback_loops_in_algorithmic_learning",
+        "label": "Feedback loops in algorithmic learning",
+        "type": "concept"
+      },
+      {
+        "id": "ai_through_a_cybernetic_lens_attention_mechanisms_as_control_processes",
+        "label": "Attention mechanisms as control processes",
+        "type": "category"
+      },
+      {
+        "id": "self_attention_as_information_filtering",
+        "label": "Self-attention as information filtering",
+        "type": "concept"
+      },
+      {
+        "id": "positional_encoding_as_systemic_context",
+        "label": "Positional encoding as systemic context",
+        "type": "concept"
+      },
+      {
+        "id": "transformer_feedback_mechanisms",
+        "label": "Transformer feedback mechanisms",
+        "type": "concept"
+      },
+      {
+        "id": "ai_through_a_cybernetic_lens_llms_as_stochastic_controllers",
+        "label": "LLMs as stochastic controllers",
+        "type": "category"
+      },
+      {
+        "id": "token_prediction_as_cybernetic_process",
+        "label": "Token prediction as cybernetic process",
+        "type": "concept"
+      },
+      {
+        "id": "emergent_capabilities_from_system_complexity",
+        "label": "Emergent capabilities from system complexity",
+        "type": "concept"
+      },
+      {
+        "id": "next_token_prediction_as_predictive_processing",
+        "label": "Next-token prediction as predictive processing",
+        "type": "concept"
+      },
+      {
+        "id": "ai_through_a_cybernetic_lens_recursive_self_improvement",
+        "label": "Recursive self-improvement",
+        "type": "category"
+      },
+      {
+        "id": "intelligence_augmentation_vs__artificial_general_intelligence",
+        "label": "Intelligence augmentation vs. artificial general intelligence",
+        "type": "concept"
+      },
+      {
+        "id": "alignment_as_a_cybernetic_control_problem",
+        "label": "Alignment as a cybernetic control problem",
+        "type": "concept"
+      },
+      {
+        "id": "capabilities_vs__control_debates",
+        "label": "Capabilities vs. control debates",
+        "type": "concept"
+      },
+      {
+        "id": "section_7",
+        "label": "Cybernetic Perspectives on AI Alignment and Safety",
+        "type": "domain"
+      },
+      {
+        "id": "cybernetic_perspectives_on_ai_alignment_and_safety_feedback_mechanisms_in_value_alignment",
+        "label": "Feedback mechanisms in value alignment",
+        "type": "category"
+      },
+      {
+        "id": "rlhf_as_cybernetic_steering",
+        "label": "RLHF as cybernetic steering",
+        "type": "concept"
+      },
+      {
+        "id": "robust_control_for_ai_safety",
+        "label": "Robust control for AI safety",
+        "type": "concept"
+      },
+      {
+        "id": "cybernetic_perspectives_on_ai_alignment_and_safety_safe_operating_parameters",
+        "label": "Safe operating parameters",
+        "type": "category"
+      },
+      {
+        "id": "ai_containment_as_boundary_management",
+        "label": "AI containment as boundary management",
+        "type": "concept"
+      },
+      {
+        "id": "regulated_exploration_vs__exploitation",
+        "label": "Regulated exploration vs. exploitation",
+        "type": "concept"
+      },
+      {
+        "id": "cybernetic_perspectives_on_ai_alignment_and_safety_complexity_matching_for_robust_ai",
+        "label": "Complexity matching for robust AI",
+        "type": "category"
+      },
+      {
+        "id": "diversity_requirements_for_safe_generalization",
+        "label": "Diversity requirements for safe generalization",
+        "type": "concept"
+      },
+      {
+        "id": "environmental_variety_and_ai_adaptation",
+        "label": "Environmental variety and AI adaptation",
+        "type": "concept"
+      },
+      {
+        "id": "cybernetic_perspectives_on_ai_alignment_and_safety_unforeseen_behaviors_in_complex_ai",
+        "label": "Unforeseen behaviors in complex AI",
+        "type": "category"
+      },
+      {
+        "id": "cascading_failures_and_system_resilience",
+        "label": "Cascading failures and system resilience",
+        "type": "concept"
+      },
+      {
+        "id": "monitoring_and_intervention_mechanisms",
+        "label": "Monitoring and intervention mechanisms",
+        "type": "concept"
+      },
+      {
+        "id": "section_8",
+        "label": "Embodied Cybernetics",
+        "type": "domain"
+      },
+      {
+        "id": "embodied_cybernetics_sensorimotor_coupling",
+        "label": "Sensorimotor coupling",
+        "type": "category"
+      },
+      {
+        "id": "subsumption_architecture__rodney_brooks_",
+        "label": "Subsumption architecture (Rodney Brooks)",
+        "type": "concept"
+      },
+      {
+        "id": "embodied_cognition_in_robotics",
+        "label": "Embodied cognition in robotics",
+        "type": "concept"
+      },
+      {
+        "id": "soft_robotics_and_morphological_computation",
+        "label": "Soft robotics and morphological computation",
+        "type": "concept"
+      },
+      {
+        "id": "embodied_cybernetics_brain_computer_interfaces",
+        "label": "Brain-computer interfaces",
+        "type": "category"
+      },
+      {
+        "id": "extended_mind_thesis",
+        "label": "Extended mind thesis",
+        "type": "concept"
+      },
+      {
+        "id": "augmented_cognition",
+        "label": "Augmented cognition",
+        "type": "concept"
+      },
+      {
+        "id": "cyborg_theory",
+        "label": "Cyborg theory",
+        "type": "concept"
+      },
+      {
+        "id": "embodied_cybernetics_biological_control_systems",
+        "label": "Biological control systems",
+        "type": "category"
+      },
+      {
+        "id": "engineered_homeostasis",
+        "label": "Engineered homeostasis",
+        "type": "concept"
+      },
+      {
+        "id": "genetic_circuits_and_biological_feedback",
+        "label": "Genetic circuits and biological feedback",
+        "type": "concept"
+      },
+      {
+        "id": "section_9",
+        "label": "Social Cybernetics",
+        "type": "domain"
+      },
+      {
+        "id": "social_cybernetics_viable_system_model__beer_",
+        "label": "Viable System Model (Beer)",
+        "type": "category"
+      },
+      {
+        "id": "management_cybernetics",
+        "label": "Management cybernetics",
+        "type": "concept"
+      },
+      {
+        "id": "team_syntegrity",
+        "label": "Team Syntegrity",
+        "type": "concept"
+      },
+      {
+        "id": "organizational_learning",
+        "label": "Organizational learning",
+        "type": "concept"
+      },
+      {
+        "id": "social_cybernetics_niklas_luhmann_s_social_systems",
+        "label": "Niklas Luhmann's social systems",
+        "type": "category"
+      },
+      {
+        "id": "communication_as_social_autopoiesis",
+        "label": "Communication as social autopoiesis",
+        "type": "concept"
+      },
+      {
+        "id": "structural_coupling_in_social_contexts",
+        "label": "Structural coupling in social contexts",
+        "type": "concept"
+      },
+      {
+        "id": "social_cybernetics_scale_free_networks",
+        "label": "Scale-free networks",
+        "type": "category"
+      },
+      {
+        "id": "small_world_networks",
+        "label": "Small-world networks",
+        "type": "concept"
+      },
+      {
+        "id": "information_cascades_and_social_diffusion",
+        "label": "Information cascades and social diffusion",
+        "type": "concept"
+      },
+      {
+        "id": "digital_social_networks_as_cybernetic_systems",
+        "label": "Digital social networks as cybernetic systems",
+        "type": "concept"
+      },
+      {
+        "id": "feedback_loops_in_social_media_dynamics",
+        "label": "Feedback loops in social media dynamics",
+        "type": "concept"
+      },
+      {
+        "id": "section_10",
+        "label": "Ecological Cybernetics",
+        "type": "domain"
+      },
+      {
+        "id": "ecological_cybernetics_earth_as_a_cybernetic_system",
+        "label": "Earth as a cybernetic system",
+        "type": "category"
+      },
+      {
+        "id": "gaia_hypothesis",
+        "label": "Gaia hypothesis",
+        "type": "concept"
+      },
+      {
+        "id": "climate_feedback_loops",
+        "label": "Climate feedback loops",
+        "type": "concept"
+      },
+      {
+        "id": "ecosystem_stability_and_resilience",
+        "label": "Ecosystem stability and resilience",
+        "type": "concept"
+      },
+      {
+        "id": "ecological_cybernetics_circular_economy",
+        "label": "Circular economy",
+        "type": "category"
+      },
+      {
+        "id": "biomimicry",
+        "label": "Biomimicry",
+        "type": "concept"
+      },
+      {
+        "id": "regenerative_design",
+        "label": "Regenerative design",
+        "type": "concept"
+      },
+      {
+        "id": "permacomputing_and_sustainable_computing",
+        "label": "Permacomputing and sustainable computing",
+        "type": "concept"
+      },
+      {
+        "id": "ecological_cybernetics_modeling_ecological_systems_with_ai",
+        "label": "Modeling ecological systems with AI",
+        "type": "category"
+      },
+      {
+        "id": "feedback_driven_resource_management",
+        "label": "Feedback-driven resource management",
+        "type": "concept"
+      },
+      {
+        "id": "climate_prediction_as_cybernetic_modeling",
+        "label": "Climate prediction as cybernetic modeling",
+        "type": "concept"
+      },
+      {
+        "id": "section_11",
+        "label": "Computational Cybernetics",
+        "type": "domain"
+      },
+      {
+        "id": "computational_cybernetics_computation_as_control",
+        "label": "Computation as control",
+        "type": "category"
+      },
+      {
+        "id": "information_theory_and_entropy",
+        "label": "Information theory and entropy",
+        "type": "concept"
+      },
+      {
+        "id": "algorithmic_information_theory",
+        "label": "Algorithmic information theory",
+        "type": "concept"
+      },
+      {
+        "id": "quantum_information_theory",
+        "label": "Quantum information theory",
+        "type": "concept"
+      },
+      {
+        "id": "computational_cybernetics_agent_based_modeling",
+        "label": "Agent-based modeling",
+        "type": "category"
+      },
+      {
+        "id": "system_dynamics",
+        "label": "System dynamics",
+        "type": "concept"
+      },
+      {
+        "id": "cellular_automata",
+        "label": "Cellular automata",
+        "type": "concept"
+      },
+      {
+        "id": "digital_twins",
+        "label": "Digital twins",
+        "type": "concept"
+      },
+      {
+        "id": "ai_enhanced_complex_systems_modeling",
+        "label": "AI-enhanced complex systems modeling",
+        "type": "concept"
+      },
+      {
+        "id": "computational_cybernetics_resilient_systems_design",
+        "label": "Resilient systems design",
+        "type": "category"
+      },
+      {
+        "id": "adversarial_dynamics",
+        "label": "Adversarial dynamics",
+        "type": "concept"
+      },
+      {
+        "id": "risk_homeostasis_in_security",
+        "label": "Risk homeostasis in security",
+        "type": "concept"
+      },
+      {
+        "id": "anti_fragile_computing",
+        "label": "Anti-fragile computing",
+        "type": "concept"
+      },
+      {
+        "id": "ai_in_security_as_cybernetic_defense",
+        "label": "AI in security as cybernetic defense",
+        "type": "concept"
+      },
+      {
+        "id": "section_12",
+        "label": "Philosophical Extensions",
+        "type": "domain"
+      },
+      {
+        "id": "philosophical_extensions_observer_dependent_knowledge",
+        "label": "Observer-dependent knowledge",
+        "type": "category"
+      },
+      {
+        "id": "constructivist_epistemology",
+        "label": "Constructivist epistemology",
+        "type": "concept"
+      },
+      {
+        "id": "radical_constructivism",
+        "label": "Radical constructivism",
+        "type": "concept"
+      },
+      {
+        "id": "cybernetic_epistemology",
+        "label": "Cybernetic epistemology",
+        "type": "concept"
+      },
+      {
+        "id": "philosophical_extensions_information_ethics",
+        "label": "Information ethics",
+        "type": "category"
+      },
+      {
+        "id": "machine_ethics",
+        "label": "Machine ethics",
+        "type": "concept"
+      },
+      {
+        "id": "responsibility_in_complex_systems",
+        "label": "Responsibility in complex systems",
+        "type": "concept"
+      },
+      {
+        "id": "distributed_moral_agency",
+        "label": "Distributed moral agency",
+        "type": "concept"
+      },
+      {
+        "id": "human_ai_ethical_symbiosis",
+        "label": "Human-AI ethical symbiosis",
+        "type": "concept"
+      },
+      {
+        "id": "philosophical_extensions_process_philosophy_connections",
+        "label": "Process philosophy connections",
+        "type": "category"
+      },
+      {
+        "id": "systems_ontology",
+        "label": "Systems ontology",
+        "type": "concept"
+      },
+      {
+        "id": "pancomputationalism",
+        "label": "Pancomputationalism",
+        "type": "concept"
+      },
+      {
+        "id": "information_based_reality_theories",
+        "label": "Information-based reality theories",
+        "type": "concept"
+      },
+      {
+        "id": "section_13",
+        "label": "Ethical and Societal Implications",
+        "type": "domain"
+      },
+      {
+        "id": "ethical_and_societal_implications_co_evolutionary_development",
+        "label": "Co-evolutionary development",
+        "type": "category"
+      },
+      {
+        "id": "distributed_agency_and_responsibility",
+        "label": "Distributed agency and responsibility",
+        "type": "concept"
+      },
+      {
+        "id": "balance_of_control_in_human_ai_systems",
+        "label": "Balance of control in human-AI systems",
+        "type": "concept"
+      },
+      {
+        "id": "ethical_and_societal_implications_feedback_loops_in_algorithmic_bias",
+        "label": "Feedback loops in algorithmic bias",
+        "type": "category"
+      },
+      {
+        "id": "systemic_approaches_to_ai_fairness",
+        "label": "Systemic approaches to AI fairness",
+        "type": "concept"
+      },
+      {
+        "id": "cybernetic_interventions_for_equitable_ai",
+        "label": "Cybernetic interventions for equitable AI",
+        "type": "concept"
+      },
+      {
+        "id": "ethical_and_societal_implications_labor_market_disruption_models",
+        "label": "Labor market disruption models",
+        "type": "category"
+      },
+      {
+        "id": "wealth_distribution_dynamics",
+        "label": "Wealth distribution dynamics",
+        "type": "concept"
+      },
+      {
+        "id": "societal_adaptation_feedback_mechanisms",
+        "label": "Societal adaptation feedback mechanisms",
+        "type": "concept"
+      },
+      {
+        "id": "ethical_and_societal_implications_regulatory_feedback_systems",
+        "label": "Regulatory feedback systems",
+        "type": "category"
+      },
+      {
+        "id": "adaptive_governance_for_emerging_technologies",
+        "label": "Adaptive governance for emerging technologies",
+        "type": "concept"
+      },
+      {
+        "id": "systemic_risk_management",
+        "label": "Systemic risk management",
+        "type": "concept"
+      },
+      {
+        "id": "section_14",
+        "label": "Applications & Case Studies",
+        "type": "domain"
+      },
+      {
+        "id": "applications___case_studies_homeostatic_control_in_medicine",
+        "label": "Homeostatic control in medicine",
+        "type": "category"
+      },
+      {
+        "id": "cybernetic_models_of_disease",
+        "label": "Cybernetic models of disease",
+        "type": "concept"
+      },
+      {
+        "id": "neural_interfaces_and_prosthetics",
+        "label": "Neural interfaces and prosthetics",
+        "type": "concept"
+      },
+      {
+        "id": "precision_medicine_as_feedback_control",
+        "label": "Precision medicine as feedback control",
+        "type": "concept"
+      },
+      {
+        "id": "applications___case_studies_learning_as_feedback",
+        "label": "Learning as feedback",
+        "type": "category"
+      },
+      {
+        "id": "educational_cybernetics",
+        "label": "Educational cybernetics",
+        "type": "concept"
+      },
+      {
+        "id": "adaptive_learning_systems",
+        "label": "Adaptive learning systems",
+        "type": "concept"
+      },
+      {
+        "id": "knowledge_management",
+        "label": "Knowledge management",
+        "type": "concept"
+      },
+      {
+        "id": "applications___case_studies_smart_cities",
+        "label": "Smart cities",
+        "type": "category"
+      },
+      {
+        "id": "traffic_as_a_self_organizing_system",
+        "label": "Traffic as a self-organizing system",
+        "type": "concept"
+      },
+      {
+        "id": "urban_metabolism",
+        "label": "Urban metabolism",
+        "type": "concept"
+      },
+      {
+        "id": "resilient_infrastructure",
+        "label": "Resilient infrastructure",
+        "type": "concept"
+      },
+      {
+        "id": "applications___case_studies_market_behavior_as_cybernetic_process",
+        "label": "Market behavior as cybernetic process",
+        "type": "category"
+      },
+      {
+        "id": "financial_feedback_loops",
+        "label": "Financial feedback loops",
+        "type": "concept"
+      },
+      {
+        "id": "economic_homeostasis_mechanisms",
+        "label": "Economic homeostasis mechanisms",
+        "type": "concept"
+      },
+      {
+        "id": "section_15",
+        "label": "Future Directions",
+        "type": "domain"
+      },
+      {
+        "id": "future_directions_quantum_control_theory",
+        "label": "Quantum control theory",
+        "type": "category"
+      },
+      {
+        "id": "quantum_neural_networks",
+        "label": "Quantum neural networks",
+        "type": "concept"
+      },
+      {
+        "id": "quantum_feedback",
+        "label": "Quantum feedback",
+        "type": "concept"
+      },
+      {
+        "id": "future_directions_neuromorphic_computing",
+        "label": "Neuromorphic computing",
+        "type": "category"
+      },
+      {
+        "id": "reservoir_computing",
+        "label": "Reservoir computing",
+        "type": "concept"
+      },
+      {
+        "id": "physical_neural_networks",
+        "label": "Physical neural networks",
+        "type": "concept"
+      },
+      {
+        "id": "future_directions_self_improving_systems_through_cybernetic_principles",
+        "label": "Self-improving systems through cybernetic principles",
+        "type": "category"
+      },
+      {
+        "id": "control_theory_for_artificial_general_intelligence",
+        "label": "Control theory for artificial general intelligence",
+        "type": "concept"
+      },
+      {
+        "id": "cybernetic_approaches_to_intelligence_augmentation",
+        "label": "Cybernetic approaches to intelligence augmentation",
+        "type": "concept"
+      },
+      {
+        "id": "future_directions_transhumanism",
+        "label": "Transhumanism",
+        "type": "category"
+      },
+      {
+        "id": "mind_uploading_theories",
+        "label": "Mind uploading theories",
+        "type": "concept"
+      },
+      {
+        "id": "distributed_consciousness",
+        "label": "Distributed consciousness",
+        "type": "concept"
+      },
+      {
+        "id": "cybernetic_immortality",
+        "label": "Cybernetic immortality",
+        "type": "concept"
+      }
+    ],
+    "edges": [
+      {
+        "source": "section_1",
+        "target": "historical_evolution_and_convergence_early_convergence__1940s_1950s___macy_conferences_and_shared_origins",
+        "label": "contains"
+      },
+      {
+        "source": "historical_evolution_and_convergence_early_convergence__1940s_1950s___macy_conferences_and_shared_origins",
+        "target": "divergence_period__1956_1980s___rise_of_symbolic_ai_and_separate_paths",
+        "label": "includes"
+      },
+      {
+        "source": "historical_evolution_and_convergence_early_convergence__1940s_1950s___macy_conferences_and_shared_origins",
+        "target": "modern_re_convergence__1990s_present___neural_networks_to_transformers",
+        "label": "includes"
+      },
+      {
+        "source": "section_1",
+        "target": "historical_evolution_and_convergence_shared_intellectual_lineage__wiener__mcculloch__von_neumann",
+        "label": "contains"
+      },
+      {
+        "source": "historical_evolution_and_convergence_shared_intellectual_lineage__wiener__mcculloch__von_neumann",
+        "target": "parallel_innovators__shannon__information___turing__computation_",
+        "label": "includes"
+      },
+      {
+        "source": "historical_evolution_and_convergence_shared_intellectual_lineage__wiener__mcculloch__von_neumann",
+        "target": "contemporary_bridging_figures",
+        "label": "includes"
+      },
+      {
+        "source": "section_1",
+        "target": "historical_evolution_and_convergence_timeline_of_critical_developments",
+        "label": "contains"
+      },
+      {
+        "source": "historical_evolution_and_convergence_timeline_of_critical_developments",
+        "target": "historical_case_studies_of_cybernetic_influence_on_ai",
+        "label": "includes"
+      },
+      {
+        "source": "historical_evolution_and_convergence_timeline_of_critical_developments",
+        "target": "paradigm_shifts_and_technological_breakthroughs",
+        "label": "includes"
+      },
+      {
+        "source": "section_2",
+        "target": "foundations_of_cybernetics_first_order_cybernetics__1940s_1960s_",
+        "label": "contains"
+      },
+      {
+        "source": "foundations_of_cybernetics_first_order_cybernetics__1940s_1960s_",
+        "target": "second_order_cybernetics__1970s_1990s_",
+        "label": "includes"
+      },
+      {
+        "source": "foundations_of_cybernetics_first_order_cybernetics__1940s_1960s_",
+        "target": "third_order_cybernetics__2000s_present_",
+        "label": "includes"
+      },
+      {
+        "source": "section_2",
+        "target": "foundations_of_cybernetics_norbert_wiener",
+        "label": "contains"
+      },
+      {
+        "source": "foundations_of_cybernetics_norbert_wiener",
+        "target": "w__ross_ashby",
+        "label": "includes"
+      },
+      {
+        "source": "foundations_of_cybernetics_norbert_wiener",
+        "target": "gregory_bateson",
+        "label": "includes"
+      },
+      {
+        "source": "foundations_of_cybernetics_norbert_wiener",
+        "target": "heinz_von_foerster",
+        "label": "includes"
+      },
+      {
+        "source": "foundations_of_cybernetics_norbert_wiener",
+        "target": "margaret_mead",
+        "label": "includes"
+      },
+      {
+        "source": "foundations_of_cybernetics_norbert_wiener",
+        "target": "warren_mcculloch",
+        "label": "includes"
+      },
+      {
+        "source": "foundations_of_cybernetics_norbert_wiener",
+        "target": "stafford_beer",
+        "label": "includes"
+      },
+      {
+        "source": "foundations_of_cybernetics_norbert_wiener",
+        "target": "claude_shannon",
+        "label": "includes"
+      },
+      {
+        "source": "section_2",
+        "target": "foundations_of_cybernetics_feedback_loops",
+        "label": "contains"
+      },
+      {
+        "source": "foundations_of_cybernetics_feedback_loops",
+        "target": "homeostasis",
+        "label": "includes"
+      },
+      {
+        "source": "foundations_of_cybernetics_feedback_loops",
+        "target": "self_regulation",
+        "label": "includes"
+      },
+      {
+        "source": "foundations_of_cybernetics_feedback_loops",
+        "target": "variety_and_the_law_of_requisite_variety",
+        "label": "includes"
+      },
+      {
+        "source": "foundations_of_cybernetics_feedback_loops",
+        "target": "entropy_and_negentropy",
+        "label": "includes"
+      },
+      {
+        "source": "section_3",
+        "target": "information_theory__from_shannon_to_transformers_shannon_s_mathematical_theory_of_communication",
+        "label": "contains"
+      },
+      {
+        "source": "information_theory__from_shannon_to_transformers_shannon_s_mathematical_theory_of_communication",
+        "target": "entropy__channel_capacity__and_noise",
+        "label": "includes"
+      },
+      {
+        "source": "information_theory__from_shannon_to_transformers_shannon_s_mathematical_theory_of_communication",
+        "target": "information_as_uncertainty_reduction",
+        "label": "includes"
+      },
+      {
+        "source": "section_3",
+        "target": "information_theory__from_shannon_to_transformers_neural_information_coding_and_transmission",
+        "label": "contains"
+      },
+      {
+        "source": "information_theory__from_shannon_to_transformers_neural_information_coding_and_transmission",
+        "target": "sensory_processing_as_information_filtering",
+        "label": "includes"
+      },
+      {
+        "source": "information_theory__from_shannon_to_transformers_neural_information_coding_and_transmission",
+        "target": "biological_feedback_loops_as_information_systems",
+        "label": "includes"
+      },
+      {
+        "source": "section_3",
+        "target": "information_theory__from_shannon_to_transformers_embeddings_as_information_representation",
+        "label": "contains"
+      },
+      {
+        "source": "information_theory__from_shannon_to_transformers_embeddings_as_information_representation",
+        "target": "attention_mechanisms_as_information_filters",
+        "label": "includes"
+      },
+      {
+        "source": "information_theory__from_shannon_to_transformers_embeddings_as_information_representation",
+        "target": "entropy_reduction_in_language_model_training",
+        "label": "includes"
+      },
+      {
+        "source": "information_theory__from_shannon_to_transformers_embeddings_as_information_representation",
+        "target": "information_bottlenecks_in_deep_learning",
+        "label": "includes"
+      },
+      {
+        "source": "section_4",
+        "target": "systems_theory_integration_ludwig_von_bertalanffy_s_contributions",
+        "label": "contains"
+      },
+      {
+        "source": "systems_theory_integration_ludwig_von_bertalanffy_s_contributions",
+        "target": "emergence_and_complexity",
+        "label": "includes"
+      },
+      {
+        "source": "systems_theory_integration_ludwig_von_bertalanffy_s_contributions",
+        "target": "system_boundaries_and_environments",
+        "label": "includes"
+      },
+      {
+        "source": "section_4",
+        "target": "systems_theory_integration_self_organization",
+        "label": "contains"
+      },
+      {
+        "source": "systems_theory_integration_self_organization",
+        "target": "autopoiesis__maturana___varela_",
+        "label": "includes"
+      },
+      {
+        "source": "systems_theory_integration_self_organization",
+        "target": "emergence_and_emergent_properties",
+        "label": "includes"
+      },
+      {
+        "source": "systems_theory_integration_self_organization",
+        "target": "attractors_and_phase_space",
+        "label": "includes"
+      },
+      {
+        "source": "section_4",
+        "target": "systems_theory_integration_dynamical_systems_fundamentals",
+        "label": "contains"
+      },
+      {
+        "source": "systems_theory_integration_dynamical_systems_fundamentals",
+        "target": "stability_and_robustness",
+        "label": "includes"
+      },
+      {
+        "source": "systems_theory_integration_dynamical_systems_fundamentals",
+        "target": "system_optimization",
+        "label": "includes"
+      },
+      {
+        "source": "systems_theory_integration_dynamical_systems_fundamentals",
+        "target": "cybernetic_principles_in_ai_control_mechanisms",
+        "label": "includes"
+      },
+      {
+        "source": "section_5",
+        "target": "cognitive_cybernetics_cybernetic_roots_of_connectionism",
+        "label": "contains"
+      },
+      {
+        "source": "cognitive_cybernetics_cybernetic_roots_of_connectionism",
+        "target": "perceptrons_and_early_neural_networks",
+        "label": "includes"
+      },
+      {
+        "source": "cognitive_cybernetics_cybernetic_roots_of_connectionism",
+        "target": "mcculloch_pitts_neurons_and_hebbian_learning",
+        "label": "includes"
+      },
+      {
+        "source": "cognitive_cybernetics_cybernetic_roots_of_connectionism",
+        "target": "evolution_from_cybernetic_models_to_modern_deep_learning",
+        "label": "includes"
+      },
+      {
+        "source": "section_5",
+        "target": "cognitive_cybernetics_brain_as_prediction_engine",
+        "label": "contains"
+      },
+      {
+        "source": "cognitive_cybernetics_brain_as_prediction_engine",
+        "target": "error_minimization_and_bayesian_inference",
+        "label": "includes"
+      },
+      {
+        "source": "cognitive_cybernetics_brain_as_prediction_engine",
+        "target": "active_inference_and_free_energy_principle",
+        "label": "includes"
+      },
+      {
+        "source": "cognitive_cybernetics_brain_as_prediction_engine",
+        "target": "predictive_processing_in_ai_systems",
+        "label": "includes"
+      },
+      {
+        "source": "section_5",
+        "target": "cognitive_cybernetics_constructivism",
+        "label": "contains"
+      },
+      {
+        "source": "cognitive_cybernetics_constructivism",
+        "target": "embodied_cognition",
+        "label": "includes"
+      },
+      {
+        "source": "cognitive_cybernetics_constructivism",
+        "target": "enactivism",
+        "label": "includes"
+      },
+      {
+        "source": "cognitive_cybernetics_constructivism",
+        "target": "computational_theories_of_mind",
+        "label": "includes"
+      },
+      {
+        "source": "section_5",
+        "target": "cognitive_cybernetics_integrated_information_theory__iit_",
+        "label": "contains"
+      },
+      {
+        "source": "cognitive_cybernetics_integrated_information_theory__iit_",
+        "target": "global_workspace_theory",
+        "label": "includes"
+      },
+      {
+        "source": "cognitive_cybernetics_integrated_information_theory__iit_",
+        "target": "cybernetic_approaches_to_consciousness",
+        "label": "includes"
+      },
+      {
+        "source": "cognitive_cybernetics_integrated_information_theory__iit_",
+        "target": "information_integration_in_artificial_systems",
+        "label": "includes"
+      },
+      {
+        "source": "section_6",
+        "target": "ai_through_a_cybernetic_lens_supervised_learning_as_goal_directed_feedback",
+        "label": "contains"
+      },
+      {
+        "source": "ai_through_a_cybernetic_lens_supervised_learning_as_goal_directed_feedback",
+        "target": "reinforcement_learning_as_cybernetic_control",
+        "label": "includes"
+      },
+      {
+        "source": "ai_through_a_cybernetic_lens_supervised_learning_as_goal_directed_feedback",
+        "target": "unsupervised_learning_as_self_organization",
+        "label": "includes"
+      },
+      {
+        "source": "ai_through_a_cybernetic_lens_supervised_learning_as_goal_directed_feedback",
+        "target": "feedback_loops_in_algorithmic_learning",
+        "label": "includes"
+      },
+      {
+        "source": "section_6",
+        "target": "ai_through_a_cybernetic_lens_attention_mechanisms_as_control_processes",
+        "label": "contains"
+      },
+      {
+        "source": "ai_through_a_cybernetic_lens_attention_mechanisms_as_control_processes",
+        "target": "self_attention_as_information_filtering",
+        "label": "includes"
+      },
+      {
+        "source": "ai_through_a_cybernetic_lens_attention_mechanisms_as_control_processes",
+        "target": "positional_encoding_as_systemic_context",
+        "label": "includes"
+      },
+      {
+        "source": "ai_through_a_cybernetic_lens_attention_mechanisms_as_control_processes",
+        "target": "transformer_feedback_mechanisms",
+        "label": "includes"
+      },
+      {
+        "source": "section_6",
+        "target": "ai_through_a_cybernetic_lens_llms_as_stochastic_controllers",
+        "label": "contains"
+      },
+      {
+        "source": "ai_through_a_cybernetic_lens_llms_as_stochastic_controllers",
+        "target": "token_prediction_as_cybernetic_process",
+        "label": "includes"
+      },
+      {
+        "source": "ai_through_a_cybernetic_lens_llms_as_stochastic_controllers",
+        "target": "emergent_capabilities_from_system_complexity",
+        "label": "includes"
+      },
+      {
+        "source": "ai_through_a_cybernetic_lens_llms_as_stochastic_controllers",
+        "target": "next_token_prediction_as_predictive_processing",
+        "label": "includes"
+      },
+      {
+        "source": "section_6",
+        "target": "ai_through_a_cybernetic_lens_recursive_self_improvement",
+        "label": "contains"
+      },
+      {
+        "source": "ai_through_a_cybernetic_lens_recursive_self_improvement",
+        "target": "intelligence_augmentation_vs__artificial_general_intelligence",
+        "label": "includes"
+      },
+      {
+        "source": "ai_through_a_cybernetic_lens_recursive_self_improvement",
+        "target": "alignment_as_a_cybernetic_control_problem",
+        "label": "includes"
+      },
+      {
+        "source": "ai_through_a_cybernetic_lens_recursive_self_improvement",
+        "target": "capabilities_vs__control_debates",
+        "label": "includes"
+      },
+      {
+        "source": "section_7",
+        "target": "cybernetic_perspectives_on_ai_alignment_and_safety_feedback_mechanisms_in_value_alignment",
+        "label": "contains"
+      },
+      {
+        "source": "cybernetic_perspectives_on_ai_alignment_and_safety_feedback_mechanisms_in_value_alignment",
+        "target": "rlhf_as_cybernetic_steering",
+        "label": "includes"
+      },
+      {
+        "source": "cybernetic_perspectives_on_ai_alignment_and_safety_feedback_mechanisms_in_value_alignment",
+        "target": "robust_control_for_ai_safety",
+        "label": "includes"
+      },
+      {
+        "source": "section_7",
+        "target": "cybernetic_perspectives_on_ai_alignment_and_safety_safe_operating_parameters",
+        "label": "contains"
+      },
+      {
+        "source": "cybernetic_perspectives_on_ai_alignment_and_safety_safe_operating_parameters",
+        "target": "ai_containment_as_boundary_management",
+        "label": "includes"
+      },
+      {
+        "source": "cybernetic_perspectives_on_ai_alignment_and_safety_safe_operating_parameters",
+        "target": "regulated_exploration_vs__exploitation",
+        "label": "includes"
+      },
+      {
+        "source": "section_7",
+        "target": "cybernetic_perspectives_on_ai_alignment_and_safety_complexity_matching_for_robust_ai",
+        "label": "contains"
+      },
+      {
+        "source": "cybernetic_perspectives_on_ai_alignment_and_safety_complexity_matching_for_robust_ai",
+        "target": "diversity_requirements_for_safe_generalization",
+        "label": "includes"
+      },
+      {
+        "source": "cybernetic_perspectives_on_ai_alignment_and_safety_complexity_matching_for_robust_ai",
+        "target": "environmental_variety_and_ai_adaptation",
+        "label": "includes"
+      },
+      {
+        "source": "section_7",
+        "target": "cybernetic_perspectives_on_ai_alignment_and_safety_unforeseen_behaviors_in_complex_ai",
+        "label": "contains"
+      },
+      {
+        "source": "cybernetic_perspectives_on_ai_alignment_and_safety_unforeseen_behaviors_in_complex_ai",
+        "target": "cascading_failures_and_system_resilience",
+        "label": "includes"
+      },
+      {
+        "source": "cybernetic_perspectives_on_ai_alignment_and_safety_unforeseen_behaviors_in_complex_ai",
+        "target": "monitoring_and_intervention_mechanisms",
+        "label": "includes"
+      },
+      {
+        "source": "section_8",
+        "target": "embodied_cybernetics_sensorimotor_coupling",
+        "label": "contains"
+      },
+      {
+        "source": "embodied_cybernetics_sensorimotor_coupling",
+        "target": "subsumption_architecture__rodney_brooks_",
+        "label": "includes"
+      },
+      {
+        "source": "embodied_cybernetics_sensorimotor_coupling",
+        "target": "embodied_cognition_in_robotics",
+        "label": "includes"
+      },
+      {
+        "source": "embodied_cybernetics_sensorimotor_coupling",
+        "target": "soft_robotics_and_morphological_computation",
+        "label": "includes"
+      },
+      {
+        "source": "section_8",
+        "target": "embodied_cybernetics_brain_computer_interfaces",
+        "label": "contains"
+      },
+      {
+        "source": "embodied_cybernetics_brain_computer_interfaces",
+        "target": "extended_mind_thesis",
+        "label": "includes"
+      },
+      {
+        "source": "embodied_cybernetics_brain_computer_interfaces",
+        "target": "augmented_cognition",
+        "label": "includes"
+      },
+      {
+        "source": "embodied_cybernetics_brain_computer_interfaces",
+        "target": "cyborg_theory",
+        "label": "includes"
+      },
+      {
+        "source": "section_8",
+        "target": "embodied_cybernetics_biological_control_systems",
+        "label": "contains"
+      },
+      {
+        "source": "embodied_cybernetics_biological_control_systems",
+        "target": "engineered_homeostasis",
+        "label": "includes"
+      },
+      {
+        "source": "embodied_cybernetics_biological_control_systems",
+        "target": "genetic_circuits_and_biological_feedback",
+        "label": "includes"
+      },
+      {
+        "source": "section_9",
+        "target": "social_cybernetics_viable_system_model__beer_",
+        "label": "contains"
+      },
+      {
+        "source": "social_cybernetics_viable_system_model__beer_",
+        "target": "management_cybernetics",
+        "label": "includes"
+      },
+      {
+        "source": "social_cybernetics_viable_system_model__beer_",
+        "target": "team_syntegrity",
+        "label": "includes"
+      },
+      {
+        "source": "social_cybernetics_viable_system_model__beer_",
+        "target": "organizational_learning",
+        "label": "includes"
+      },
+      {
+        "source": "section_9",
+        "target": "social_cybernetics_niklas_luhmann_s_social_systems",
+        "label": "contains"
+      },
+      {
+        "source": "social_cybernetics_niklas_luhmann_s_social_systems",
+        "target": "communication_as_social_autopoiesis",
+        "label": "includes"
+      },
+      {
+        "source": "social_cybernetics_niklas_luhmann_s_social_systems",
+        "target": "structural_coupling_in_social_contexts",
+        "label": "includes"
+      },
+      {
+        "source": "section_9",
+        "target": "social_cybernetics_scale_free_networks",
+        "label": "contains"
+      },
+      {
+        "source": "social_cybernetics_scale_free_networks",
+        "target": "small_world_networks",
+        "label": "includes"
+      },
+      {
+        "source": "social_cybernetics_scale_free_networks",
+        "target": "information_cascades_and_social_diffusion",
+        "label": "includes"
+      },
+      {
+        "source": "social_cybernetics_scale_free_networks",
+        "target": "digital_social_networks_as_cybernetic_systems",
+        "label": "includes"
+      },
+      {
+        "source": "social_cybernetics_scale_free_networks",
+        "target": "feedback_loops_in_social_media_dynamics",
+        "label": "includes"
+      },
+      {
+        "source": "section_10",
+        "target": "ecological_cybernetics_earth_as_a_cybernetic_system",
+        "label": "contains"
+      },
+      {
+        "source": "ecological_cybernetics_earth_as_a_cybernetic_system",
+        "target": "gaia_hypothesis",
+        "label": "includes"
+      },
+      {
+        "source": "ecological_cybernetics_earth_as_a_cybernetic_system",
+        "target": "climate_feedback_loops",
+        "label": "includes"
+      },
+      {
+        "source": "ecological_cybernetics_earth_as_a_cybernetic_system",
+        "target": "ecosystem_stability_and_resilience",
+        "label": "includes"
+      },
+      {
+        "source": "section_10",
+        "target": "ecological_cybernetics_circular_economy",
+        "label": "contains"
+      },
+      {
+        "source": "ecological_cybernetics_circular_economy",
+        "target": "biomimicry",
+        "label": "includes"
+      },
+      {
+        "source": "ecological_cybernetics_circular_economy",
+        "target": "regenerative_design",
+        "label": "includes"
+      },
+      {
+        "source": "ecological_cybernetics_circular_economy",
+        "target": "permacomputing_and_sustainable_computing",
+        "label": "includes"
+      },
+      {
+        "source": "section_10",
+        "target": "ecological_cybernetics_modeling_ecological_systems_with_ai",
+        "label": "contains"
+      },
+      {
+        "source": "ecological_cybernetics_modeling_ecological_systems_with_ai",
+        "target": "feedback_driven_resource_management",
+        "label": "includes"
+      },
+      {
+        "source": "ecological_cybernetics_modeling_ecological_systems_with_ai",
+        "target": "climate_prediction_as_cybernetic_modeling",
+        "label": "includes"
+      },
+      {
+        "source": "section_11",
+        "target": "computational_cybernetics_computation_as_control",
+        "label": "contains"
+      },
+      {
+        "source": "computational_cybernetics_computation_as_control",
+        "target": "information_theory_and_entropy",
+        "label": "includes"
+      },
+      {
+        "source": "computational_cybernetics_computation_as_control",
+        "target": "algorithmic_information_theory",
+        "label": "includes"
+      },
+      {
+        "source": "computational_cybernetics_computation_as_control",
+        "target": "quantum_information_theory",
+        "label": "includes"
+      },
+      {
+        "source": "section_11",
+        "target": "computational_cybernetics_agent_based_modeling",
+        "label": "contains"
+      },
+      {
+        "source": "computational_cybernetics_agent_based_modeling",
+        "target": "system_dynamics",
+        "label": "includes"
+      },
+      {
+        "source": "computational_cybernetics_agent_based_modeling",
+        "target": "cellular_automata",
+        "label": "includes"
+      },
+      {
+        "source": "computational_cybernetics_agent_based_modeling",
+        "target": "digital_twins",
+        "label": "includes"
+      },
+      {
+        "source": "computational_cybernetics_agent_based_modeling",
+        "target": "ai_enhanced_complex_systems_modeling",
+        "label": "includes"
+      },
+      {
+        "source": "section_11",
+        "target": "computational_cybernetics_resilient_systems_design",
+        "label": "contains"
+      },
+      {
+        "source": "computational_cybernetics_resilient_systems_design",
+        "target": "adversarial_dynamics",
+        "label": "includes"
+      },
+      {
+        "source": "computational_cybernetics_resilient_systems_design",
+        "target": "risk_homeostasis_in_security",
+        "label": "includes"
+      },
+      {
+        "source": "computational_cybernetics_resilient_systems_design",
+        "target": "anti_fragile_computing",
+        "label": "includes"
+      },
+      {
+        "source": "computational_cybernetics_resilient_systems_design",
+        "target": "ai_in_security_as_cybernetic_defense",
+        "label": "includes"
+      },
+      {
+        "source": "section_12",
+        "target": "philosophical_extensions_observer_dependent_knowledge",
+        "label": "contains"
+      },
+      {
+        "source": "philosophical_extensions_observer_dependent_knowledge",
+        "target": "constructivist_epistemology",
+        "label": "includes"
+      },
+      {
+        "source": "philosophical_extensions_observer_dependent_knowledge",
+        "target": "radical_constructivism",
+        "label": "includes"
+      },
+      {
+        "source": "philosophical_extensions_observer_dependent_knowledge",
+        "target": "cybernetic_epistemology",
+        "label": "includes"
+      },
+      {
+        "source": "section_12",
+        "target": "philosophical_extensions_information_ethics",
+        "label": "contains"
+      },
+      {
+        "source": "philosophical_extensions_information_ethics",
+        "target": "machine_ethics",
+        "label": "includes"
+      },
+      {
+        "source": "philosophical_extensions_information_ethics",
+        "target": "responsibility_in_complex_systems",
+        "label": "includes"
+      },
+      {
+        "source": "philosophical_extensions_information_ethics",
+        "target": "distributed_moral_agency",
+        "label": "includes"
+      },
+      {
+        "source": "philosophical_extensions_information_ethics",
+        "target": "human_ai_ethical_symbiosis",
+        "label": "includes"
+      },
+      {
+        "source": "section_12",
+        "target": "philosophical_extensions_process_philosophy_connections",
+        "label": "contains"
+      },
+      {
+        "source": "philosophical_extensions_process_philosophy_connections",
+        "target": "systems_ontology",
+        "label": "includes"
+      },
+      {
+        "source": "philosophical_extensions_process_philosophy_connections",
+        "target": "pancomputationalism",
+        "label": "includes"
+      },
+      {
+        "source": "philosophical_extensions_process_philosophy_connections",
+        "target": "information_based_reality_theories",
+        "label": "includes"
+      },
+      {
+        "source": "section_13",
+        "target": "ethical_and_societal_implications_co_evolutionary_development",
+        "label": "contains"
+      },
+      {
+        "source": "ethical_and_societal_implications_co_evolutionary_development",
+        "target": "distributed_agency_and_responsibility",
+        "label": "includes"
+      },
+      {
+        "source": "ethical_and_societal_implications_co_evolutionary_development",
+        "target": "balance_of_control_in_human_ai_systems",
+        "label": "includes"
+      },
+      {
+        "source": "section_13",
+        "target": "ethical_and_societal_implications_feedback_loops_in_algorithmic_bias",
+        "label": "contains"
+      },
+      {
+        "source": "ethical_and_societal_implications_feedback_loops_in_algorithmic_bias",
+        "target": "systemic_approaches_to_ai_fairness",
+        "label": "includes"
+      },
+      {
+        "source": "ethical_and_societal_implications_feedback_loops_in_algorithmic_bias",
+        "target": "cybernetic_interventions_for_equitable_ai",
+        "label": "includes"
+      },
+      {
+        "source": "section_13",
+        "target": "ethical_and_societal_implications_labor_market_disruption_models",
+        "label": "contains"
+      },
+      {
+        "source": "ethical_and_societal_implications_labor_market_disruption_models",
+        "target": "wealth_distribution_dynamics",
+        "label": "includes"
+      },
+      {
+        "source": "ethical_and_societal_implications_labor_market_disruption_models",
+        "target": "societal_adaptation_feedback_mechanisms",
+        "label": "includes"
+      },
+      {
+        "source": "section_13",
+        "target": "ethical_and_societal_implications_regulatory_feedback_systems",
+        "label": "contains"
+      },
+      {
+        "source": "ethical_and_societal_implications_regulatory_feedback_systems",
+        "target": "adaptive_governance_for_emerging_technologies",
+        "label": "includes"
+      },
+      {
+        "source": "ethical_and_societal_implications_regulatory_feedback_systems",
+        "target": "systemic_risk_management",
+        "label": "includes"
+      },
+      {
+        "source": "section_14",
+        "target": "applications___case_studies_homeostatic_control_in_medicine",
+        "label": "contains"
+      },
+      {
+        "source": "applications___case_studies_homeostatic_control_in_medicine",
+        "target": "cybernetic_models_of_disease",
+        "label": "includes"
+      },
+      {
+        "source": "applications___case_studies_homeostatic_control_in_medicine",
+        "target": "neural_interfaces_and_prosthetics",
+        "label": "includes"
+      },
+      {
+        "source": "applications___case_studies_homeostatic_control_in_medicine",
+        "target": "precision_medicine_as_feedback_control",
+        "label": "includes"
+      },
+      {
+        "source": "section_14",
+        "target": "applications___case_studies_learning_as_feedback",
+        "label": "contains"
+      },
+      {
+        "source": "applications___case_studies_learning_as_feedback",
+        "target": "educational_cybernetics",
+        "label": "includes"
+      },
+      {
+        "source": "applications___case_studies_learning_as_feedback",
+        "target": "adaptive_learning_systems",
+        "label": "includes"
+      },
+      {
+        "source": "applications___case_studies_learning_as_feedback",
+        "target": "knowledge_management",
+        "label": "includes"
+      },
+      {
+        "source": "section_14",
+        "target": "applications___case_studies_smart_cities",
+        "label": "contains"
+      },
+      {
+        "source": "applications___case_studies_smart_cities",
+        "target": "traffic_as_a_self_organizing_system",
+        "label": "includes"
+      },
+      {
+        "source": "applications___case_studies_smart_cities",
+        "target": "urban_metabolism",
+        "label": "includes"
+      },
+      {
+        "source": "applications___case_studies_smart_cities",
+        "target": "resilient_infrastructure",
+        "label": "includes"
+      },
+      {
+        "source": "section_14",
+        "target": "applications___case_studies_market_behavior_as_cybernetic_process",
+        "label": "contains"
+      },
+      {
+        "source": "applications___case_studies_market_behavior_as_cybernetic_process",
+        "target": "financial_feedback_loops",
+        "label": "includes"
+      },
+      {
+        "source": "applications___case_studies_market_behavior_as_cybernetic_process",
+        "target": "economic_homeostasis_mechanisms",
+        "label": "includes"
+      },
+      {
+        "source": "section_15",
+        "target": "future_directions_quantum_control_theory",
+        "label": "contains"
+      },
+      {
+        "source": "future_directions_quantum_control_theory",
+        "target": "quantum_neural_networks",
+        "label": "includes"
+      },
+      {
+        "source": "future_directions_quantum_control_theory",
+        "target": "quantum_feedback",
+        "label": "includes"
+      },
+      {
+        "source": "section_15",
+        "target": "future_directions_neuromorphic_computing",
+        "label": "contains"
+      },
+      {
+        "source": "future_directions_neuromorphic_computing",
+        "target": "reservoir_computing",
+        "label": "includes"
+      },
+      {
+        "source": "future_directions_neuromorphic_computing",
+        "target": "physical_neural_networks",
+        "label": "includes"
+      },
+      {
+        "source": "section_15",
+        "target": "future_directions_self_improving_systems_through_cybernetic_principles",
+        "label": "contains"
+      },
+      {
+        "source": "future_directions_self_improving_systems_through_cybernetic_principles",
+        "target": "control_theory_for_artificial_general_intelligence",
+        "label": "includes"
+      },
+      {
+        "source": "future_directions_self_improving_systems_through_cybernetic_principles",
+        "target": "cybernetic_approaches_to_intelligence_augmentation",
+        "label": "includes"
+      },
+      {
+        "source": "section_15",
+        "target": "future_directions_transhumanism",
+        "label": "contains"
+      },
+      {
+        "source": "future_directions_transhumanism",
+        "target": "mind_uploading_theories",
+        "label": "includes"
+      },
+      {
+        "source": "future_directions_transhumanism",
+        "target": "distributed_consciousness",
+        "label": "includes"
+      },
+      {
+        "source": "future_directions_transhumanism",
+        "target": "cybernetic_immortality",
+        "label": "includes"
+      },
+      {
+        "source": "divergence_period__1956_1980s___rise_of_symbolic_ai_and_separate_paths",
+        "target": "modern_re_convergence__1990s_present___neural_networks_to_transformers",
+        "label": "related_to"
+      },
+      {
+        "source": "parallel_innovators__shannon__information___turing__computation_",
+        "target": "contemporary_bridging_figures",
+        "label": "related_to"
+      },
+      {
+        "source": "historical_case_studies_of_cybernetic_influence_on_ai",
+        "target": "paradigm_shifts_and_technological_breakthroughs",
+        "label": "related_to"
+      },
+      {
+        "source": "second_order_cybernetics__1970s_1990s_",
+        "target": "third_order_cybernetics__2000s_present_",
+        "label": "related_to"
+      },
+      {
+        "source": "w__ross_ashby",
+        "target": "gregory_bateson",
+        "label": "related_to"
+      },
+      {
+        "source": "w__ross_ashby",
+        "target": "heinz_von_foerster",
+        "label": "related_to"
+      },
+      {
+        "source": "w__ross_ashby",
+        "target": "margaret_mead",
+        "label": "related_to"
+      },
+      {
+        "source": "w__ross_ashby",
+        "target": "warren_mcculloch",
+        "label": "related_to"
+      },
+      {
+        "source": "w__ross_ashby",
+        "target": "stafford_beer",
+        "label": "related_to"
+      },
+      {
+        "source": "w__ross_ashby",
+        "target": "claude_shannon",
+        "label": "related_to"
+      },
+      {
+        "source": "gregory_bateson",
+        "target": "heinz_von_foerster",
+        "label": "related_to"
+      },
+      {
+        "source": "gregory_bateson",
+        "target": "margaret_mead",
+        "label": "related_to"
+      },
+      {
+        "source": "gregory_bateson",
+        "target": "warren_mcculloch",
+        "label": "related_to"
+      },
+      {
+        "source": "gregory_bateson",
+        "target": "stafford_beer",
+        "label": "related_to"
+      },
+      {
+        "source": "gregory_bateson",
+        "target": "claude_shannon",
+        "label": "related_to"
+      },
+      {
+        "source": "heinz_von_foerster",
+        "target": "margaret_mead",
+        "label": "related_to"
+      },
+      {
+        "source": "heinz_von_foerster",
+        "target": "warren_mcculloch",
+        "label": "related_to"
+      },
+      {
+        "source": "heinz_von_foerster",
+        "target": "stafford_beer",
+        "label": "related_to"
+      },
+      {
+        "source": "heinz_von_foerster",
+        "target": "claude_shannon",
+        "label": "related_to"
+      },
+      {
+        "source": "margaret_mead",
+        "target": "warren_mcculloch",
+        "label": "related_to"
+      },
+      {
+        "source": "margaret_mead",
+        "target": "stafford_beer",
+        "label": "related_to"
+      },
+      {
+        "source": "margaret_mead",
+        "target": "claude_shannon",
+        "label": "related_to"
+      },
+      {
+        "source": "warren_mcculloch",
+        "target": "stafford_beer",
+        "label": "related_to"
+      },
+      {
+        "source": "warren_mcculloch",
+        "target": "claude_shannon",
+        "label": "related_to"
+      },
+      {
+        "source": "stafford_beer",
+        "target": "claude_shannon",
+        "label": "related_to"
+      },
+      {
+        "source": "homeostasis",
+        "target": "self_regulation",
+        "label": "related_to"
+      },
+      {
+        "source": "homeostasis",
+        "target": "variety_and_the_law_of_requisite_variety",
+        "label": "related_to"
+      },
+      {
+        "source": "homeostasis",
+        "target": "entropy_and_negentropy",
+        "label": "related_to"
+      },
+      {
+        "source": "self_regulation",
+        "target": "variety_and_the_law_of_requisite_variety",
+        "label": "related_to"
+      },
+      {
+        "source": "self_regulation",
+        "target": "entropy_and_negentropy",
+        "label": "related_to"
+      },
+      {
+        "source": "variety_and_the_law_of_requisite_variety",
+        "target": "entropy_and_negentropy",
+        "label": "related_to"
+      },
+      {
+        "source": "entropy__channel_capacity__and_noise",
+        "target": "information_as_uncertainty_reduction",
+        "label": "related_to"
+      },
+      {
+        "source": "sensory_processing_as_information_filtering",
+        "target": "biological_feedback_loops_as_information_systems",
+        "label": "related_to"
+      },
+      {
+        "source": "attention_mechanisms_as_information_filters",
+        "target": "entropy_reduction_in_language_model_training",
+        "label": "related_to"
+      },
+      {
+        "source": "attention_mechanisms_as_information_filters",
+        "target": "information_bottlenecks_in_deep_learning",
+        "label": "related_to"
+      },
+      {
+        "source": "entropy_reduction_in_language_model_training",
+        "target": "information_bottlenecks_in_deep_learning",
+        "label": "related_to"
+      },
+      {
+        "source": "emergence_and_complexity",
+        "target": "system_boundaries_and_environments",
+        "label": "related_to"
+      },
+      {
+        "source": "autopoiesis__maturana___varela_",
+        "target": "emergence_and_emergent_properties",
+        "label": "related_to"
+      },
+      {
+        "source": "autopoiesis__maturana___varela_",
+        "target": "attractors_and_phase_space",
+        "label": "related_to"
+      },
+      {
+        "source": "emergence_and_emergent_properties",
+        "target": "attractors_and_phase_space",
+        "label": "related_to"
+      },
+      {
+        "source": "stability_and_robustness",
+        "target": "system_optimization",
+        "label": "related_to"
+      },
+      {
+        "source": "stability_and_robustness",
+        "target": "cybernetic_principles_in_ai_control_mechanisms",
+        "label": "related_to"
+      },
+      {
+        "source": "system_optimization",
+        "target": "cybernetic_principles_in_ai_control_mechanisms",
+        "label": "related_to"
+      },
+      {
+        "source": "perceptrons_and_early_neural_networks",
+        "target": "mcculloch_pitts_neurons_and_hebbian_learning",
+        "label": "related_to"
+      },
+      {
+        "source": "perceptrons_and_early_neural_networks",
+        "target": "evolution_from_cybernetic_models_to_modern_deep_learning",
+        "label": "related_to"
+      },
+      {
+        "source": "mcculloch_pitts_neurons_and_hebbian_learning",
+        "target": "evolution_from_cybernetic_models_to_modern_deep_learning",
+        "label": "related_to"
+      },
+      {
+        "source": "error_minimization_and_bayesian_inference",
+        "target": "active_inference_and_free_energy_principle",
+        "label": "related_to"
+      },
+      {
+        "source": "error_minimization_and_bayesian_inference",
+        "target": "predictive_processing_in_ai_systems",
+        "label": "related_to"
+      },
+      {
+        "source": "active_inference_and_free_energy_principle",
+        "target": "predictive_processing_in_ai_systems",
+        "label": "related_to"
+      },
+      {
+        "source": "embodied_cognition",
+        "target": "enactivism",
+        "label": "related_to"
+      },
+      {
+        "source": "embodied_cognition",
+        "target": "computational_theories_of_mind",
+        "label": "related_to"
+      },
+      {
+        "source": "enactivism",
+        "target": "computational_theories_of_mind",
+        "label": "related_to"
+      },
+      {
+        "source": "global_workspace_theory",
+        "target": "cybernetic_approaches_to_consciousness",
+        "label": "related_to"
+      },
+      {
+        "source": "global_workspace_theory",
+        "target": "information_integration_in_artificial_systems",
+        "label": "related_to"
+      },
+      {
+        "source": "cybernetic_approaches_to_consciousness",
+        "target": "information_integration_in_artificial_systems",
+        "label": "related_to"
+      },
+      {
+        "source": "reinforcement_learning_as_cybernetic_control",
+        "target": "unsupervised_learning_as_self_organization",
+        "label": "related_to"
+      },
+      {
+        "source": "reinforcement_learning_as_cybernetic_control",
+        "target": "feedback_loops_in_algorithmic_learning",
+        "label": "related_to"
+      },
+      {
+        "source": "unsupervised_learning_as_self_organization",
+        "target": "feedback_loops_in_algorithmic_learning",
+        "label": "related_to"
+      },
+      {
+        "source": "self_attention_as_information_filtering",
+        "target": "positional_encoding_as_systemic_context",
+        "label": "related_to"
+      },
+      {
+        "source": "self_attention_as_information_filtering",
+        "target": "transformer_feedback_mechanisms",
+        "label": "related_to"
+      },
+      {
+        "source": "positional_encoding_as_systemic_context",
+        "target": "transformer_feedback_mechanisms",
+        "label": "related_to"
+      },
+      {
+        "source": "token_prediction_as_cybernetic_process",
+        "target": "emergent_capabilities_from_system_complexity",
+        "label": "related_to"
+      },
+      {
+        "source": "token_prediction_as_cybernetic_process",
+        "target": "next_token_prediction_as_predictive_processing",
+        "label": "related_to"
+      },
+      {
+        "source": "emergent_capabilities_from_system_complexity",
+        "target": "next_token_prediction_as_predictive_processing",
+        "label": "related_to"
+      },
+      {
+        "source": "intelligence_augmentation_vs__artificial_general_intelligence",
+        "target": "alignment_as_a_cybernetic_control_problem",
+        "label": "related_to"
+      },
+      {
+        "source": "intelligence_augmentation_vs__artificial_general_intelligence",
+        "target": "capabilities_vs__control_debates",
+        "label": "related_to"
+      },
+      {
+        "source": "alignment_as_a_cybernetic_control_problem",
+        "target": "capabilities_vs__control_debates",
+        "label": "related_to"
+      },
+      {
+        "source": "rlhf_as_cybernetic_steering",
+        "target": "robust_control_for_ai_safety",
+        "label": "related_to"
+      },
+      {
+        "source": "ai_containment_as_boundary_management",
+        "target": "regulated_exploration_vs__exploitation",
+        "label": "related_to"
+      },
+      {
+        "source": "diversity_requirements_for_safe_generalization",
+        "target": "environmental_variety_and_ai_adaptation",
+        "label": "related_to"
+      },
+      {
+        "source": "cascading_failures_and_system_resilience",
+        "target": "monitoring_and_intervention_mechanisms",
+        "label": "related_to"
+      },
+      {
+        "source": "subsumption_architecture__rodney_brooks_",
+        "target": "embodied_cognition_in_robotics",
+        "label": "related_to"
+      },
+      {
+        "source": "subsumption_architecture__rodney_brooks_",
+        "target": "soft_robotics_and_morphological_computation",
+        "label": "related_to"
+      },
+      {
+        "source": "embodied_cognition_in_robotics",
+        "target": "soft_robotics_and_morphological_computation",
+        "label": "related_to"
+      },
+      {
+        "source": "extended_mind_thesis",
+        "target": "augmented_cognition",
+        "label": "related_to"
+      },
+      {
+        "source": "extended_mind_thesis",
+        "target": "cyborg_theory",
+        "label": "related_to"
+      },
+      {
+        "source": "augmented_cognition",
+        "target": "cyborg_theory",
+        "label": "related_to"
+      },
+      {
+        "source": "engineered_homeostasis",
+        "target": "genetic_circuits_and_biological_feedback",
+        "label": "related_to"
+      },
+      {
+        "source": "management_cybernetics",
+        "target": "team_syntegrity",
+        "label": "related_to"
+      },
+      {
+        "source": "management_cybernetics",
+        "target": "organizational_learning",
+        "label": "related_to"
+      },
+      {
+        "source": "team_syntegrity",
+        "target": "organizational_learning",
+        "label": "related_to"
+      },
+      {
+        "source": "communication_as_social_autopoiesis",
+        "target": "structural_coupling_in_social_contexts",
+        "label": "related_to"
+      },
+      {
+        "source": "small_world_networks",
+        "target": "information_cascades_and_social_diffusion",
+        "label": "related_to"
+      },
+      {
+        "source": "small_world_networks",
+        "target": "digital_social_networks_as_cybernetic_systems",
+        "label": "related_to"
+      },
+      {
+        "source": "small_world_networks",
+        "target": "feedback_loops_in_social_media_dynamics",
+        "label": "related_to"
+      },
+      {
+        "source": "information_cascades_and_social_diffusion",
+        "target": "digital_social_networks_as_cybernetic_systems",
+        "label": "related_to"
+      },
+      {
+        "source": "information_cascades_and_social_diffusion",
+        "target": "feedback_loops_in_social_media_dynamics",
+        "label": "related_to"
+      },
+      {
+        "source": "digital_social_networks_as_cybernetic_systems",
+        "target": "feedback_loops_in_social_media_dynamics",
+        "label": "related_to"
+      },
+      {
+        "source": "gaia_hypothesis",
+        "target": "climate_feedback_loops",
+        "label": "related_to"
+      },
+      {
+        "source": "gaia_hypothesis",
+        "target": "ecosystem_stability_and_resilience",
+        "label": "related_to"
+      },
+      {
+        "source": "climate_feedback_loops",
+        "target": "ecosystem_stability_and_resilience",
+        "label": "related_to"
+      },
+      {
+        "source": "biomimicry",
+        "target": "regenerative_design",
+        "label": "related_to"
+      },
+      {
+        "source": "biomimicry",
+        "target": "permacomputing_and_sustainable_computing",
+        "label": "related_to"
+      },
+      {
+        "source": "regenerative_design",
+        "target": "permacomputing_and_sustainable_computing",
+        "label": "related_to"
+      },
+      {
+        "source": "feedback_driven_resource_management",
+        "target": "climate_prediction_as_cybernetic_modeling",
+        "label": "related_to"
+      },
+      {
+        "source": "information_theory_and_entropy",
+        "target": "algorithmic_information_theory",
+        "label": "related_to"
+      },
+      {
+        "source": "information_theory_and_entropy",
+        "target": "quantum_information_theory",
+        "label": "related_to"
+      },
+      {
+        "source": "algorithmic_information_theory",
+        "target": "quantum_information_theory",
+        "label": "related_to"
+      },
+      {
+        "source": "system_dynamics",
+        "target": "cellular_automata",
+        "label": "related_to"
+      },
+      {
+        "source": "system_dynamics",
+        "target": "digital_twins",
+        "label": "related_to"
+      },
+      {
+        "source": "system_dynamics",
+        "target": "ai_enhanced_complex_systems_modeling",
+        "label": "related_to"
+      },
+      {
+        "source": "cellular_automata",
+        "target": "digital_twins",
+        "label": "related_to"
+      },
+      {
+        "source": "cellular_automata",
+        "target": "ai_enhanced_complex_systems_modeling",
+        "label": "related_to"
+      },
+      {
+        "source": "digital_twins",
+        "target": "ai_enhanced_complex_systems_modeling",
+        "label": "related_to"
+      },
+      {
+        "source": "adversarial_dynamics",
+        "target": "risk_homeostasis_in_security",
+        "label": "related_to"
+      },
+      {
+        "source": "adversarial_dynamics",
+        "target": "anti_fragile_computing",
+        "label": "related_to"
+      },
+      {
+        "source": "adversarial_dynamics",
+        "target": "ai_in_security_as_cybernetic_defense",
+        "label": "related_to"
+      },
+      {
+        "source": "risk_homeostasis_in_security",
+        "target": "anti_fragile_computing",
+        "label": "related_to"
+      },
+      {
+        "source": "risk_homeostasis_in_security",
+        "target": "ai_in_security_as_cybernetic_defense",
+        "label": "related_to"
+      },
+      {
+        "source": "anti_fragile_computing",
+        "target": "ai_in_security_as_cybernetic_defense",
+        "label": "related_to"
+      },
+      {
+        "source": "constructivist_epistemology",
+        "target": "radical_constructivism",
+        "label": "related_to"
+      },
+      {
+        "source": "constructivist_epistemology",
+        "target": "cybernetic_epistemology",
+        "label": "related_to"
+      },
+      {
+        "source": "radical_constructivism",
+        "target": "cybernetic_epistemology",
+        "label": "related_to"
+      },
+      {
+        "source": "machine_ethics",
+        "target": "responsibility_in_complex_systems",
+        "label": "related_to"
+      },
+      {
+        "source": "machine_ethics",
+        "target": "distributed_moral_agency",
+        "label": "related_to"
+      },
+      {
+        "source": "machine_ethics",
+        "target": "human_ai_ethical_symbiosis",
+        "label": "related_to"
+      },
+      {
+        "source": "responsibility_in_complex_systems",
+        "target": "distributed_moral_agency",
+        "label": "related_to"
+      },
+      {
+        "source": "responsibility_in_complex_systems",
+        "target": "human_ai_ethical_symbiosis",
+        "label": "related_to"
+      },
+      {
+        "source": "distributed_moral_agency",
+        "target": "human_ai_ethical_symbiosis",
+        "label": "related_to"
+      },
+      {
+        "source": "systems_ontology",
+        "target": "pancomputationalism",
+        "label": "related_to"
+      },
+      {
+        "source": "systems_ontology",
+        "target": "information_based_reality_theories",
+        "label": "related_to"
+      },
+      {
+        "source": "pancomputationalism",
+        "target": "information_based_reality_theories",
+        "label": "related_to"
+      },
+      {
+        "source": "distributed_agency_and_responsibility",
+        "target": "balance_of_control_in_human_ai_systems",
+        "label": "related_to"
+      },
+      {
+        "source": "systemic_approaches_to_ai_fairness",
+        "target": "cybernetic_interventions_for_equitable_ai",
+        "label": "related_to"
+      },
+      {
+        "source": "wealth_distribution_dynamics",
+        "target": "societal_adaptation_feedback_mechanisms",
+        "label": "related_to"
+      },
+      {
+        "source": "adaptive_governance_for_emerging_technologies",
+        "target": "systemic_risk_management",
+        "label": "related_to"
+      },
+      {
+        "source": "cybernetic_models_of_disease",
+        "target": "neural_interfaces_and_prosthetics",
+        "label": "related_to"
+      },
+      {
+        "source": "cybernetic_models_of_disease",
+        "target": "precision_medicine_as_feedback_control",
+        "label": "related_to"
+      },
+      {
+        "source": "neural_interfaces_and_prosthetics",
+        "target": "precision_medicine_as_feedback_control",
+        "label": "related_to"
+      },
+      {
+        "source": "educational_cybernetics",
+        "target": "adaptive_learning_systems",
+        "label": "related_to"
+      },
+      {
+        "source": "educational_cybernetics",
+        "target": "knowledge_management",
+        "label": "related_to"
+      },
+      {
+        "source": "adaptive_learning_systems",
+        "target": "knowledge_management",
+        "label": "related_to"
+      },
+      {
+        "source": "traffic_as_a_self_organizing_system",
+        "target": "urban_metabolism",
+        "label": "related_to"
+      },
+      {
+        "source": "traffic_as_a_self_organizing_system",
+        "target": "resilient_infrastructure",
+        "label": "related_to"
+      },
+      {
+        "source": "urban_metabolism",
+        "target": "resilient_infrastructure",
+        "label": "related_to"
+      },
+      {
+        "source": "financial_feedback_loops",
+        "target": "economic_homeostasis_mechanisms",
+        "label": "related_to"
+      },
+      {
+        "source": "quantum_neural_networks",
+        "target": "quantum_feedback",
+        "label": "related_to"
+      },
+      {
+        "source": "reservoir_computing",
+        "target": "physical_neural_networks",
+        "label": "related_to"
+      },
+      {
+        "source": "control_theory_for_artificial_general_intelligence",
+        "target": "cybernetic_approaches_to_intelligence_augmentation",
+        "label": "related_to"
+      },
+      {
+        "source": "mind_uploading_theories",
+        "target": "distributed_consciousness",
+        "label": "related_to"
+      },
+      {
+        "source": "mind_uploading_theories",
+        "target": "cybernetic_immortality",
+        "label": "related_to"
+      },
+      {
+        "source": "distributed_consciousness",
+        "target": "cybernetic_immortality",
+        "label": "related_to"
+      }
+    ]
+  }
+}
