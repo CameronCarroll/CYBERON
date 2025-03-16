@@ -28,7 +28,7 @@ class TestUploadEndpoint(unittest.TestCase):
         """Clean up after tests"""
         self.app_context.pop()
     
-    @patch('app.routes.main.extract_text_to_json')
+    @patch('app.routes.main.extract_markdown_to_json')  # Updated function name
     @patch('app.routes.main.load_query_engine')
     @patch('os.path.join')
     @patch('werkzeug.utils.secure_filename')
@@ -60,7 +60,7 @@ class TestUploadEndpoint(unittest.TestCase):
                 self.assertTrue(data['success'])
                 self.assertEqual(data['filename'], 'ontology.txt')
                 
-                # Verify extract_text_to_json was called
+                # Verify extract_markdown_to_json was called
                 mock_extract.assert_called_once()
                 mock_load_query_engine.assert_called_once()
     
@@ -96,7 +96,7 @@ class TestUploadEndpoint(unittest.TestCase):
         self.assertIn('error', data)
         self.assertEqual(data['error'], 'No selected file')
     
-    @patch('app.routes.main.extract_text_to_json')
+    @patch('app.routes.main.extract_markdown_to_json')  # Updated function name
     def test_upload_file_processing_error(self, mock_extract):
         """Test file upload with processing error"""
         # Configure mock to raise exception

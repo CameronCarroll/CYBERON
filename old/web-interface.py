@@ -59,7 +59,7 @@ def upload_file():
             # Process the file
             try:
                 output_file = os.path.join(app.config['DATA_FOLDER'], 'cybernetics_ontology.json')
-                extract_text_to_json(filepath, output_file)
+                extract_markdown_to_json(filepath, output_file)
                 
                 # Load the query engine with the new data
                 load_query_engine()

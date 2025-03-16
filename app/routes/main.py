@@ -1,7 +1,7 @@
 import os
 from flask import Blueprint, render_template, current_app, request, jsonify
 from werkzeug.utils import secure_filename
-from app.utils.ontology_parser import extract_text_to_json, analyze_ontology_structure
+from app.utils.ontology_parser import extract_markdown_to_json, analyze_ontology_structure
 from app.models.query_engine import CyberneticsQueryEngine
 
 bp = Blueprint('main', __name__)
@@ -62,7 +62,7 @@ def upload_file():
             # Process the file
             try:
                 output_file = os.path.join(current_app.config['DATA_FOLDER'], 'cybernetics_ontology.json')
-                extract_text_to_json(filepath, output_file)
+                extract_markdown_to_json(filepath, output_file)
                 
                 # Load the query engine with the new data
                 load_query_engine()

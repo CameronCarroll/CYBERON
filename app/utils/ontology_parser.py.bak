@@ -159,7 +159,7 @@ def convert_to_knowledge_graph(structured_ontology: Dict) -> Dict:
         
         # Add subsection nodes and connect to sections
         for subsection_name, items in section_data["subsections"].items():
-            subsection_id = make_id(subsection_name)
+            subsection_id = make_id(f"{section_title}_{subsection_name}")
             
             nodes.append({
                 "id": subsection_id,

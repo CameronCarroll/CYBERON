@@ -1,0 +1,130 @@
+{
+    "structured_ontology": {
+      "categories": [
+        {
+          "id": "information_theory",
+          "title": "Information Theory",
+          "children": [
+            {
+              "id": "foundational_concepts",
+              "title": "Foundational Concepts",
+              "children": [
+                {
+                  "id": "shannon_entropy",
+                  "title": "Shannon Entropy",
+                  "type": "concept",
+                  "description": "A mathematical measure of information content or uncertainty"
+                },
+                {
+                  "id": "channel_capacity",
+                  "title": "Channel Capacity",
+                  "type": "concept",
+                  "description": "The maximum rate at which information can be transmitted over a communication channel"
+                }
+              ]
+            },
+            {
+              "id": "key_figures",
+              "title": "Key Figures",
+              "children": [
+                {
+                  "id": "claude_shannon",
+                  "title": "Claude Shannon",
+                  "type": "person",
+                  "description": "American mathematician, known as 'the father of information theory'"
+                },
+                {
+                  "id": "norbert_wiener",
+                  "title": "Norbert Wiener",
+                  "type": "person",
+                  "description": "American mathematician who established the field of cybernetics"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "cybernetics",
+          "title": "Cybernetics",
+          "children": [
+            {
+              "id": "feedback_systems",
+              "title": "Feedback Systems",
+              "children": [
+                {
+                  "id": "negative_feedback",
+                  "title": "Negative Feedback",
+                  "type": "concept",
+                  "description": "A type of feedback when the system responds to reduce the output signal"
+                },
+                {
+                  "id": "homeostasis",
+                  "title": "Homeostasis",
+                  "type": "concept",
+                  "description": "The ability of a system to maintain stability despite external changes"
+                }
+              ]
+            },
+            {
+              "id": "cybernetic_applications",
+              "title": "Cybernetic Applications",
+              "children": [
+                {
+                  "id": "ai_systems",
+                  "title": "AI Systems",
+                  "type": "concept",
+                  "description": "Application of cybernetic principles to artificial intelligence"
+                },
+                {
+                  "id": "biological_systems",
+                  "title": "Biological Systems",
+                  "type": "concept",
+                  "description": "Study of regulatory mechanisms in living organisms"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "knowledge_graph": {
+      "nodes": [
+        {"id": "information_theory", "label": "Information Theory", "type": "category"},
+        {"id": "foundational_concepts", "label": "Foundational Concepts", "type": "category"},
+        {"id": "shannon_entropy", "label": "Shannon Entropy", "type": "concept"},
+        {"id": "channel_capacity", "label": "Channel Capacity", "type": "concept"},
+        {"id": "key_figures", "label": "Key Figures", "type": "category"},
+        {"id": "claude_shannon", "label": "Claude Shannon", "type": "person"},
+        {"id": "norbert_wiener", "label": "Norbert Wiener", "type": "person"},
+        {"id": "cybernetics", "label": "Cybernetics", "type": "category"},
+        {"id": "feedback_systems", "label": "Feedback Systems", "type": "category"},
+        {"id": "negative_feedback", "label": "Negative Feedback", "type": "concept"},
+        {"id": "homeostasis", "label": "Homeostasis", "type": "concept"},
+        {"id": "cybernetic_applications", "label": "Cybernetic Applications", "type": "category"},
+        {"id": "ai_systems", "label": "AI Systems", "type": "concept"},
+        {"id": "biological_systems", "label": "Biological Systems", "type": "concept"}
+      ],
+      "edges": [
+        {"source": "information_theory", "target": "foundational_concepts", "label": "contains"},
+        {"source": "foundational_concepts", "target": "shannon_entropy", "label": "includes"},
+        {"source": "foundational_concepts", "target": "channel_capacity", "label": "includes"},
+        {"source": "information_theory", "target": "key_figures", "label": "contains"},
+        {"source": "key_figures", "target": "claude_shannon", "label": "includes"},
+        {"source": "key_figures", "target": "norbert_wiener", "label": "includes"},
+        {"source": "cybernetics", "target": "feedback_systems", "label": "contains"},
+        {"source": "feedback_systems", "target": "negative_feedback", "label": "includes"},
+        {"source": "feedback_systems", "target": "homeostasis", "label": "includes"},
+        {"source": "cybernetics", "target": "cybernetic_applications", "label": "contains"},
+        {"source": "cybernetic_applications", "target": "ai_systems", "label": "includes"},
+        {"source": "cybernetic_applications", "target": "biological_systems", "label": "includes"},
+        {"source": "claude_shannon", "target": "shannon_entropy", "label": "developed"},
+        {"source": "claude_shannon", "target": "channel_capacity", "label": "formulated"},
+        {"source": "norbert_wiener", "target": "cybernetics", "label": "founded"},
+        {"source": "norbert_wiener", "target": "feedback_systems", "label": "studied"},
+        {"source": "information_theory", "target": "cybernetics", "label": "related_to"},
+        {"source": "shannon_entropy", "target": "negative_feedback", "label": "related_to"},
+        {"source": "homeostasis", "target": "biological_systems", "label": "applied_in"},
+        {"source": "negative_feedback", "target": "ai_systems", "label": "used_in"}
+      ]
+    }
+  }

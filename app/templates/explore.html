@@ -142,7 +142,7 @@
         
         // Fetch central concepts
         function fetchCentralConcepts() {
-            fetch('/api/api/concepts/central?count=5')
+            fetch('/api/concepts/central?count=5')
                 .then(response => response.json())
                 .then(data => {
                     const centralConceptsEl = document.getElementById('central-concepts');
@@ -181,7 +181,7 @@
         
         // Load concept options for path finding
         function loadConceptOptions() {
-            fetch('/api/api/search?q=')
+            fetch('/api/search?q=')
                 .then(response => response.json())
                 .then(data => {
                     const sourceSelect = document.getElementById('path-source');
@@ -213,7 +213,7 @@
         
         // Load evolution chains
         function loadEvolutionChains() {
-            fetch('/api/api/concepts/evolution')
+            fetch('/api/concepts/evolution')
                 .then(response => response.json())
                 .then(data => {
                     const evolutionChainsEl = document.getElementById('evolution-chains');
@@ -295,7 +295,7 @@
                 return;
             }
             
-            fetch(`/api/api/search?q=${encodeURIComponent(query)}&types=${types.join(',')}`)
+            fetch(`/api/search?q=${encodeURIComponent(query)}&types=${types.join(',')}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.results && data.results.length > 0) {
@@ -373,7 +373,7 @@
             pathsContainer.classList.remove('hidden');
             pathsResults.innerHTML = '<p class="text-gray-500">Finding paths...</p>';
             
-            fetch(`/api/api/paths?source=${sourceId}&target=${targetId}&max_length=3`)
+            fetch(`/api/paths?source=${sourceId}&target=${targetId}&max_length=3`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.paths && data.paths.length > 0) {
@@ -445,7 +445,7 @@
             detailsContainer.classList.remove('hidden');
             contentEl.innerHTML = '<p class="text-gray-500">Loading concept details...</p>';
             
-            fetch(`/api/api/entity/${conceptId}`)
+            fetch(`/api/entity/${conceptId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.error) {
