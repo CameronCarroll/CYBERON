@@ -13,8 +13,8 @@
                 <div class="text-xl font-bold">Cybernetics Digital Garden</div>
                 <div class="flex space-x-4">
                     <a href="/" class="hover:underline">Home</a>
-                    <a href="/viz/ontology" class="hover:underline">Visualize</a>
-                    <a href="/viz/explore" class="hover:underline">Explore</a>
+                    <a href="/ontology" class="hover:underline">Visualize</a>
+                    <a href="/explore" class="hover:underline">Explore</a>
                     <a href="/browse" class="hover:underline">Browse</a>
                     <a href="/upload" class="hover:underline">Upload</a>
                 </div>
@@ -214,7 +214,7 @@
             document.getElementById('entity-modal-content').innerHTML = '<p class="text-gray-500">Loading entity details...</p>';
             
             // Search for entity in API
-            fetch(`/api/search?q=${encodeURIComponent(entityName)}`)
+            fetch(`/api/api/search?q=${encodeURIComponent(entityName)}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.results && data.results.length > 0) {
@@ -222,7 +222,7 @@
                         const entity = data.results.find(r => r.label === entityName) || data.results[0];
                         
                         // Fetch entity details
-                        return fetch(`/api/entity/${entity.id}`);
+                        return fetch(`/api/api/entity/${entity.id}`);
                     } else {
                         throw new Error('Entity not found');
                     }

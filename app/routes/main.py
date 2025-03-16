@@ -14,9 +14,14 @@ def load_query_engine():
     global query_engine
     data_file = os.path.join(current_app.config['DATA_FOLDER'], 'cybernetics_ontology.json')
     
+    print(f"Looking for data file at: {data_file}")
     if os.path.exists(data_file):
+        print(f"Data file found, loading query engine with: {data_file}")
         query_engine = CyberneticsQueryEngine(data_file)
+        print(f"Query engine loaded with {query_engine.graph.number_of_nodes()} nodes and {query_engine.graph.number_of_edges()} edges")
         return True
+    else:
+        print(f"Data file not found at: {data_file}")
     return False
 
 @bp.before_app_request

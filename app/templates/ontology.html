@@ -35,8 +35,8 @@
                 <div class="text-xl font-bold">Cybernetics Digital Garden</div>
                 <div class="flex space-x-4">
                     <a href="/" class="hover:underline">Home</a>
-                    <a href="/viz/ontology" class="hover:underline">Visualize</a>
-                    <a href="/viz/explore" class="hover:underline">Explore</a>
+                    <a href="/ontology" class="hover:underline">Visualize</a>
+                    <a href="/explore" class="hover:underline">Explore</a>
                     <a href="/browse" class="hover:underline">Browse</a>
                     <a href="/upload" class="hover:underline">Upload</a>
                 </div>
@@ -184,10 +184,16 @@
             
             // Fetch graph data
             console.log('Fetching graph data...');
-            // Using full URL to avoid path issues
-            fetch(window.location.origin + '/api/graph-data')
+            // Debugging - log URL before fetch
+            const apiUrl = window.location.origin + '/api/graph-data';
+            console.log('API URL:', apiUrl);
+            // Using full URL with correct API endpoint
+            fetch(apiUrl)
                 .then(response => {
                     console.log('Response status:', response.status);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
                     return response.json();
                 })
                 .then(data => {
@@ -214,6 +220,8 @@
                     console.error('Error loading graph data:', error);
                     document.getElementById('graph-container').innerHTML = 
                         '<div class="flex h-full items-center justify-center"><p class="text-red-500">Error loading graph data: ' + error.message + '</p></div>';
+                    // Debug message - display URL that was used
+                    console.log('Attempted to fetch from:', window.location.origin + '/api/graph-data');
                 });
             
             // Initialize the graph
@@ -239,7 +247,10 @@
                     .linkDirectionalArrowRelPos(1)
                     .linkCurvature(0.25)
                     .onNodeClick(handleNodeClick)
-                    .onNodeHover(handleNodeHover)
+                    .onNodeHover((node, prevNode) => {
+                        // Call our handler with the current event
+                        handleNodeHover(node, window.event || event);
+                    })
                     .linkWidth(link => link === highlightedLink ? 2 : 1)
                     .linkColor(link => link === highlightedLink ? '#ff9900' : '#cccccc')
                     .nodeCanvasObject((node, ctx, globalScale) => {
@@ -298,7 +309,7 @@
             let highlightedLink = null;
             
             // Handle node hover for tooltip
-            function handleNodeHover(node) {
+            function handleNodeHover(node, event) {
                 if (node) {
                     const label = node.name || node.id;
                     const type = node.type || 'unknown';
@@ -308,10 +319,16 @@
                         <div class="text-sm text-gray-600">${type}</div>
                     `;
                     
-                    // Position the tooltip near the mouse
-                    const mousePos = d3.pointer(event, document.body);
-                    tooltip.style.left = (mousePos[0] + 10) + 'px';
-                    tooltip.style.top = (mousePos[1] + 10) + 'px';
+                    // Position the tooltip near the mouse - handle case where event might be missing
+                    if (event) {
+                        const mousePos = d3.pointer(event, document.body);
+                        tooltip.style.left = (mousePos[0] + 10) + 'px';
+                        tooltip.style.top = (mousePos[1] + 10) + 'px';
+                    } else {
+                        // Fallback position near the node if event not available
+                        tooltip.style.left = (node.x + 10) + 'px';
+                        tooltip.style.top = (node.y + 10) + 'px';
+                    }
                     tooltip.style.opacity = 0.9;
                 } else {
                     tooltip.style.opacity = 0;
@@ -341,7 +358,13 @@
             // Show node details in panel
             function showNodeDetails(node) {
                 fetch(`${window.location.origin}/api/entity/${node.id}`)
-                    .then(response => response.json())
+                    .then(response => {
+                        console.log(`Entity details response for ${node.id}:`, response.status);
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         const detailsPanel = document.getElementById('node-details');
                         const detailsTitle = document.getElementById('node-details-title');

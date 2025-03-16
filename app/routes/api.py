@@ -1,15 +1,32 @@
-from flask import Blueprint, jsonify, request
-from app.routes.main import query_engine
+from flask import Blueprint, jsonify, request, current_app
+import sys
+# Import the query_engine each time to ensure we get the latest reference
+import app.routes.main as main_module
 
 bp = Blueprint('api', __name__)
 
 @bp.route('/graph-data')
 def get_graph_data():
     """API endpoint to get graph data for visualization"""
+    import sys
+    print("API: /graph-data endpoint called", file=sys.stderr)
+    
+    # Get the latest reference to query_engine
+    query_engine = main_module.query_engine
+    
     if query_engine is None:
-        return jsonify({"error": "No ontology data loaded"}), 404
+        print("API: Error - query_engine is None", file=sys.stderr)
+        # Try to load it once more
+        main_module.load_query_engine()
+        query_engine = main_module.query_engine
+        
+        if query_engine is None:
+            print("API: Failed to load query_engine", file=sys.stderr)
+            return jsonify({"error": "No ontology data loaded"}), 404
     
     try:
+        print(f"API: Query engine loaded with data from: {query_engine.data_source if hasattr(query_engine, 'data_source') else 'unknown'}", file=sys.stderr)
+        
         # Convert graph to visualization format
         nodes = []
         for node_id in query_engine.graph.nodes():
@@ -29,7 +46,7 @@ def get_graph_data():
             })
         
         # Log data for debugging
-        print(f"Returning graph data with {len(nodes)} nodes and {len(links)} links")
+        print(f"API: Returning graph data with {len(nodes)} nodes and {len(links)} links", file=sys.stderr)
         
         return jsonify({
             "nodes": nodes,
@@ -44,8 +61,16 @@ def get_graph_data():
 @bp.route('/entity/<entity_id>')
 def get_entity(entity_id):
     """API endpoint to get entity details"""
+    # Get the latest reference to query_engine
+    query_engine = main_module.query_engine
+    
     if query_engine is None:
-        return jsonify({"error": "No ontology data loaded"}), 404
+        # Try to load it once more
+        main_module.load_query_engine()
+        query_engine = main_module.query_engine
+        
+        if query_engine is None:
+            return jsonify({"error": "No ontology data loaded"}), 404
     
     entity_info = query_engine.query_entity(entity_id)
     return jsonify(entity_info)
@@ -53,8 +78,16 @@ def get_entity(entity_id):
 @bp.route('/search')
 def search():
     """API endpoint to search entities"""
+    # Get the latest reference to query_engine
+    query_engine = main_module.query_engine
+    
     if query_engine is None:
-        return jsonify({"error": "No ontology data loaded"}), 404
+        # Try to load it once more
+        main_module.load_query_engine()
+        query_engine = main_module.query_engine
+        
+        if query_engine is None:
+            return jsonify({"error": "No ontology data loaded"}), 404
     
     query = request.args.get('q', '')
     entity_types = request.args.get('types', None)
@@ -68,8 +101,16 @@ def search():
 @bp.route('/paths')
 def find_paths():
     """API endpoint to find paths between entities"""
+    # Get the latest reference to query_engine
+    query_engine = main_module.query_engine
+    
     if query_engine is None:
-        return jsonify({"error": "No ontology data loaded"}), 404
+        # Try to load it once more
+        main_module.load_query_engine()
+        query_engine = main_module.query_engine
+        
+        if query_engine is None:
+            return jsonify({"error": "No ontology data loaded"}), 404
     
     source = request.args.get('source', '')
     target = request.args.get('target', '')
@@ -81,8 +122,16 @@ def find_paths():
 @bp.route('/sections/topic/<topic>')
 def find_sections(topic):
     """API endpoint to find sections by topic"""
+    # Get the latest reference to query_engine
+    query_engine = main_module.query_engine
+    
     if query_engine is None:
-        return jsonify({"error": "No ontology data loaded"}), 404
+        # Try to load it once more
+        main_module.load_query_engine()
+        query_engine = main_module.query_engine
+        
+        if query_engine is None:
+            return jsonify({"error": "No ontology data loaded"}), 404
     
     sections = query_engine.find_section_by_topic(topic)
     return jsonify({"sections": sections})
@@ -90,8 +139,16 @@ def find_sections(topic):
 @bp.route('/concepts/evolution')
 def get_concept_evolution():
     """API endpoint to get concept evolution chains"""
+    # Get the latest reference to query_engine
+    query_engine = main_module.query_engine
+    
     if query_engine is None:
-        return jsonify({"error": "No ontology data loaded"}), 404
+        # Try to load it once more
+        main_module.load_query_engine()
+        query_engine = main_module.query_engine
+        
+        if query_engine is None:
+            return jsonify({"error": "No ontology data loaded"}), 404
     
     evolution_chains = query_engine.get_concept_evolution()
     return jsonify({"evolution_chains": evolution_chains})
@@ -99,8 +156,16 @@ def get_concept_evolution():
 @bp.route('/concepts/central')
 def get_central_concepts():
     """API endpoint to get central concepts"""
+    # Get the latest reference to query_engine
+    query_engine = main_module.query_engine
+    
     if query_engine is None:
-        return jsonify({"error": "No ontology data loaded"}), 404
+        # Try to load it once more
+        main_module.load_query_engine()
+        query_engine = main_module.query_engine
+        
+        if query_engine is None:
+            return jsonify({"error": "No ontology data loaded"}), 404
     
     count = int(request.args.get('count', 10))
     central_entities = query_engine.get_central_entities(count)
@@ -109,8 +174,16 @@ def get_central_concepts():
 @bp.route('/concepts/related/<concept_id>')
 def get_related_concepts(concept_id):
     """API endpoint to get related concepts"""
+    # Get the latest reference to query_engine
+    query_engine = main_module.query_engine
+    
     if query_engine is None:
-        return jsonify({"error": "No ontology data loaded"}), 404
+        # Try to load it once more
+        main_module.load_query_engine()
+        query_engine = main_module.query_engine
+        
+        if query_engine is None:
+            return jsonify({"error": "No ontology data loaded"}), 404
     
     relationship_types = request.args.get('types', None)
     
@@ -123,8 +196,16 @@ def get_related_concepts(concept_id):
 @bp.route('/hierarchy')
 def get_hierarchy():
     """API endpoint to get concept hierarchy"""
+    # Get the latest reference to query_engine
+    query_engine = main_module.query_engine
+    
     if query_engine is None:
-        return jsonify({"error": "No ontology data loaded"}), 404
+        # Try to load it once more
+        main_module.load_query_engine()
+        query_engine = main_module.query_engine
+        
+        if query_engine is None:
+            return jsonify({"error": "No ontology data loaded"}), 404
     
     hierarchy = query_engine.analyze_concept_hierarchy()
     return jsonify(hierarchy)

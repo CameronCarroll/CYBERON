@@ -15,6 +15,7 @@ class CyberneticsQueryEngine:
             data_source: Path to the JSON file with ontology data,
                          or a dictionary containing the data
         """
+        self.data_source = data_source
         self.load_data(data_source)
         self.build_graph()
         
@@ -414,9 +415,10 @@ class CyberneticsQueryEngine:
             # Build hierarchy dict
             hierarchy = {}
             for node, depth in visited.items():
-                if depth not in hierarchy:
-                    hierarchy[depth] = []
-                hierarchy[depth].append({
+                depth_str = str(depth)  # Convert to string key for JSON serialization
+                if depth_str not in hierarchy:
+                    hierarchy[depth_str] = []
+                hierarchy[depth_str].append({
                     "id": node,
                     "label": self.graph.nodes[node].get("label", node),
                     "type": self.graph.nodes[node].get("type", "unknown")

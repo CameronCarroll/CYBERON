@@ -37,6 +37,26 @@ python run.py
 
 3. Upload an ontology text file to begin exploring
 
+## Testing
+
+To run the tests:
+
+```bash
+pytest
+```
+
+To run a specific test file:
+
+```bash
+pytest app/tests/test_api.py
+```
+
+To run tests with a specific marker:
+
+```bash
+pytest -m api
+```
+
 ## Project Structure
 
 ```
