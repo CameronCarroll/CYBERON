@@ -38,8 +38,8 @@ class TestAPIEndpoints(unittest.TestCase):
         # Configure mock methods to return sample data
         self.mock_graph.nodes.return_value = [{"id": "concept1"}]
         
-        # Patch the query_engine in api module
-        self.patcher = patch('app.routes.api.query_engine', self.mock_query_engine)
+        # Patch the query_engine in main module that api.py imports
+        self.patcher = patch('app.routes.main.query_engine', self.mock_query_engine)
         self.mock_api_query_engine = self.patcher.start()
     
     def tearDown(self):
@@ -235,18 +235,20 @@ class TestAPIEndpoints(unittest.TestCase):
         """Test endpoints when no ontology data is loaded"""
         # Set query_engine to None to simulate no data loaded
         self.patcher.stop()
-        with patch('app.routes.api.query_engine', None):
-            # Test one of the endpoints
-            response = self.client.get('/api/graph-data')
-            
-            # Check response
-            self.assertEqual(response.status_code, 404)
-            data = json.loads(response.data)
-            self.assertIn('error', data)
-            self.assertEqual(data['error'], "No ontology data loaded")
+        # Patch load_query_engine to return False
+        with patch('app.routes.main.load_query_engine', return_value=False):
+            with patch('app.routes.main.query_engine', None):
+                # Test one of the endpoints
+                response = self.client.get('/api/graph-data')
+                
+                # Check response
+                self.assertEqual(response.status_code, 404)
+                data = json.loads(response.data)
+                self.assertIn('error', data)
+                self.assertEqual(data['error'], "No ontology data loaded")
         
         # Restart the original patcher for other tests
-        self.patcher.start()
+        self.mock_api_query_engine = self.patcher.start()
 
 
 if __name__ == '__main__':
