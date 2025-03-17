@@ -31,10 +31,10 @@
                 <div class="bg-white rounded-lg shadow-md p-4">
                     <h2 class="text-xl font-bold mb-4">Sections</h2>
                     <div class="space-y-2">
-                        {% for section_num, section_data in ontology.items() %}
+                        {% for section_id, section_data in ontology.items() %}
                         <div>
-                            <a href="#section-{{ section_num }}" class="text-blue-600 hover:underline font-medium">
-                                {{ section_num }}. {{ section_data.title }}
+                            <a href="#section-{{ section_id }}" class="text-blue-600 hover:underline font-medium">
+                                {{ section_data.title }}
                             </a>
                         </div>
                         {% endfor %}
@@ -60,14 +60,14 @@
                 <!-- Main content area -->
                 <div class="lg:col-span-3">
                     <div id="content-container" class="space-y-6">
-                        {% for section_num, section_data in ontology.items() %}
-                        <div id="section-{{ section_num }}" class="bg-white rounded-lg shadow-md overflow-hidden">
+                        {% for section_id, section_data in ontology.items() %}
+                        <div id="section-{{ section_id }}" class="bg-white rounded-lg shadow-md overflow-hidden">
                             <div class="section-header bg-blue-100 p-4 cursor-pointer hover:bg-blue-200" 
-                                 onclick="toggleSection('section-content-{{ section_num }}')">
-                                <h2 class="text-xl font-bold">{{ section_num }}. {{ section_data.title }}</h2>
+                                 onclick="toggleSection('section-content-{{ section_id }}')">
+                                <h2 class="text-xl font-bold">{{ section_data.title }}</h2>
                             </div>
                             
-                            <div id="section-content-{{ section_num }}" class="p-4 section-content">
+                            <div id="section-content-{{ section_id }}" class="p-4 section-content">
                                 {% if section_data.subsections %}
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {% for subsection_name, items in section_data.subsections.items() %}
@@ -77,9 +77,13 @@
                                             {% for item in items %}
                                             <li class="searchable-item">
                                                 <a href="#" class="entity-link hover:underline" 
-                                                   onclick="showEntityDetails('{{ item|replace("'", "\\'") }}'); return false;">
-                                                    {{ item }}
+                                                   data-name="{{ item.name }}"
+                                                   onclick="showEntityDetails('{{ item.name|replace("'", "\\'") }}'); return false;">
+                                                    {{ item.name }}
                                                 </a>
+                                                {% if item.description %}
+                                                <span class="text-gray-600 text-sm ml-2">- {{ item.description }}</span>
+                                                {% endif %}
                                             </li>
                                             {% endfor %}
                                         </ul>
@@ -132,22 +136,7 @@
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set up search functionality
-            const searchInput = document.getElementById('search-content');
-            searchInput.addEventListener('input', performSearch);
-            
-            // Set up expand/collapse buttons
-            document.getElementById('expand-all-btn').addEventListener('click', expandAllSections);
-            document.getElementById('collapse-all-btn').addEventListener('click', collapseAllSections);
-            
-            // Collapse all sections by default except the first one
-            const sectionContents = document.querySelectorAll('.section-content');
-            for (let i = 1; i < sectionContents.length; i++) {
-                sectionContents[i].style.display = 'none';
-            }
-        });
-        
+        // Functions to handle section toggling
         function toggleSection(sectionId) {
             const section = document.getElementById(sectionId);
             if (section.style.display === 'none') {
@@ -171,6 +160,7 @@
             });
         }
         
+        // Search functionality
         function performSearch() {
             const searchTerm = document.getElementById('search-content').value.toLowerCase();
             const searchableItems = document.querySelectorAll('.searchable-item');
@@ -205,7 +195,11 @@
             }
         }
         
+        // Entity details handling
         function showEntityDetails(entityName) {
+            // Generate ID the same way the server does
+            const entityId = makeId(entityName);
+            
             // Show modal
             document.getElementById('entity-modal').classList.remove('hidden');
             document.getElementById('entity-modal-title').textContent = entityName;
@@ -213,86 +207,168 @@
             // Reset content
             document.getElementById('entity-modal-content').innerHTML = '<p class="text-gray-500">Loading entity details...</p>';
             
-            // Search for entity in API
-            fetch(`/api/api/search?q=${encodeURIComponent(entityName)}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.results && data.results.length > 0) {
-                        // Find closest match
-                        const entity = data.results.find(r => r.label === entityName) || data.results[0];
-                        
-                        // Fetch entity details
-                        return fetch(`/api/api/entity/${entity.id}`);
-                    } else {
-                        throw new Error('Entity not found');
-                    }
-                })
+            // Search for entity description first
+            let entityDescription = findEntityDescriptionInOntology(entityName);
+            
+            // Fetch entity relationships from API
+            fetch(`/api/entity/${entityId}`)
                 .then(response => response.json())
                 .then(details => {
                     if (details.error) {
                         throw new Error(details.error);
                     }
-                    
-                    const contentEl = document.getElementById('entity-modal-content');
-                    
-                    // Build entity details view
-                    let html = `
-                        <div class="mb-3">
-                            <span class="inline-block px-2 py-1 bg-gray-200 rounded text-sm">
-                                ${details.attributes.type || 'unknown'}
-                            </span>
-                        </div>
-                    `;
-                    
-                    // Incoming connections
-                    if (details.incoming && details.incoming.length > 0) {
-                        html += `<h4 class="font-bold mb-2">Incoming Connections</h4><ul class="space-y-1 ml-4">`;
-                        details.incoming.forEach(conn => {
-                            html += `
-                                <li>
-                                    <a href="#" onclick="showEntityDetails('${conn.label.replace(/'/g, "\\'")}'); return false;" class="text-blue-600 hover:underline">
-                                        ${conn.label}
-                                    </a>
-                                    <span class="text-gray-600"> ${conn.relationship} → This</span>
-                                </li>
-                            `;
-                        });
-                        html += `</ul>`;
-                    }
-                    
-                    // Outgoing connections
-                    if (details.outgoing && details.outgoing.length > 0) {
-                        html += `<h4 class="font-bold mt-4 mb-2">Outgoing Connections</h4><ul class="space-y-1 ml-4">`;
-                        details.outgoing.forEach(conn => {
-                            html += `
-                                <li>
-                                    <span class="text-gray-600">This ${conn.relationship} → </span>
-                                    <a href="#" onclick="showEntityDetails('${conn.label.replace(/'/g, "\\'")}'); return false;" class="text-blue-600 hover:underline">
-                                        ${conn.label}
-                                    </a>
-                                </li>
-                            `;
-                        });
-                        html += `</ul>`;
-                    }
-                    
-                    // Set content
-                    contentEl.innerHTML = html;
+                    displayEntityDetails(details, entityDescription);
                 })
                 .catch(error => {
-                    document.getElementById('entity-modal-content').innerHTML = 
-                        `<p class="text-red-500">Error: ${error.message}</p>`;
+                    // If the direct ID fails, try searching
+                    fetch(`/api/search?q=${encodeURIComponent(entityName)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.results && data.results.length > 0) {
+                                // Find closest match
+                                const entity = data.results.find(r => r.label === entityName) || data.results[0];
+                                return fetch(`/api/entity/${entity.id}`);
+                            } else {
+                                throw new Error('Entity not found');
+                            }
+                        })
+                        .then(response => {
+                            if (!response) throw new Error('Entity not found');
+                            return response.json();
+                        })
+                        .then(details => {
+                            if (details.error) {
+                                throw new Error(details.error);
+                            }
+                            displayEntityDetails(details, entityDescription);
+                        })
+                        .catch(error => {
+                            document.getElementById('entity-modal-content').innerHTML = 
+                                `<p class="text-red-500">Error finding entity: ${error.message}</p>`;
+                        });
                 });
+        }
+        
+        // Display entity details in the modal
+        function displayEntityDetails(details, entityDescription) {
+            const contentEl = document.getElementById('entity-modal-content');
+            
+            // Build entity details view
+            let html = `
+                <div class="mb-3">
+                    <span class="inline-block px-2 py-1 bg-gray-200 rounded text-sm">
+                        ${details.attributes.type || 'unknown'}
+                    </span>
+                </div>
+            `;
+            
+            // Add description if found in ontology
+            if (entityDescription) {
+                html += `
+                    <div class="my-3 p-3 bg-gray-50 rounded">
+                        <h4 class="font-bold mb-1">Description</h4>
+                        <p>${entityDescription}</p>
+                    </div>
+                `;
+            }
+            
+            // Incoming connections
+            if (details.incoming && details.incoming.length > 0) {
+                html += `<h4 class="font-bold mb-2">Incoming Connections</h4><ul class="space-y-1 ml-4">`;
+                details.incoming.forEach(conn => {
+                    html += `
+                        <li>
+                            <a href="#" onclick="showEntityDetails('${conn.label.replace(/'/g, "\\'")}'); return false;" class="text-blue-600 hover:underline">
+                                ${conn.label}
+                            </a>
+                            <span class="text-gray-600"> ${conn.relationship} → This</span>
+                        </li>
+                    `;
+                });
+                html += `</ul>`;
+            }
+            
+            // Outgoing connections
+            if (details.outgoing && details.outgoing.length > 0) {
+                html += `<h4 class="font-bold mt-4 mb-2">Outgoing Connections</h4><ul class="space-y-1 ml-4">`;
+                details.outgoing.forEach(conn => {
+                    html += `
+                        <li>
+                            <span class="text-gray-600">This ${conn.relationship} → </span>
+                            <a href="#" onclick="showEntityDetails('${conn.label.replace(/'/g, "\\'")}'); return false;" class="text-blue-600 hover:underline">
+                                ${conn.label}
+                            </a>
+                        </li>
+                    `;
+                });
+                html += `</ul>`;
+            }
+            
+            // Set content
+            contentEl.innerHTML = html;
+        }
+        
+        // Find entity description in ontology
+        function findEntityDescriptionInOntology(entityName) {
+            // Get the ontology data from the page
+            const ontologyData = {{ ontology|tojson|safe }};
+            
+            if (!ontologyData) {
+                return null;
+            }
+            
+            // Search through all sections and subsections
+            for (const sectionId in ontologyData) {
+                const section = ontologyData[sectionId];
+                
+                for (const subsectionName in section.subsections) {
+                    const items = section.subsections[subsectionName];
+                    
+                    // Search through items
+                    for (const item of items) {
+                        // Check if this item matches the entity name
+                        if (item.name === entityName && item.description) {
+                            return item.description;
+                        }
+                    }
+                }
+            }
+            
+            return null;
+        }
+        
+        // Helper function to generate IDs in the same way as the server
+        function makeId(text) {
+            return text.toLowerCase()
+                .replace(/[^a-z0-9]+/g, '_')
+                .replace(/^_+|_+$/g, '');
         }
         
         function closeEntityModal() {
             document.getElementById('entity-modal').classList.add('hidden');
         }
         
-        // Close modal when clicking outside of it
-        document.getElementById('entity-modal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeEntityModal();
+        // Set up event listeners when document is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Search box event listener
+            const searchInput = document.getElementById('search-content');
+            searchInput.addEventListener('input', performSearch);
+            
+            // Expand/collapse button listeners
+            document.getElementById('expand-all-btn').addEventListener('click', expandAllSections);
+            document.getElementById('collapse-all-btn').addEventListener('click', collapseAllSections);
+            
+            // Close modal when clicking outside of it
+            document.getElementById('entity-modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeEntityModal();
+                }
+            });
+            
+            // Collapse all sections by default except the first one
+            const sectionContents = document.querySelectorAll('.section-content');
+            for (let i = 1; i < sectionContents.length; i++) {
+                sectionContents[i].style.display = 'none';
             }
         });
     </script>
