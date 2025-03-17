@@ -1,0 +1,96 @@
+#!/usr/bin/env python
+"""
+MCP Server entry point for CYBERON.
+
+This script initializes and starts the MCP server for CYBERON,
+providing Model Context Protocol integration.
+"""
+
+import sys
+import os
+import argparse
+import logging
+import signal
+from typing import Optional
+
+from app.mcp import MCPServer
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stderr)
+    ]
+)
+
+logger = logging.getLogger("mcp_server")
+
+# Global server instance for signal handlers
+server_instance: Optional[MCPServer] = None
+
+def signal_handler(sig, frame):
+    """Handle signals to gracefully shutdown the server."""
+    if server_instance:
+        logger.info(f"Received signal {sig}, shutting down...")
+        server_instance.stop()
+    sys.exit(0)
+
+def main():
+    """Main entry point for the MCP server."""
+    global server_instance
+    
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description="CYBERON MCP Server")
+    parser.add_argument("--debug", action="store_true", help="Enable debug logging")
+    parser.add_argument("--transport", default="stdio", choices=["stdio"], help="Transport to use")
+    args = parser.parse_args()
+    
+    # Configure logging level
+    if args.debug:
+        logging.getLogger().setLevel(logging.DEBUG)
+        logger.debug("Debug logging enabled")
+    
+    # Setup signal handlers for graceful shutdown
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+    
+    # Create and start the server
+    try:
+        logger.info("Initializing MCP server")
+        server = MCPServer()
+        server_instance = server
+        
+        # Set up the requested transport
+        if args.transport == "stdio":
+            logger.info("Using STDIO transport")
+            server.create_stdio_transport()
+        
+        # Start the server
+        logger.info("Starting MCP server")
+        server.start()
+        
+        # For STDIO transport, the server will run in background threads
+        # and we need to keep the main thread alive
+        if args.transport == "stdio":
+            # Use signal.pause() to wait for signals on Unix systems
+            if hasattr(signal, 'pause'):
+                signal.pause()
+            else:
+                # On Windows or other platforms without signal.pause()
+                import time
+                while True:
+                    time.sleep(1)
+    
+    except KeyboardInterrupt:
+        logger.info("Keyboard interrupt received, shutting down...")
+        if server_instance:
+            server_instance.stop()
+    except Exception as e:
+        logger.exception(f"Error running MCP server: {e}")
+        return 1
+    
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main())

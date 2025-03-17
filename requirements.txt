@@ -7,3 +7,4 @@ python-louvain==0.16
 pytest==7.4.0
 pytest-flask==1.2.0
 flask-limiter==3.3.1
+jsonschema==4.19.0
