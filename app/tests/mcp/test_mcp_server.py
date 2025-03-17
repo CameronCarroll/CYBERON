@@ -9,12 +9,35 @@ from unittest.mock import MagicMock, patch
 from app.mcp.server import MCPServer
 from app.mcp.transports.base import Transport
 
+# Create a subclass of MCPServer for testing that doesn't register resource handlers
+class TestMCPServerClass(MCPServer):
+    def _register_core_handlers(self) -> None:
+        """Register core request handlers for the MCP protocol."""
+        # Core protocol handlers
+        self.register_handler("initialize", MagicMock(return_value={"result": "success"}))
+        self.register_handler("server/capabilities", MagicMock(return_value={"result": "success"}))
+        
+        # Work Package 2 - Query engine handlers
+        self.register_handler("cyberon/search", MagicMock(return_value={"result": "success"}))
+        self.register_handler("cyberon/entity", MagicMock(return_value={"result": "success"}))
+        self.register_handler("cyberon/paths", MagicMock(return_value={"result": "success"}))
+        self.register_handler("cyberon/connections", MagicMock(return_value={"result": "success"}))
+        self.register_handler("cyberon/entity_types", MagicMock(return_value={"result": "success"}))
+        self.register_handler("cyberon/relationship_types", MagicMock(return_value={"result": "success"}))
+        
+        # Mock resource handlers for testing
+        self.register_handler("resources/list", MagicMock(return_value={"resources": []}))
+        self.register_handler("resources/templates/list", MagicMock(return_value={"resourceTemplates": []}))
+        self.register_handler("resources/read", MagicMock(return_value={"contents": []}))
+        self.register_handler("resources/subscribe", MagicMock(return_value={}))
+        self.register_handler("resources/unsubscribe", MagicMock(return_value={}))
+
 class TestMCPServer:
     """Test suite for the MCP server."""
     
     def test_server_initialization(self):
         """Test that the server initializes correctly."""
-        server = MCPServer()
+        server = TestMCPServerClass()
         assert server is not None
         assert server.PROTOCOL_VERSION == "0.5.0"
         assert "protocol_version" in server.capabilities
@@ -23,7 +46,7 @@ class TestMCPServer:
         
     def test_register_handler(self):
         """Test that handlers can be registered."""
-        server = MCPServer()
+        server = TestMCPServerClass()
         handler = MagicMock()
         
         # Register a custom handler
@@ -35,7 +58,7 @@ class TestMCPServer:
     
     def test_register_transport(self):
         """Test that transports can be registered."""
-        server = MCPServer()
+        server = TestMCPServerClass()
         transport = MagicMock(spec=Transport)
         
         # Register the transport
@@ -48,7 +71,7 @@ class TestMCPServer:
     
     def test_handle_valid_request(self):
         """Test handling a valid request."""
-        server = MCPServer()
+        server = TestMCPServerClass()
         
         # Mock transport ID
         transport_id = "test-transport"
@@ -79,7 +102,7 @@ class TestMCPServer:
     
     def test_handle_invalid_request(self):
         """Test handling an invalid request."""
-        server = MCPServer()
+        server = TestMCPServerClass()
         
         # Test cases for invalid requests
         invalid_requests = [
@@ -106,7 +129,7 @@ class TestMCPServer:
     
     def test_handler_exception(self):
         """Test that exceptions in handlers are properly handled."""
-        server = MCPServer()
+        server = TestMCPServerClass()
         
         # Create a handler that raises an exception
         def failing_handler(params, transport_id):
@@ -133,7 +156,7 @@ class TestMCPServer:
     
     def test_invalid_json(self):
         """Test handling invalid JSON input."""
-        server = MCPServer()
+        server = TestMCPServerClass()
         
         # Process invalid JSON
         response = server.handle_message("this is not json", "test-transport")

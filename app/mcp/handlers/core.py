@@ -19,12 +19,28 @@ CYBERON MCP Server provides access to a cybernetics ontology database. You can:
 2. Retrieve detailed information about entities
 3. Find paths between entities
 4. Discover connected entities
+5. Access ontology data as structured resources
 
-Available methods:
+Available Query Methods:
 - cyberon/search: Search for entities by name or keyword
 - cyberon/entity: Get detailed information about a specific entity
 - cyberon/paths: Find paths between two entities
 - cyberon/connections: Find entities connected to a specific entity
+- cyberon/entity_types: Get all entity types in the ontology
+- cyberon/relationship_types: Get all relationship types in the ontology
+
+Available Resource Methods:
+- resources/list: List available resources in the ontology
+- resources/templates/list: List resource templates for dynamic access
+- resources/read: Read a specific resource by URI
+- resources/subscribe: Subscribe to resource updates
+- resources/unsubscribe: Unsubscribe from resource updates
+
+Resource URIs use the cyberon:// scheme, for example:
+- cyberon:///entity/{id}: Access a specific entity
+- cyberon:///entity/search?query={query}: Search for entities
+- cyberon:///section/{number}: Access a specific section of the ontology
+- cyberon:///graph/summary: Get a summary of the ontology graph
 
 For specific usage details, refer to the method descriptions.
 """

@@ -18,6 +18,15 @@ from app.mcp.handlers.query import (
     get_relationship_types_handler
 )
 
+# Import resource handlers (WP3)
+from app.mcp.handlers.resources import (
+    list_resources_handler,
+    list_resource_templates_handler,
+    read_resource_handler,
+    resource_subscription_handler,
+    resource_unsubscription_handler
+)
+
 __all__ = [
     "initialize_handler", 
     "capabilities_handler",
@@ -28,5 +37,11 @@ __all__ = [
     "find_paths_handler",
     "find_connections_handler",
     "get_entity_types_handler",
-    "get_relationship_types_handler"
+    "get_relationship_types_handler",
+    # Resource handlers (WP3)
+    "list_resources_handler",
+    "list_resource_templates_handler",
+    "read_resource_handler",
+    "resource_subscription_handler",
+    "resource_unsubscription_handler"
 ]

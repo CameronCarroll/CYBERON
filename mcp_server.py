@@ -14,6 +14,7 @@ import signal
 from typing import Optional
 
 from app.mcp import MCPServer
+from app.models.query_engine import CyberneticsQueryEngine
 
 # Configure logging
 logging.basicConfig(
@@ -36,6 +37,29 @@ def signal_handler(sig, frame):
         server_instance.stop()
     sys.exit(0)
 
+def load_query_engine(data_file: str) -> Optional[CyberneticsQueryEngine]:
+    """
+    Load the CyberneticsQueryEngine from a data file.
+    
+    Args:
+        data_file: Path to the data file
+        
+    Returns:
+        Query engine instance or None if loading fails
+    """
+    try:
+        if not os.path.exists(data_file):
+            logger.error(f"Data file not found: {data_file}")
+            return None
+        
+        logger.info(f"Loading query engine from {data_file}")
+        engine = CyberneticsQueryEngine(data_file)
+        logger.info(f"Query engine loaded with {engine.graph.number_of_nodes()} nodes and {engine.graph.number_of_edges()} edges")
+        return engine
+    except Exception as e:
+        logger.exception(f"Error loading query engine: {e}")
+        return None
+
 def main():
     """Main entry point for the MCP server."""
     global server_instance
@@ -44,6 +68,8 @@ def main():
     parser = argparse.ArgumentParser(description="CYBERON MCP Server")
     parser.add_argument("--debug", action="store_true", help="Enable debug logging")
     parser.add_argument("--transport", default="stdio", choices=["stdio"], help="Transport to use")
+    parser.add_argument("--data-file", default="data/cybernetics_ontology.json", 
+                        help="Path to the ontology data file")
     args = parser.parse_args()
     
     # Configure logging level
@@ -60,6 +86,15 @@ def main():
         logger.info("Initializing MCP server")
         server = MCPServer()
         server_instance = server
+        
+        # Initialize and set up the query engine
+        data_file = os.path.abspath(args.data_file)
+        query_engine = load_query_engine(data_file)
+        
+        if query_engine:
+            server.set_query_engine(query_engine)
+        else:
+            logger.warning("Running without query engine - some functionality will be limited")
         
         # Set up the requested transport
         if args.transport == "stdio":

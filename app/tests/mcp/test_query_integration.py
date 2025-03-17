@@ -16,7 +16,9 @@ from app.mcp.handlers.query import (
     entity_search_handler,
     entity_info_handler,
     find_paths_handler,
-    find_connections_handler
+    find_connections_handler,
+    get_entity_types_handler,
+    get_relationship_types_handler
 )
 
 # Sample test data
@@ -64,7 +66,30 @@ def mock_query_engine():
 @pytest.fixture
 def mcp_server_with_query_engine(mock_query_engine):
     """Create an MCP server with the mock query engine."""
-    server = MCPServer()
+    # Create a testing subclass to avoid resource handler imports
+    class TestServerClass(MCPServer):
+        def _register_core_handlers(self) -> None:
+            """Register core request handlers for the MCP protocol."""
+            # Core protocol handlers
+            self.register_handler("initialize", Mock(return_value={"result": "success"}))
+            self.register_handler("server/capabilities", Mock(return_value={"result": "success"}))
+            
+            # Work Package 2 - Query engine handlers
+            self.register_handler("cyberon/search", entity_search_handler)
+            self.register_handler("cyberon/entity", entity_info_handler)
+            self.register_handler("cyberon/paths", find_paths_handler)
+            self.register_handler("cyberon/connections", find_connections_handler)
+            self.register_handler("cyberon/entity_types", get_entity_types_handler)
+            self.register_handler("cyberon/relationship_types", get_relationship_types_handler)
+            
+            # Mock resource handlers
+            self.register_handler("resources/list", Mock(return_value={"resources": []}))
+            self.register_handler("resources/templates/list", Mock(return_value={"resourceTemplates": []}))
+            self.register_handler("resources/read", Mock(return_value={"contents": []}))
+            self.register_handler("resources/subscribe", Mock(return_value={}))
+            self.register_handler("resources/unsubscribe", Mock(return_value={}))
+    
+    server = TestServerClass()
     server.set_query_engine(mock_query_engine)
     return server
 

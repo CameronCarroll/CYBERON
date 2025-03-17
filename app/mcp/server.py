@@ -47,7 +47,7 @@ class MCPServer:
                 "vendor": "CYBERON Project"
             },
             "supports": {
-                "resources": False,  # Will be implemented in Work Package 3
+                "resources": True,   # Implemented in Work Package 3
                 "tools": True,       # Basic tools implemented in Work Package 2
                 "prompts": False     # Will be implemented in Work Package 6
             }
@@ -79,6 +79,13 @@ class MCPServer:
         self.register_handler("cyberon/connections", find_connections_handler)
         self.register_handler("cyberon/entity_types", get_entity_types_handler)
         self.register_handler("cyberon/relationship_types", get_relationship_types_handler)
+        
+        # Work Package 3 - Resource handlers
+        self.register_handler("resources/list", list_resources_handler)
+        self.register_handler("resources/templates/list", list_resource_templates_handler)
+        self.register_handler("resources/read", read_resource_handler)
+        self.register_handler("resources/subscribe", resource_subscription_handler)
+        self.register_handler("resources/unsubscribe", resource_unsubscription_handler)
     
     def register_handler(self, method: str, handler: Callable) -> None:
         """
@@ -125,7 +132,14 @@ class MCPServer:
             engine: The CyberneticsQueryEngine instance
         """
         self.query_engine = engine
-        set_query_engine(engine)
+        
+        # Set the query engine for all handlers that need it
+        from app.mcp.handlers.query import set_query_engine as set_query_engine_for_query
+        from app.mcp.handlers.resources import set_query_engine as set_query_engine_for_resources
+        
+        set_query_engine_for_query(engine)
+        set_query_engine_for_resources(engine)
+        
         logger.info("Query engine set for MCP server")
     
     def handle_message(self, message: str, transport_id: str) -> Optional[str]:

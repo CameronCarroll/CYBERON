@@ -10,6 +10,8 @@ The Model Context Protocol integration allows:
 - Retrieving detailed information about entities
 - Finding paths between entities
 - Discovering connected entities
+- Accessing ontology data as structured resources
+- Using resource templates for dynamic access
 
 ## Running the MCP Server
 
@@ -50,7 +52,7 @@ The MCP server supports the following methods:
 - `initialize`: Initialize the MCP connection
 - `server/capabilities`: Get server capabilities
 
-### CYBERON-specific
+### CYBERON-specific Tools
 
 - `cyberon/search`: Search for entities
   - Parameters:
@@ -78,10 +80,53 @@ The MCP server supports the following methods:
 
 - `cyberon/relationship_types`: Get all relationship types in the ontology
   - Parameters: none
+  
+### Resource Methods
+
+- `resources/list`: List available resources
+  - Parameters:
+    - `cursor` (string, optional): Pagination cursor
+
+- `resources/templates/list`: List resource templates
+  - Parameters:
+    - `cursor` (string, optional): Pagination cursor
+
+- `resources/read`: Read a resource
+  - Parameters:
+    - `uri` (string): The URI of the resource to read
+
+- `resources/subscribe`: Subscribe to resource updates
+  - Parameters:
+    - `uri` (string): The URI of the resource to subscribe to
+
+- `resources/unsubscribe`: Unsubscribe from resource updates
+  - Parameters:
+    - `uri` (string): The URI of the resource to unsubscribe from
+
+### Resource URI Scheme
+
+Resources are accessed using URIs with the following structure:
+
+```
+cyberon:///{resource_type}/{resource_id}[?{query_params}]
+```
+
+Available resource types:
+- `entity`: Access entity details (e.g., `cyberon:///entity/node1`)
+- `entity/search`: Search for entities (e.g., `cyberon:///entity/search?query=system`)
+- `relationship`: Access relationship details (e.g., `cyberon:///relationship/edge1`)
+- `section`: Access section content (e.g., `cyberon:///section/1`)
+- `entity_type`: Access entities of a specific type (e.g., `cyberon:///entity_type/concept`)
+- `relationship_type`: Access relationships of a specific type (e.g., `cyberon:///relationship_type/related_to`)
+- `paths`: Find paths between entities (e.g., `cyberon:///paths?source=node1&target=node2`)
+- `connections`: Find connected entities (e.g., `cyberon:///connections/node1?max_distance=2`)
+- `graph/summary`: Get a summary of the ontology graph
 
 ## Example Usage
 
-Here's an example of using the MCP server with JSON-RPC 2.0:
+### Using Query Tools
+
+Here's an example of using the search tool:
 
 ```json
 {
@@ -117,6 +162,76 @@ Response:
 }
 ```
 
+### Using Resources
+
+Listing available resources:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 2,
+  "method": "resources/list",
+  "params": {}
+}
+```
+
+Response:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 2,
+  "result": {
+    "resources": [
+      {
+        "name": "Entity Type: concept",
+        "uri": "cyberon:///entity_type/concept",
+        "description": "Information about the 'concept' entity type (15 entities)",
+        "mimeType": "application/json"
+      },
+      {
+        "name": "Graph Summary",
+        "uri": "cyberon:///graph/summary",
+        "description": "Summary information about the ontology graph",
+        "mimeType": "application/json"
+      },
+      ...
+    ]
+  }
+}
+```
+
+Reading a resource:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 3,
+  "method": "resources/read",
+  "params": {
+    "uri": "cyberon:///entity/cybernetics"
+  }
+}
+```
+
+Response:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 3,
+  "result": {
+    "contents": [
+      {
+        "uri": "cyberon:///entity/cybernetics",
+        "mimeType": "application/json",
+        "text": "{\n  \"id\": \"cybernetics\",\n  \"attributes\": {\n    \"label\": \"Cybernetics\",\n    \"type\": \"concept\"\n  },\n  \"incoming\": [...],\n  \"outgoing\": [...]\n}"
+      }
+    ]
+  }
+}
+```
+
 ## Integration with LLMs
 
 The MCP server is designed to work with Claude and other LLMs that support the Model Context Protocol. It provides structured access to the cybernetics ontology, allowing LLMs to:
@@ -140,3 +255,4 @@ See the following files for implementation details:
 
 - `WP1_IMPLEMENTATION_REPORT.md`: Core MCP server implementation
 - `WP2_IMPLEMENTATION_REPORT.md`: Query engine integration
+- `WP3_IMPLEMENTATION_REPORT.md`: Resource implementation
