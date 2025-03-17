@@ -1,67 +1,153 @@
-I'll create a concise technical architecture summary for the cybernetics digital garden Flask application.
-
-# Technical Architecture: Cybernetics Digital Garden
+# Cybernetics Digital Garden - Technical Architecture
 
 ## Overview
-This is a Flask-based web application that provides interactive visualization and exploration of cybernetics concepts using knowledge graph technology. The system allows users to upload ontology data, visualize relationships between concepts, and explore connections through various interfaces.
+
+A Flask-based web application for interactive visualization and exploration of cybernetics concepts using a knowledge graph. It includes a Model Context Protocol (MCP) server for standardized API access for LLMs and other clients.
 
 ## Core Architecture
 
 ### Application Structure
-- **Flask Application Factory Pattern**: Uses a modular structure with blueprints for separation of concerns
-- **Blueprint Organization**:
-  - `main`: Core routes and query engine initialization
-  - `api`: RESTful endpoints for data retrieval
-  - `visualization`: Graph visualization routes
+
+#### Flask Application Factory Pattern
+- Modular structure with blueprints
+- Blueprints:
+  - `main`: Core routes and query engine
+  - `api`: RESTful endpoints
+  - `visualization`: Graph visualization
+
+#### MCP Server Integration
+- Core MCP server integrated with Flask
+- JSON-RPC 2.0 message format
 
 ### Data Processing Pipeline
-1. **Ontology Parsing**: Text files are processed via `ontology_parser.py` which extracts structured information, including external URL references
-2. **Knowledge Graph Construction**: Creates nodes (concepts, people, domains) with optional external URLs and edges (relationships)
-3. **NetworkX Integration**: Graph is stored as a directed graph (`nx.DiGraph`) for analysis
+
+#### Ontology Parsing
+- `ontology_parser.py` extracts structured information and URLs
+- Knowledge Graph Construction:
+  - Nodes (concepts, people, domains)
+  - Edges (relationships)
+- NetworkX Integration: `nx.DiGraph` for graph analysis
 
 ### Query Engine
-The `CyberneticsQueryEngine` class provides core functionality:
-- Knowledge graph construction from JSON data
+
+#### CyberneticsQueryEngine
+- Knowledge graph construction
 - Entity and relationship queries
-- Path finding between concepts
-- Centrality analysis for identifying key concepts
+- Path finding
+- Centrality analysis
 - Concept evolution tracing
 
-### Frontend Architecture
-- **Template-Based UI**: Uses Jinja2 templates with TailwindCSS
-- **Interactive Visualizations**: 
-  - Force-directed graph using Force-Graph library and D3.js
+## MCP Server Architecture
+
+### Transport Layer
+
+- **Transport Interface**: Abstract communication protocol
+- **STDIO Transport**: Standard input/output communication
+- **Message Handling**: JSON-RPC 2.0 parsing and formatting
+
+### Handler System
+
+1. **Core Handlers**
+   - Initialization and capability negotiation
+
+2. **Query Handlers**
+   - Entity search
+   - Information retrieval
+   - Path finding
+
+3. **Resource Handlers**
+   - Resource listing
+   - Templates
+   - Reading
+   - Subscriptions
+
+4. **Tool Handlers**
+   - Tool discovery
+   - Schema retrieval
+   - Execution
+
+5. **Prompt Handlers**
+   - Prompt template management
+   - Generation
+
+### Resources System
+
+- **URI Scheme**: `cyberon:///` for resource access
+- **Resource Types**:
+  - Entities
+  - Relationships
+  - Sections
+  - Types
+- **Resource Templates**: Dynamic URI construction
+
+### Tools System
+
+- **Tool Registry**: Centralized registry with schemas
+- **Basic Tools**:
+  - Search
+  - Entity analysis
+  - Comparison
+  - Central entities
+- **Advanced Tools**:
+  - Concept hierarchy
+  - Related concepts
+  - Evolution tracing
+- **Parameter Validation**: JSON Schema
+
+### Prompts System
+
+- **Prompt Templates**: Natural language for ontology exploration
+- **Context Generation**: Rich context for LLMs
+- **Specialized Prompts**:
+  - Entity analysis
+  - Comparison
+  - Hierarchy
+
+## Frontend Architecture
+
+### UI Components
+- **Template-Based UI**: Jinja2 templates with TailwindCSS
+- **Interactive Visualizations**:
+  - Force-directed graph (Force-Graph, D3.js)
   - Client-side filtering and node interaction
-  - External content linking for nodes with external_url field
-- **Core Views**:
-  - Ontology visualization (network graph)
-  - Concept explorer (search, connections, evolution chains)
-  - Structured ontology browser
-  - External content access through node links
+  - External content linking
+
+### Core Views
+- Ontology visualization
+- Concept explorer
+- Structured ontology browser
+- External content access
 
 ## Data Flow
 
-1. User uploads ontology text file
-2. Server processes file into structured JSON using `extract_text_to_json()`
-3. JSON is loaded into `CyberneticsQueryEngine`
-4. API endpoints provide graph data for visualization
-5. Client-side JavaScript renders interactive visualizations
+1. User uploads ontology or LLM connects via MCP
+2. Server processes file to JSON using `extract_text_to_json()`
+3. JSON loaded into CyberneticsQueryEngine
+4. API endpoints provide graph data (web UI)
+5. MCP handlers provide ontology access (LLMs/clients)
+6. Client-side JavaScript renders visualizations (web UI)
+7. MCP clients process responses (LLM integration)
 
-## Technical Components
+## API and Protocol Interfaces
 
-- **Backend**: Python 3 with Flask
-- **Graph Analysis**: NetworkX library
-- **Frontend**: HTML/CSS with TailwindCSS, JavaScript with D3.js
-- **Visualization**: Force-Graph for network visualization
-- **Testing**: Pytest with API mocking
+### REST API Endpoints
 
-## API Endpoints
+- `/api/graph-data`: Graph nodes and edges
+- `/api/entity/<entity_id>`: Entity details
+- `/api/search`: Text search
+- `/api/paths`: Path finding
+- `/api/concepts/central`: Central concepts
+- `/api/concepts/evolution`: Evolution chains
 
-- `/api/graph-data`: Graph nodes and edges for visualization
-- `/api/entity/<entity_id>`: Entity details with relationships
-- `/api/search`: Text search across entities
-- `/api/paths`: Path finding between entities
-- `/api/concepts/central`: Central concept identification
-- `/api/concepts/evolution`: Evolution chains of concepts
+### MCP Methods
 
-This architecture provides a modular, extensible framework for exploring complex knowledge domains through interactive visualizations and structured data navigation.
+1. `initialize`: MCP connection initialization
+2. `cyberon/search`: Entity search
+3. `cyberon/entity`: Entity details
+4. `cyberon/paths`: Path finding
+5. `resources/list`: Resource listing
+6. `resources/read`: Resource reading
+7. `tools/list`: Tool listing
+8. `tools/execute`: Tool execution
+9. `prompts/list`: Prompt listing
+10. `prompts/get`: Prompt retrieval

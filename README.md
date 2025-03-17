@@ -16,6 +16,20 @@ A Flask web application for exploring and visualizing knowledge ontologies using
 - Analyze concept hierarchies and evolution
 - Link knowledge graph nodes to external content via URLs
 
+## Model Context Protocol (MCP) Server
+
+This application includes a Model Context Protocol server that allows LLMs and other clients to interact with the cybernetics ontology through a standardized protocol. The MCP server provides:
+
+- Entity search and information retrieval
+- Path finding between concepts
+- Resource access via URIs
+- Tool execution for ontology analysis
+- Prompt templates for natural language interaction
+
+### Starting the MCP Server
+
+The MCP server starts automatically with the Flask application
+
 ## Installation
 
 1. Clone the repository:
