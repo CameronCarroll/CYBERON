@@ -2,6 +2,10 @@
 
 A Flask web application for exploring and visualizing knowledge ontologies using graph technology. Originally designed for cybernetics, but adaptable to any domain knowledge structure. Supports linking knowledge graph nodes to external content via the external_url field.
 
+## Documentation
+
+- See API reference at `/API_README.md`
+
 ## Features
 
 - Upload and parse ontology text files in markdown format
