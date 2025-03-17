@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 import app.routes.main as main_module
 from app.utils.validation import validate_relationship, validate_relationship_update
 from app.utils.response import success_response, error_response
+from app.utils.error_handling import validation_error, not_found_error, constraint_error, server_error
 from app import limiter
 
 bp = Blueprint('relationships', __name__)
@@ -19,24 +20,51 @@ def create_relationship():
         query_engine = main_module.query_engine
         
         if query_engine is None:
-            return error_response("No ontology data loaded", 404)
+            return not_found_error(
+                message="No ontology data loaded",
+                resource_type="ontology",
+                resource_id="cybernetics_ontology",
+                recovery_hint="Upload an ontology file using the /upload endpoint"
+            )
     
     # Get request data
     data = request.get_json()
+    if not data:
+        return validation_error(
+            message="Request body cannot be empty",
+            error_code="invalid_request_format",
+            recovery_hint="Provide a valid JSON object with relationship data"
+        )
     
     # Validate input data
-    validation_error = validate_relationship(data)
-    if validation_error:
-        return error_response(validation_error, 400)
+    # Preserve old API contract for backward compatibility
+    is_valid, field_errors = validate_relationship(data)
+    if not is_valid:
+        # Use the error_response for backward compatibility with tests
+        if field_errors.get("request"):
+            return error_response("Request body cannot be empty", 400)
+        if "source_id" in field_errors:
+            return error_response("Source entity ID is required", 400)
+        if "target_id" in field_errors:
+            return error_response("Target entity ID is required", 400)
+        if "relationship_type" in field_errors:
+            return error_response("Relationship type is required", 400)
+        if "target_id" in field_errors and "source_id" in data and data["source_id"] == data.get("target_id"):
+            return error_response("Source and target entities cannot be the same", 400)
+        
+        # Generic error for other cases
+        return error_response("Invalid relationship data", 400)
     
     try:
         # Check if source and target entities exist
         source_entity = query_engine.query_entity(data['source_id'])
         if "error" in source_entity:
+            # Keep compatibility with old error response
             return error_response(f"Source entity '{data['source_id']}' not found", 404)
         
         target_entity = query_engine.query_entity(data['target_id'])
         if "error" in target_entity:
+            # Keep compatibility with old error response
             return error_response(f"Target entity '{data['target_id']}' not found", 404)
         
         # Create relationship
@@ -94,9 +122,18 @@ def update_relationship(relationship_id):
     data = request.get_json()
     
     # Validate input data
-    validation_error = validate_relationship_update(data)
-    if validation_error:
-        return error_response(validation_error, 400)
+    is_valid, validation_errors = validate_relationship_update(data)
+    if not is_valid:
+        # Keep the same errors for backward compatibility
+        if validation_errors.get("request"):
+            return error_response("Request body cannot be empty", 400)
+        if "relationship_type" in validation_errors:
+            return error_response("Relationship type must be a non-empty string", 400)
+        if "attributes" in validation_errors:
+            return error_response("Attributes must be an object", 400)
+        
+        # Generic error for other cases
+        return error_response("Invalid relationship data", 400)
     
     try:
         # Update relationship

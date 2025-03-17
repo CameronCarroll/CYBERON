@@ -55,12 +55,13 @@ def create_app(test_config=None, testing=False):
             f"Rate limit exceeded: {request.remote_addr} - {request.method} {request.path}"
         )
         
-        return jsonify({
-            "success": False,
-            "error": "Too many requests. Please slow down.",
-            "retry_after": e.description,
-            "message": "The API is rate limited to prevent abuse. Please reduce your request frequency."
-        }), 429
+        # Import here to avoid circular imports
+        from app.utils.error_handling import rate_limit_error
+        
+        return rate_limit_error(
+            message="Too many requests. Please slow down.",
+            retry_after=e.description if hasattr(e, 'description') else "a while"
+        )
     
     # Disable rate limiting for tests
     if testing:
@@ -101,5 +102,9 @@ def create_app(test_config=None, testing=False):
     app.register_blueprint(entities.bp, url_prefix='/api')
     app.register_blueprint(relationships.bp, url_prefix='/api')
     app.register_blueprint(graph.bp, url_prefix='/api/graph')
+    
+    # Register error handlers
+    from app.utils.error_handling import register_error_handlers
+    register_error_handlers(app)
 
     return app

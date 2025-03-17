@@ -48,12 +48,127 @@ All API endpoints return responses in JSON format with a consistent structure:
 }
 ```
 
-For error responses:
+### Error Handling
+
+The API implements consistent, detailed error responses to help with debugging and to provide actionable information for recovery. Error responses follow this structure:
 
 ```json
 {
   "success": false,
-  "error": "Error message details"
+  "error": {
+    "message": "Human-readable error message",
+    "type": "error_type",
+    "code": 101,
+    "code_name": "missing_required_field",
+    "timestamp": "2023-01-01T12:00:00.123456Z",
+    "invalid_fields": {
+      "field_name": "Error details for this field"
+    },
+    "resource_id": "affected_resource_id",
+    "recovery_hint": "Suggestion on how to fix the error",
+    "request_excerpt": {
+      "relevant_part": "of the request that caused the error"
+    },
+    "related_operations": [
+      "GET /api/related-endpoint",
+      "POST /api/alternative-endpoint"
+    ]
+  }
+}
+```
+
+#### Error Types and Codes
+
+The API uses standardized error types and numeric codes to enable programmatic error handling:
+
+1. **Validation Errors** (100-199)
+   - `missing_required_field` (101): A required field is missing
+   - `invalid_field_type` (102): Field has incorrect type
+   - `invalid_field_value` (103): Field value is invalid
+   - `invalid_entity_type` (104): Invalid entity type
+   - `invalid_relationship_type` (105): Invalid relationship type
+   - `invalid_query_parameter` (106): Invalid query parameter
+   - `invalid_request_format` (107): Invalid request format
+
+2. **Not Found Errors** (200-299)
+   - `entity_not_found` (201): Entity not found
+   - `relationship_not_found` (202): Relationship not found
+   - `resource_not_found` (203): Generic resource not found
+   - `route_not_found` (204): Endpoint not found
+
+3. **Constraint Violations** (300-399)
+   - `entity_already_exists` (301): Entity already exists
+   - `relationship_already_exists` (302): Relationship already exists
+   - `has_dependent_relationships` (303): Entity has dependent relationships
+   - `circular_relationship` (304): Would create a circular relationship
+   - `relationship_limit_exceeded` (305): Relationship limit exceeded
+
+4. **Rate Limiting Errors** (500-599)
+   - `rate_limit_exceeded` (501): Rate limit exceeded
+
+5. **Server Errors** (900-999)
+   - `internal_server_error` (901): Internal server error
+   - `database_error` (902): Database error
+   - `service_unavailable` (903): Service unavailable
+   - `data_corruption` (904): Data corruption
+
+#### Example Error Responses
+
+**Validation Error:**
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Entity validation failed: Entity type is required",
+    "type": "validation_error",
+    "code": 101,
+    "code_name": "missing_required_field",
+    "timestamp": "2023-01-01T12:00:00.123456Z",
+    "invalid_fields": {
+      "type": "Entity type is required"
+    },
+    "request_excerpt": {
+      "label": "Test Entity"
+    },
+    "recovery_hint": "Provide valid entity data according to the API schema"
+  }
+}
+```
+
+**Not Found Error:**
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Entity 'nonexistent_id' not found",
+    "type": "not_found",
+    "code": 201,
+    "code_name": "entity_not_found",
+    "timestamp": "2023-01-01T12:00:00.123456Z",
+    "resource_id": "nonexistent_id",
+    "recovery_hint": "Check if the entity ID is correct or create a new entity with this ID"
+  }
+}
+```
+
+**Constraint Violation:**
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Entity has relationships and cannot be deleted",
+    "type": "constraint_violation",
+    "code": 303,
+    "code_name": "has_dependent_relationships",
+    "timestamp": "2023-01-01T12:00:00.123456Z",
+    "resource_id": "entity_id",
+    "recovery_hint": "Delete the relationships first or use cascade=true parameter",
+    "related_operations": [
+      "GET /api/relationships?entity_id=entity_id",
+      "DELETE /api/relationships/{relationship_id}",
+      "DELETE /api/entities/entity_id?cascade=true"
+    ]
+  }
 }
 ```
 

@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 import app.routes.main as main_module
 from app.utils.validation import validate_entity, validate_entity_update
 from app.utils.response import success_response, error_response
+from app.utils.error_handling import validation_error, not_found_error, constraint_error, server_error
 from app import limiter
 import datetime
 
@@ -24,11 +25,30 @@ def create_entity():
     
     # Get request data
     data = request.get_json()
+    if not data:
+        return error_response("Request body cannot be empty", 400)
     
-    # Validate input data
-    validation_error = validate_entity(data)
-    if validation_error:
-        return error_response(validation_error, 400)
+    # Validate input data - maintain backward compatibility with tests
+    is_valid, field_errors = validate_entity(data)
+    if not is_valid:
+        # Maintain same error messages as before for tests
+        if "label" not in data:
+            return error_response("Entity label is required", 400)
+        if "type" not in data:
+            return error_response("Entity type is required", 400)
+        if "label" in data and (not isinstance(data['label'], str) or not data['label'].strip()):
+            return error_response("Entity label must be a non-empty string", 400)
+        if "type" in data and (not isinstance(data['type'], str) or not data['type'].strip()):
+            return error_response("Entity type must be a non-empty string", 400)
+        if "description" in data and not isinstance(data['description'], str):
+            return error_response("Entity description must be a string", 400)
+        if "external_url" in data and not isinstance(data['external_url'], str):
+            return error_response("External URL must be a string", 400)
+        if "attributes" in data and not isinstance(data['attributes'], dict):
+            return error_response("Attributes must be an object", 400)
+        
+        # Any other errors
+        return error_response("Invalid entity data", 400)
     
     try:
         # Create entity
@@ -83,9 +103,9 @@ def update_entity(entity_id):
     data = request.get_json()
     
     # Validate input data
-    validation_error = validate_entity_update(data)
-    if validation_error:
-        return error_response(validation_error, 400)
+    validation_error_msg = validate_entity_update(data)[1]
+    if validation_error_msg:
+        return error_response(list(validation_error_msg.values())[0], 400)
     
     try:
         # Update entity
