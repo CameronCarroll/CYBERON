@@ -35,6 +35,13 @@ from app.mcp.handlers.tools import (
     execute_tool_handler
 )
 
+# Import prompt handlers (WP6)
+from app.mcp.handlers.prompts import (
+    register_default_prompts,
+    list_prompts_handler,
+    get_prompt_handler
+)
+
 __all__ = [
     "initialize_handler", 
     "capabilities_handler",
@@ -56,5 +63,9 @@ __all__ = [
     "register_default_tools",
     "list_tools_handler",
     "get_tool_schema_handler",
-    "execute_tool_handler"
+    "execute_tool_handler",
+    # Prompt handlers (WP6)
+    "register_default_prompts",
+    "list_prompts_handler",
+    "get_prompt_handler"
 ]

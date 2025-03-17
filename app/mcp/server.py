@@ -48,8 +48,8 @@ class MCPServer:
             },
             "supports": {
                 "resources": True,   # Implemented in Work Package 3
-                "tools": True,       # Basic tools implemented in Work Package 2
-                "prompts": False     # Will be implemented in Work Package 6
+                "tools": True,       # Implemented in Work Package 4
+                "prompts": True      # Implemented in Work Package 6
             }
         }
         self.request_handlers: Dict[str, Callable] = {}
@@ -94,6 +94,13 @@ class MCPServer:
         
         # Register default tools
         register_default_tools()
+        
+        # Work Package 6 - Prompt handlers
+        self.register_handler("prompts/list", list_prompts_handler)
+        self.register_handler("prompts/get", get_prompt_handler)
+        
+        # Register default prompts
+        register_default_prompts()
     
     def register_handler(self, method: str, handler: Callable) -> None:
         """
@@ -145,10 +152,12 @@ class MCPServer:
         from app.mcp.handlers.query import set_query_engine as set_query_engine_for_query
         from app.mcp.handlers.resources import set_query_engine as set_query_engine_for_resources
         from app.mcp.handlers.tools import set_query_engine as set_query_engine_for_tools
+        from app.mcp.handlers.prompts import set_query_engine as set_query_engine_for_prompts
         
         set_query_engine_for_query(engine)
         set_query_engine_for_resources(engine)
         set_query_engine_for_tools(engine)
+        set_query_engine_for_prompts(engine)
         
         logger.info("Query engine set for MCP server")
     

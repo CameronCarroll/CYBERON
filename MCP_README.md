@@ -272,6 +272,7 @@ See the following files for implementation details:
 - `WP3_IMPLEMENTATION_REPORT.md`: Resource implementation
 - `WP4_IMPLEMENTATION_REPORT.md`: Basic tools implementation
 - `WP5_IMPLEMENTATION_REPORT.md`: Advanced tools implementation
+- `WP6_IMPLEMENTATION_REPORT.md`: Prompts implementation
 
 ## Using Tools
 
@@ -594,3 +595,212 @@ Response:
     }
   }
 }
+```
+
+## Using Prompts
+
+The MCP server provides prompt templates for interacting with the cybernetics ontology using natural language. These prompts can be easily used with LLMs that support the MCP protocol.
+
+### Listing Available Prompts
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 11,
+  "method": "prompts/list",
+  "params": {}
+}
+```
+
+Response:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 11,
+  "result": {
+    "prompts": [
+      {
+        "name": "cyberon.prompts.entity_analysis",
+        "description": "Analyze a specific entity in the cybernetics ontology",
+        "parameter_schema": {
+          "type": "object",
+          "properties": {
+            "entity_id": {
+              "type": "string",
+              "description": "The ID of the entity to analyze"
+            }
+          },
+          "required": ["entity_id"]
+        },
+        "usage_examples": [
+          {
+            "description": "Analyze the 'cybernetics' concept",
+            "params": {
+              "entity_id": "cybernetics"
+            }
+          }
+        ]
+      },
+      {
+        "name": "cyberon.prompts.concept_comparison",
+        "description": "Compare two concepts in the cybernetics ontology",
+        "parameter_schema": {
+          "type": "object",
+          "properties": {
+            "concept1_id": {
+              "type": "string",
+              "description": "The ID of the first concept to compare"
+            },
+            "concept2_id": {
+              "type": "string",
+              "description": "The ID of the second concept to compare"
+            }
+          },
+          "required": ["concept1_id", "concept2_id"]
+        },
+        "usage_examples": [
+          {
+            "description": "Compare 'first_order_cybernetics' and 'second_order_cybernetics'",
+            "params": {
+              "concept1_id": "first_order_cybernetics",
+              "concept2_id": "second_order_cybernetics"
+            }
+          }
+        ]
+      },
+      {
+        "name": "cyberon.prompts.ontology_exploration",
+        "description": "Explore a topic within the cybernetics ontology",
+        "parameter_schema": {
+          "type": "object",
+          "properties": {
+            "topic": {
+              "type": "string",
+              "description": "The topic to explore"
+            }
+          },
+          "required": ["topic"]
+        },
+        "usage_examples": [
+          {
+            "description": "Explore the topic of 'feedback loops'",
+            "params": {
+              "topic": "feedback loops"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Generating a Prompt
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 12,
+  "method": "prompts/get",
+  "params": {
+    "name": "cyberon.prompts.entity_analysis",
+    "params": {
+      "entity_id": "cybernetics"
+    }
+  }
+}
+```
+
+Response:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 12,
+  "result": {
+    "name": "cyberon.prompts.entity_analysis",
+    "timestamp": "2023-07-14T15:35:22.987654",
+    "prompt": "Please analyze the concept 'Cybernetics' from the cybernetics ontology. Based on the information below, provide a comprehensive explanation of what Cybernetics is, its significance, and how it relates to other concepts in cybernetics.\n\nWhen analyzing, please consider:\n1. The key characteristics of Cybernetics\n2. Its relationship to other concepts in cybernetics\n3. Its historical development and importance\n4. Real-world applications or examples\n\nPlease format your response with clear headings and concise paragraphs.",
+    "context": {
+      "entity": {
+        "id": "cybernetics",
+        "attributes": {
+          "label": "Cybernetics",
+          "type": "concept",
+          "description": "The study of control and communication in complex systems"
+        },
+        "incoming": [
+          {"id": "systems_theory", "label": "Systems Theory", "relationship": "influenced_by"},
+          {"id": "information_theory", "label": "Information Theory", "relationship": "related_to"}
+        ],
+        "outgoing": [
+          {"id": "first_order_cybernetics", "label": "First-Order Cybernetics", "relationship": "has_part"},
+          {"id": "second_order_cybernetics", "label": "Second-Order Cybernetics", "relationship": "has_part"}
+        ]
+      },
+      "entity_summary": "Cybernetics (concept)",
+      "relationships": [
+        "Incoming relationships:",
+        "- Systems Theory is influenced_by Cybernetics",
+        "- Information Theory is related_to Cybernetics",
+        "Outgoing relationships:",
+        "- Cybernetics is has_part First-Order Cybernetics",
+        "- Cybernetics is has_part Second-Order Cybernetics"
+      ]
+    }
+  }
+}
+```
+
+### Advanced Prompts
+
+#### Concept Comparison
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 13,
+  "method": "prompts/get",
+  "params": {
+    "name": "cyberon.prompts.concept_comparison",
+    "params": {
+      "concept1_id": "first_order_cybernetics",
+      "concept2_id": "second_order_cybernetics"
+    }
+  }
+}
+```
+
+#### Hierarchy Analysis
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 14,
+  "method": "prompts/get",
+  "params": {
+    "name": "cyberon.prompts.hierarchy_analysis",
+    "params": {
+      "root_concept_id": "cybernetics"
+    }
+  }
+}
+```
+
+#### Central Concepts Analysis
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 15,
+  "method": "prompts/get",
+  "params": {
+    "name": "cyberon.prompts.central_concepts",
+    "params": {
+      "limit": 5,
+      "entity_type": "concept"
+    }
+  }
+}
+```
