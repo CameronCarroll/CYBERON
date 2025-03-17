@@ -103,6 +103,20 @@ The MCP server supports the following methods:
   - Parameters:
     - `uri` (string): The URI of the resource to unsubscribe from
 
+### Tool Methods
+
+- `tools/list`: List available tools
+  - Parameters: none
+
+- `tools/schema`: Get schema for a specific tool
+  - Parameters:
+    - `name` (string): The name of the tool
+
+- `tools/execute`: Execute a tool
+  - Parameters:
+    - `name` (string): The name of the tool to execute
+    - `params` (object): Parameters for the tool
+
 ### Resource URI Scheme
 
 Resources are accessed using URIs with the following structure:
@@ -256,3 +270,128 @@ See the following files for implementation details:
 - `WP1_IMPLEMENTATION_REPORT.md`: Core MCP server implementation
 - `WP2_IMPLEMENTATION_REPORT.md`: Query engine integration
 - `WP3_IMPLEMENTATION_REPORT.md`: Resource implementation
+- `WP4_IMPLEMENTATION_REPORT.md`: Tools implementation
+
+## Using Tools
+
+Listing available tools:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 4,
+  "method": "tools/list",
+  "params": {}
+}
+```
+
+Response:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 4,
+  "result": {
+    "tools": [
+      {
+        "name": "cyberon.tools.search",
+        "description": "Search for entities in the cybernetics ontology",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "query": {"type": "string", "description": "The search query"},
+            "entity_types": {"type": "array", "items": {"type": "string"}, "description": "Optional filter by entity types"},
+            "limit": {"type": "integer", "description": "Maximum number of results to return", "default": 10}
+          },
+          "required": ["query"]
+        }
+      },
+      ...
+    ]
+  }
+}
+```
+
+Getting a tool schema:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 5,
+  "method": "tools/schema",
+  "params": {
+    "name": "cyberon.tools.analyze_entity"
+  }
+}
+```
+
+Response:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 5,
+  "result": {
+    "name": "cyberon.tools.analyze_entity",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "entity_id": {"type": "string", "description": "The ID of the entity to analyze"}
+      },
+      "required": ["entity_id"]
+    }
+  }
+}
+```
+
+Executing a tool:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 6,
+  "method": "tools/execute",
+  "params": {
+    "name": "cyberon.tools.analyze_entity",
+    "params": {
+      "entity_id": "cybernetics"
+    }
+  }
+}
+```
+
+Response:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 6,
+  "result": {
+    "name": "cyberon.tools.analyze_entity",
+    "timestamp": "2023-07-14T15:21:36.123456",
+    "result": {
+      "entity": {
+        "id": "cybernetics",
+        "label": "Cybernetics",
+        "type": "concept"
+      },
+      "stats": {
+        "incoming_relationships": 15,
+        "outgoing_relationships": 8,
+        "total_relationships": 23,
+        "relationship_types": {
+          "related_to": 12,
+          "part_of": 5,
+          "influenced_by": 6
+        }
+      },
+      "top_connected": [
+        {"id": "information_theory", "count": 3},
+        {"id": "systems_theory", "count": 2},
+        {"id": "control_theory", "count": 2},
+        {"id": "second_order_cybernetics", "count": 1},
+        {"id": "feedback", "count": 1}
+      ]
+    }
+  }
+}

@@ -20,6 +20,7 @@ CYBERON MCP Server provides access to a cybernetics ontology database. You can:
 3. Find paths between entities
 4. Discover connected entities
 5. Access ontology data as structured resources
+6. Execute tools that analyze and transform the ontology data
 
 Available Query Methods:
 - cyberon/search: Search for entities by name or keyword
@@ -36,13 +37,25 @@ Available Resource Methods:
 - resources/subscribe: Subscribe to resource updates
 - resources/unsubscribe: Unsubscribe from resource updates
 
+Available Tool Methods:
+- tools/list: List available tools
+- tools/schema: Get the schema for a specific tool
+- tools/execute: Execute a tool with parameters
+
 Resource URIs use the cyberon:// scheme, for example:
 - cyberon:///entity/{id}: Access a specific entity
 - cyberon:///entity/search?query={query}: Search for entities
 - cyberon:///section/{number}: Access a specific section of the ontology
 - cyberon:///graph/summary: Get a summary of the ontology graph
 
-For specific usage details, refer to the method descriptions.
+Available Tools:
+- cyberon.tools.search: Search for entities with advanced options
+- cyberon.tools.analyze_entity: Analyze an entity's relationships and provide insights
+- cyberon.tools.compare_entities: Compare two entities and find commonalities/differences
+- cyberon.tools.central_entities: Find the most central entities in the ontology
+- cyberon.tools.summarize_ontology: Provide a summary of the ontology structure
+
+For specific usage details, refer to the method descriptions and tool schemas.
 """
 
 def set_server_capabilities(capabilities: Dict[str, Any]) -> None:

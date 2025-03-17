@@ -86,6 +86,14 @@ class MCPServer:
         self.register_handler("resources/read", read_resource_handler)
         self.register_handler("resources/subscribe", resource_subscription_handler)
         self.register_handler("resources/unsubscribe", resource_unsubscription_handler)
+        
+        # Work Package 4 - Tool handlers
+        self.register_handler("tools/list", list_tools_handler)
+        self.register_handler("tools/schema", get_tool_schema_handler)
+        self.register_handler("tools/execute", execute_tool_handler)
+        
+        # Register default tools
+        register_default_tools()
     
     def register_handler(self, method: str, handler: Callable) -> None:
         """
@@ -136,9 +144,11 @@ class MCPServer:
         # Set the query engine for all handlers that need it
         from app.mcp.handlers.query import set_query_engine as set_query_engine_for_query
         from app.mcp.handlers.resources import set_query_engine as set_query_engine_for_resources
+        from app.mcp.handlers.tools import set_query_engine as set_query_engine_for_tools
         
         set_query_engine_for_query(engine)
         set_query_engine_for_resources(engine)
+        set_query_engine_for_tools(engine)
         
         logger.info("Query engine set for MCP server")
     
