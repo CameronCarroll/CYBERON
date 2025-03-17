@@ -10,3 +10,4 @@ app/data/*
 app/uploads/*
 app/utils/__pycache__/*
 app/models/__pycache__/*
+app/__pycache__/*

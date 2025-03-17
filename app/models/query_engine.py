@@ -1,7 +1,9 @@
 import networkx as nx
 import json
-from typing import List, Dict, Any, Optional, Set, Tuple
+import datetime
+import uuid
 import re
+from typing import List, Dict, Any, Optional, Set, Tuple
 
 class CyberneticsQueryEngine:
     """
@@ -594,3 +596,534 @@ class CyberneticsQueryEngine:
                 for section in self.structured_ontology.values()
             )
         }
+        
+    def create_entity(self, entity_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Create a new entity in the graph
+        
+        Args:
+            entity_data: Dictionary with entity data
+            
+        Returns:
+            Dictionary with created entity data
+            
+        Raises:
+            ValueError: If entity creation fails
+        """
+        # Generate an ID if not provided
+        entity_id = entity_data.get('id')
+        if not entity_id:
+            # Generate an ID from the label if possible
+            if 'label' in entity_data:
+                # Convert label to a safe ID format (lowercase, underscores)
+                entity_id = re.sub(r'[^a-z0-9_]', '_', entity_data['label'].lower()).strip('_')
+                
+                # If ID already exists, append a unique suffix
+                if entity_id in self.graph:
+                    entity_id = f"{entity_id}_{str(uuid.uuid4())[:8]}"
+            else:
+                # Generate a random ID
+                entity_id = str(uuid.uuid4())
+        
+        # Check if entity ID already exists
+        if entity_id in self.graph:
+            raise ValueError(f"Entity with ID '{entity_id}' already exists")
+        
+        # Create node attributes
+        node_attrs = {
+            "label": entity_data.get('label', entity_id),
+            "type": entity_data.get('type', 'unknown'),
+            "created_at": datetime.datetime.utcnow().isoformat() + "Z"
+        }
+        
+        # Add optional attributes
+        if 'description' in entity_data:
+            node_attrs['description'] = entity_data['description']
+        
+        if 'external_url' in entity_data:
+            node_attrs['external_url'] = entity_data['external_url']
+        
+        if 'attributes' in entity_data and isinstance(entity_data['attributes'], dict):
+            # Merge custom attributes
+            for key, value in entity_data['attributes'].items():
+                if key not in node_attrs:
+                    node_attrs[key] = value
+        
+        # Add the node to the graph
+        self.graph.add_node(entity_id, **node_attrs)
+        
+        # Get the node attributes from the graph
+        attributes = self.graph.nodes[entity_id]
+        
+        # Format the response
+        entity = {
+            "id": entity_id,
+            "attributes": attributes,
+            "incoming": [],
+            "outgoing": []
+        }
+        
+        return entity
+    
+    def update_entity(self, entity_id: str, entity_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """
+        Update an existing entity
+        
+        Args:
+            entity_id: ID of the entity to update
+            entity_data: Dictionary with fields to update
+            
+        Returns:
+            Dictionary with updated entity data, or None if entity not found
+            
+        Raises:
+            ValueError: If update data is invalid
+        """
+        # Check if entity exists
+        if entity_id not in self.graph:
+            return None
+        
+        # Get current attributes
+        node_attrs = dict(self.graph.nodes[entity_id])
+        
+        # Update the node
+        if 'label' in entity_data:
+            node_attrs['label'] = entity_data['label']
+        
+        if 'type' in entity_data:
+            node_attrs['type'] = entity_data['type']
+        
+        if 'description' in entity_data:
+            node_attrs['description'] = entity_data['description']
+        
+        if 'external_url' in entity_data:
+            node_attrs['external_url'] = entity_data['external_url']
+        
+        if 'attributes' in entity_data and isinstance(entity_data['attributes'], dict):
+            # Merge custom attributes
+            for key, value in entity_data['attributes'].items():
+                if key not in ('label', 'type', 'description', 'external_url', 'created_at'):
+                    node_attrs[key] = value
+        
+        # Add updated timestamp
+        node_attrs['updated_at'] = datetime.datetime.utcnow().isoformat() + "Z"
+        
+        # Update the node attributes
+        for key, value in node_attrs.items():
+            self.graph.nodes[entity_id][key] = value
+        
+        # Format the response
+        entity = {
+            "id": entity_id,
+            "attributes": node_attrs
+        }
+        
+        return entity
+    
+    def delete_entity(self, entity_id: str, cascade: bool = False) -> Dict[str, Any]:
+        """
+        Delete an entity and optionally its relationships
+        
+        Args:
+            entity_id: ID of the entity to delete
+            cascade: Whether to cascade delete relationships
+            
+        Returns:
+            Dictionary with deletion result
+        """
+        # Check if entity exists
+        if entity_id not in self.graph:
+            return {"success": False, "not_found": True}
+        
+        # Check if entity has relationships
+        has_relationships = False
+        for _, _, _ in self.graph.in_edges(entity_id, data=True):
+            has_relationships = True
+            break
+        
+        if not has_relationships:
+            for _, _, _ in self.graph.out_edges(entity_id, data=True):
+                has_relationships = True
+                break
+        
+        # Check if we can delete the entity
+        if has_relationships and not cascade:
+            return {
+                "success": False, 
+                "message": "Entity has relationships. Use cascade=true to delete them."
+            }
+        
+        # Delete related relationships
+        relationships_removed = 0
+        if cascade:
+            # Delete incoming relationships
+            for source, _ in list(self.graph.in_edges(entity_id)):
+                self.graph.remove_edge(source, entity_id)
+                relationships_removed += 1
+            
+            # Delete outgoing relationships
+            for _, target in list(self.graph.out_edges(entity_id)):
+                self.graph.remove_edge(entity_id, target)
+                relationships_removed += 1
+        
+        # Delete the entity
+        self.graph.remove_node(entity_id)
+        
+        return {
+            "success": True,
+            "relationships_removed": relationships_removed
+        }
+    
+    def create_relationship(self, relationship_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Create a new relationship between entities
+        
+        Args:
+            relationship_data: Dictionary with relationship data
+            
+        Returns:
+            Dictionary with created relationship data
+            
+        Raises:
+            ValueError: If relationship creation fails
+        """
+        source_id = relationship_data.get('source_id')
+        target_id = relationship_data.get('target_id')
+        rel_type = relationship_data.get('relationship_type')
+        
+        # Check if source and target exist
+        if source_id not in self.graph:
+            raise ValueError(f"Source entity '{source_id}' not found")
+        
+        if target_id not in self.graph:
+            raise ValueError(f"Target entity '{target_id}' not found")
+        
+        # Check if relationship already exists
+        if self.graph.has_edge(source_id, target_id):
+            # If a relationship of the same type exists, raise an error
+            for _, _, data in self.graph.out_edges(source_id, data=True):
+                if data.get('label') == rel_type:
+                    raise ValueError(f"Relationship of type '{rel_type}' already exists between entities")
+        
+        # Generate relationship ID
+        relationship_id = str(uuid.uuid4())
+        
+        # Create edge attributes
+        edge_attrs = {
+            "id": relationship_id,
+            "label": rel_type,
+            "created_at": datetime.datetime.utcnow().isoformat() + "Z"
+        }
+        
+        # Add custom attributes
+        if 'attributes' in relationship_data and isinstance(relationship_data['attributes'], dict):
+            for key, value in relationship_data['attributes'].items():
+                if key not in edge_attrs:
+                    edge_attrs[key] = value
+        
+        # Add the edge to the graph
+        self.graph.add_edge(source_id, target_id, **edge_attrs)
+        
+        # Format the response
+        source_label = self.graph.nodes[source_id].get('label', source_id)
+        target_label = self.graph.nodes[target_id].get('label', target_id)
+        
+        relationship = {
+            "id": relationship_id,
+            "source_id": source_id,
+            "source_label": source_label,
+            "target_id": target_id,
+            "target_label": target_label,
+            "relationship_type": rel_type,
+            "attributes": {k: v for k, v in edge_attrs.items() if k not in ('id', 'label', 'created_at')},
+            "created_at": edge_attrs["created_at"]
+        }
+        
+        return relationship
+    
+    def get_relationship(self, relationship_id: str) -> Optional[Dict[str, Any]]:
+        """
+        Get a relationship by ID
+        
+        Args:
+            relationship_id: ID of the relationship to get
+            
+        Returns:
+            Dictionary with relationship data, or None if not found
+        """
+        # Find the relationship by ID
+        for source, target, data in self.graph.edges(data=True):
+            if data.get('id') == relationship_id:
+                source_label = self.graph.nodes[source].get('label', source)
+                source_type = self.graph.nodes[source].get('type', 'unknown')
+                target_label = self.graph.nodes[target].get('label', target)
+                target_type = self.graph.nodes[target].get('type', 'unknown')
+                
+                return {
+                    "id": relationship_id,
+                    "source_id": source,
+                    "source_label": source_label,
+                    "source_type": source_type,
+                    "target_id": target,
+                    "target_label": target_label,
+                    "target_type": target_type,
+                    "relationship_type": data.get('label', 'related_to'),
+                    "attributes": {k: v for k, v in data.items() if k not in ('id', 'label', 'created_at', 'updated_at')},
+                    "created_at": data.get('created_at'),
+                    "updated_at": data.get('updated_at')
+                }
+        
+        return None
+    
+    def update_relationship(self, relationship_id: str, relationship_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """
+        Update an existing relationship
+        
+        Args:
+            relationship_id: ID of the relationship to update
+            relationship_data: Dictionary with fields to update
+            
+        Returns:
+            Dictionary with updated relationship data, or None if not found
+            
+        Raises:
+            ValueError: If update data is invalid
+        """
+        # Find the relationship by ID
+        for source, target, data in self.graph.edges(data=True):
+            if data.get('id') == relationship_id:
+                # Update the edge data
+                if 'relationship_type' in relationship_data:
+                    self.graph[source][target]['label'] = relationship_data['relationship_type']
+                
+                if 'attributes' in relationship_data and isinstance(relationship_data['attributes'], dict):
+                    # Merge custom attributes
+                    for key, value in relationship_data['attributes'].items():
+                        if key not in ('id', 'label', 'created_at'):
+                            self.graph[source][target][key] = value
+                
+                # Add updated timestamp
+                self.graph[source][target]['updated_at'] = datetime.datetime.utcnow().isoformat() + "Z"
+                
+                # Get the updated data
+                updated_data = dict(self.graph[source][target])
+                
+                source_label = self.graph.nodes[source].get('label', source)
+                target_label = self.graph.nodes[target].get('label', target)
+                
+                return {
+                    "id": relationship_id,
+                    "source_id": source,
+                    "target_id": target,
+                    "relationship_type": updated_data.get('label', 'related_to'),
+                    "attributes": {k: v for k, v in updated_data.items() if k not in ('id', 'label', 'created_at', 'updated_at')},
+                    "updated_at": updated_data.get('updated_at')
+                }
+        
+        return None
+    
+    def delete_relationship(self, relationship_id: str) -> bool:
+        """
+        Delete a relationship
+        
+        Args:
+            relationship_id: ID of the relationship to delete
+            
+        Returns:
+            Boolean indicating success
+        """
+        # Find the relationship by ID
+        for source, target, data in list(self.graph.edges(data=True)):
+            if data.get('id') == relationship_id:
+                # Remove the edge
+                self.graph.remove_edge(source, target)
+                return True
+        
+        return False
+    
+    def list_entities(self, entity_type: Optional[str] = None, query: Optional[str] = None, 
+                      limit: int = 50, offset: int = 0, sort: str = 'created_at', 
+                      order: str = 'desc') -> Dict[str, Any]:
+        """
+        List entities with optional filtering
+        
+        Args:
+            entity_type: Optional entity type to filter by
+            query: Optional search term for labels and descriptions
+            limit: Maximum number of results to return
+            offset: Pagination offset
+            sort: Field to sort by
+            order: Sort order - 'asc' or 'desc'
+            
+        Returns:
+            Dictionary with list of entities and total count
+        """
+        # Get all entities
+        entities = []
+        for node_id, attrs in self.graph.nodes(data=True):
+            # Skip if entity type doesn't match
+            if entity_type and attrs.get('type') != entity_type:
+                continue
+            
+            # Skip if query doesn't match
+            if query:
+                label = attrs.get('label', '').lower()
+                description = attrs.get('description', '').lower()
+                query_lower = query.lower()
+                
+                if query_lower not in label and query_lower not in description:
+                    continue
+            
+            # Add entity to results
+            entities.append({
+                "id": node_id,
+                "label": attrs.get('label', node_id),
+                "type": attrs.get('type', 'unknown'),
+                "description": attrs.get('description', ''),
+                "created_at": attrs.get('created_at')
+            })
+        
+        # Sort entities
+        reverse = order.lower() == 'desc'
+        
+        if sort == 'label':
+            entities.sort(key=lambda e: e.get('label', ''), reverse=reverse)
+        elif sort == 'type':
+            entities.sort(key=lambda e: e.get('type', ''), reverse=reverse)
+        elif sort == 'created_at':
+            entities.sort(key=lambda e: e.get('created_at', ''), reverse=reverse)
+        else:
+            # Default to sorting by ID
+            entities.sort(key=lambda e: e.get('id', ''), reverse=reverse)
+        
+        # Apply pagination
+        total = len(entities)
+        entities = entities[offset:offset + limit]
+        
+        return {
+            "entities": entities,
+            "total": total
+        }
+    
+    def list_relationships(self, source_id: Optional[str] = None, target_id: Optional[str] = None, 
+                           entity_id: Optional[str] = None, relationship_type: Optional[str] = None, 
+                           limit: int = 50, offset: int = 0, sort: str = 'created_at', 
+                           order: str = 'desc') -> Dict[str, Any]:
+        """
+        List relationships with optional filtering
+        
+        Args:
+            source_id: Optional source entity ID to filter by
+            target_id: Optional target entity ID to filter by
+            entity_id: Optional entity ID to filter by (either source or target)
+            relationship_type: Optional relationship type to filter by
+            limit: Maximum number of results to return
+            offset: Pagination offset
+            sort: Field to sort by
+            order: Sort order - 'asc' or 'desc'
+            
+        Returns:
+            Dictionary with list of relationships and total count
+        """
+        # Get all relationships
+        relationships = []
+        for source, target, data in self.graph.edges(data=True):
+            # Skip if source doesn't match
+            if source_id and source != source_id:
+                continue
+            
+            # Skip if target doesn't match
+            if target_id and target != target_id:
+                continue
+            
+            # Skip if entity doesn't match
+            if entity_id and source != entity_id and target != entity_id:
+                continue
+            
+            # Skip if relationship type doesn't match
+            rel_type = data.get('label', 'related_to')
+            if relationship_type and rel_type != relationship_type:
+                continue
+            
+            # Add relationship to results
+            source_label = self.graph.nodes[source].get('label', source)
+            target_label = self.graph.nodes[target].get('label', target)
+            
+            relationships.append({
+                "id": data.get('id', f"{source}_{target}"),
+                "source_id": source,
+                "source_label": source_label,
+                "target_id": target,
+                "target_label": target_label,
+                "relationship_type": rel_type,
+                "created_at": data.get('created_at')
+            })
+        
+        # Sort relationships
+        reverse = order.lower() == 'desc'
+        
+        if sort == 'relationship_type':
+            relationships.sort(key=lambda r: r.get('relationship_type', ''), reverse=reverse)
+        elif sort == 'source_label':
+            relationships.sort(key=lambda r: r.get('source_label', ''), reverse=reverse)
+        elif sort == 'target_label':
+            relationships.sort(key=lambda r: r.get('target_label', ''), reverse=reverse)
+        elif sort == 'created_at':
+            relationships.sort(key=lambda r: r.get('created_at', ''), reverse=reverse)
+        else:
+            # Default to sorting by ID
+            relationships.sort(key=lambda r: r.get('id', ''), reverse=reverse)
+        
+        # Apply pagination
+        total = len(relationships)
+        relationships = relationships[offset:offset + limit]
+        
+        return {
+            "relationships": relationships,
+            "total": total
+        }
+        
+    def save_changes(self) -> bool:
+        """
+        Save changes to the knowledge graph to disk
+        
+        Returns:
+            Boolean indicating success
+        """
+        try:
+            # Convert NetworkX graph to knowledge graph format
+            nodes = []
+            for node_id, attrs in self.graph.nodes(data=True):
+                node = {"id": node_id}
+                for key, value in attrs.items():
+                    node[key] = value
+                nodes.append(node)
+            
+            edges = []
+            for source, target, data in self.graph.edges(data=True):
+                edge = {
+                    "source": source,
+                    "target": target
+                }
+                for key, value in data.items():
+                    edge[key] = value
+                edges.append(edge)
+            
+            # Create updated knowledge graph data
+            updated_knowledge_graph = {
+                "nodes": nodes,
+                "edges": edges
+            }
+            
+            # Update the data
+            self.data["knowledge_graph"] = updated_knowledge_graph
+            
+            # Save to file if data source is a file path
+            if isinstance(self.data_source, str):
+                with open(self.data_source, 'w', encoding='utf-8') as f:
+                    json.dump(self.data, f, indent=2)
+            
+            return True
+        except Exception as e:
+            print(f"Error saving changes: {e}")
+            return False

@@ -22,6 +22,7 @@ def create_app(test_config=None, testing=False):
 
     # Register blueprints
     from app.routes import main, api, visualization
+    from app.api import entities, relationships, graph
     
     # Register main blueprint first (it contains the query engine initialization)
     app.register_blueprint(main.bp)
@@ -31,9 +32,13 @@ def create_app(test_config=None, testing=False):
         main.load_query_engine()
         print(f"Query engine initialized during app startup: {main.query_engine is not None}")
     
-    # Register other blueprints
+    # Register existing blueprints
     app.register_blueprint(api.bp, url_prefix='/api')
-    # Register visualization blueprint without a URL prefix to match the frontend requests
     app.register_blueprint(visualization.bp)
+    
+    # Register new API blueprints for CRUD operations
+    app.register_blueprint(entities.bp, url_prefix='/api')
+    app.register_blueprint(relationships.bp, url_prefix='/api')
+    app.register_blueprint(graph.bp, url_prefix='/api/graph')
 
     return app
