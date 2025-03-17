@@ -8,6 +8,7 @@ from app import create_app
 from app.models.query_engine import CyberneticsQueryEngine
 import app.routes.main as main_module
 import datetime
+from datetime import UTC
 import time
 import uuid
 
@@ -60,7 +61,7 @@ class TestAPIIntegration:
             "metadata": {
                 "title": "Integration Test Knowledge Graph",
                 "description": "Test data for API integration tests",
-                "created_at": datetime.datetime.utcnow().isoformat() + "Z",
+                "created_at": datetime.datetime.now(UTC).isoformat() + "Z",
                 "version": "1.0.0"
             },
             "entities": [],

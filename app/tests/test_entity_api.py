@@ -3,6 +3,7 @@ import unittest
 import pytest
 from unittest.mock import patch, MagicMock
 import datetime
+from datetime import UTC
 
 from app import create_app
 from app.models.query_engine import CyberneticsQueryEngine
@@ -52,7 +53,7 @@ class TestEntityAPI(unittest.TestCase):
                 "external_url": "https://example.com",
                 "key1": "value1",
                 "key2": "value2",
-                "created_at": datetime.datetime.utcnow().isoformat() + "Z"
+                "created_at": datetime.datetime.now(UTC).isoformat() + "Z"
             },
             "incoming": [],
             "outgoing": []
@@ -153,8 +154,8 @@ class TestEntityAPI(unittest.TestCase):
                 "external_url": "https://example.com",
                 "key1": "value1",
                 "key2": "value2",
-                "created_at": datetime.datetime.utcnow().isoformat() + "Z",
-                "updated_at": datetime.datetime.utcnow().isoformat() + "Z"
+                "created_at": datetime.datetime.now(UTC).isoformat() + "Z",
+                "updated_at": datetime.datetime.now(UTC).isoformat() + "Z"
             }
         }
         self.mock_query_engine.update_entity.return_value = updated_entity

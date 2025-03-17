@@ -634,7 +634,7 @@ class CyberneticsQueryEngine:
         node_attrs = {
             "label": entity_data.get('label', entity_id),
             "type": entity_data.get('type', 'unknown'),
-            "created_at": datetime.datetime.utcnow().isoformat() + "Z"
+            "created_at": datetime.datetime.now(UTC).isoformat() + "Z"
         }
         
         # Add optional attributes
@@ -707,7 +707,7 @@ class CyberneticsQueryEngine:
                     node_attrs[key] = value
         
         # Add updated timestamp
-        node_attrs['updated_at'] = datetime.datetime.utcnow().isoformat() + "Z"
+        node_attrs['updated_at'] = datetime.datetime.now(UTC).isoformat() + "Z"
         
         # Update the node attributes
         for key, value in node_attrs.items():
@@ -813,7 +813,7 @@ class CyberneticsQueryEngine:
         edge_attrs = {
             "id": relationship_id,
             "label": rel_type,
-            "created_at": datetime.datetime.utcnow().isoformat() + "Z"
+            "created_at": datetime.datetime.now(UTC).isoformat() + "Z"
         }
         
         # Add custom attributes
@@ -904,7 +904,7 @@ class CyberneticsQueryEngine:
                             self.graph[source][target][key] = value
                 
                 # Add updated timestamp
-                self.graph[source][target]['updated_at'] = datetime.datetime.utcnow().isoformat() + "Z"
+                self.graph[source][target]['updated_at'] = datetime.datetime.now(UTC).isoformat() + "Z"
                 
                 # Get the updated data
                 updated_data = dict(self.graph[source][target])
