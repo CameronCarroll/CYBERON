@@ -15,8 +15,8 @@ This is a Flask-based web application that provides interactive visualization an
   - `visualization`: Graph visualization routes
 
 ### Data Processing Pipeline
-1. **Ontology Parsing**: Text files are processed via `ontology_parser.py` which extracts structured information
-2. **Knowledge Graph Construction**: Creates nodes (concepts, people, domains) and edges (relationships)
+1. **Ontology Parsing**: Text files are processed via `ontology_parser.py` which extracts structured information, including external URL references
+2. **Knowledge Graph Construction**: Creates nodes (concepts, people, domains) with optional external URLs and edges (relationships)
 3. **NetworkX Integration**: Graph is stored as a directed graph (`nx.DiGraph`) for analysis
 
 ### Query Engine
@@ -32,10 +32,12 @@ The `CyberneticsQueryEngine` class provides core functionality:
 - **Interactive Visualizations**: 
   - Force-directed graph using Force-Graph library and D3.js
   - Client-side filtering and node interaction
+  - External content linking for nodes with external_url field
 - **Core Views**:
   - Ontology visualization (network graph)
   - Concept explorer (search, connections, evolution chains)
   - Structured ontology browser
+  - External content access through node links
 
 ## Data Flow
 

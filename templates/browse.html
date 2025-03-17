@@ -206,83 +206,96 @@
         }
         
         function showEntityDetails(entityName) {
-            // Show modal
-            document.getElementById('entity-modal').classList.remove('hidden');
-            document.getElementById('entity-modal-title').textContent = entityName;
+        // Show modal
+        document.getElementById('entity-modal').classList.remove('hidden');
+        document.getElementById('entity-modal-title').textContent = entityName;
+        
+        // Reset content
+        document.getElementById('entity-modal-content').innerHTML = '<p class="text-gray-500">Loading entity details...</p>';
+        
+        // Search for entity in API
+        fetch(`/api/search?q=${encodeURIComponent(entityName)}`)
+            .then(response => response.json())
+            .then(data => {
+            if (data.results && data.results.length > 0) {
+                // Find closest match
+                const entity = data.results.find(r => r.label === entityName) || data.results[0];
+                // Fetch entity details
+                return fetch(`/api/entity/${entity.id}`);
+            } else {
+                throw new Error('Entity not found');
+            }
+            })
+            .then(response => response.json())
+            .then(details => {
+            console.log("Entity details:", details); // Debug: Log the details object
             
-            // Reset content
-            document.getElementById('entity-modal-content').innerHTML = '<p class="text-gray-500">Loading entity details...</p>';
+            if (details.error) {
+                throw new Error(details.error);
+            }
             
-            // Search for entity in API
-            fetch(`/api/search?q=${encodeURIComponent(entityName)}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.results && data.results.length > 0) {
-                        // Find closest match
-                        const entity = data.results.find(r => r.label === entityName) || data.results[0];
-                        
-                        // Fetch entity details
-                        return fetch(`/api/entity/${entity.id}`);
-                    } else {
-                        throw new Error('Entity not found');
-                    }
-                })
-                .then(response => response.json())
-                .then(details => {
-                    if (details.error) {
-                        throw new Error(details.error);
-                    }
-                    
-                    const contentEl = document.getElementById('entity-modal-content');
-                    
-                    // Build entity details view
-                    let html = `
-                        <div class="mb-3">
-                            <span class="inline-block px-2 py-1 bg-gray-200 rounded text-sm">
-                                ${details.attributes.type || 'unknown'}
-                            </span>
-                        </div>
-                    `;
-                    
-                    // Incoming connections
-                    if (details.incoming && details.incoming.length > 0) {
-                        html += `<h4 class="font-bold mb-2">Incoming Connections</h4><ul class="space-y-1 ml-4">`;
-                        details.incoming.forEach(conn => {
-                            html += `
-                                <li>
-                                    <a href="#" onclick="showEntityDetails('${conn.label.replace(/'/g, "\\'")}'); return false;" class="text-blue-600 hover:underline">
-                                        ${conn.label}
-                                    </a>
-                                    <span class="text-gray-600"> ${conn.relationship} → This</span>
-                                </li>
-                            `;
-                        });
-                        html += `</ul>`;
-                    }
-                    
-                    // Outgoing connections
-                    if (details.outgoing && details.outgoing.length > 0) {
-                        html += `<h4 class="font-bold mt-4 mb-2">Outgoing Connections</h4><ul class="space-y-1 ml-4">`;
-                        details.outgoing.forEach(conn => {
-                            html += `
-                                <li>
-                                    <span class="text-gray-600">This ${conn.relationship} → </span>
-                                    <a href="#" onclick="showEntityDetails('${conn.label.replace(/'/g, "\\'")}'); return false;" class="text-blue-600 hover:underline">
-                                        ${conn.label}
-                                    </a>
-                                </li>
-                            `;
-                        });
-                        html += `</ul>`;
-                    }
-                    
-                    // Set content
-                    contentEl.innerHTML = html;
-                })
-                .catch(error => {
-                    document.getElementById('entity-modal-content').innerHTML = 
-                        `<p class="text-red-500">Error: ${error.message}</p>`;
+            const contentEl = document.getElementById('entity-modal-content');
+            
+            // Build entity details view
+            let html = `
+                <div class="mb-3">
+                <span class="inline-block px-2 py-1 bg-gray-200 rounded text-sm">
+                    ${details.attributes.type || 'unknown'}
+                </span>
+                </div>
+            `;
+            
+            // Check for external URL in the attributes
+            if (details.attributes.external_url) {
+                html += `
+                <div class="my-3 p-3 bg-blue-50 rounded">
+                    <h4 class="font-bold mb-2">External Resource</h4>
+                    <a href="${details.attributes.external_url}" target="_blank" class="text-blue-600 hover:underline break-all">
+                    ${details.attributes.external_url}
+                    </a>
+                </div>
+                `;
+            }
+            
+            // Incoming connections
+            if (details.incoming && details.incoming.length > 0) {
+                html += `<h4 class="font-bold mb-2">Incoming Connections</h4><ul class="space-y-1 ml-4">`;
+                details.incoming.forEach(conn => {
+                html += `
+                    <li>
+                    <a href="#" onclick="showEntityDetails('${conn.label.replace(/'/g, "\\'")}'); return false;" class="text-blue-600 hover:underline">
+                        ${conn.label}
+                    </a>
+                    <span class="text-gray-600"> ${conn.relationship} → This</span>
+                    </li>
+                `;
                 });
+                html += `</ul>`;
+            }
+            
+            // Outgoing connections
+            if (details.outgoing && details.outgoing.length > 0) {
+                html += `<h4 class="font-bold mt-4 mb-2">Outgoing Connections</h4><ul class="space-y-1 ml-4">`;
+                details.outgoing.forEach(conn => {
+                html += `
+                    <li>
+                    <span class="text-gray-600">This ${conn.relationship} → </span>
+                    <a href="#" onclick="showEntityDetails('${conn.label.replace(/'/g, "\\'")}'); return false;" class="text-blue-600 hover:underline">
+                        ${conn.label}
+                    </a>
+                    </li>
+                `;
+                });
+                html += `</ul>`;
+            }
+            
+            // Set content
+            contentEl.innerHTML = html;
+            })
+            .catch(error => {
+            document.getElementById('entity-modal-content').innerHTML = 
+                `<p class="text-red-500">Error: ${error.message}</p>`;
+            });
         }
         
         function closeEntityModal() {

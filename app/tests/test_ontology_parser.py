@@ -24,12 +24,12 @@ class TestMarkdownOntologyParser(unittest.TestCase):
 # Information Theory
 
 ## Foundational Concepts
-- Shannon Entropy: A mathematical measure of information content or uncertainty
+- Shannon Entropy [url:/articles/shannon-entropy.html]: A mathematical measure of information content or uncertainty
 - Channel Capacity: The maximum rate at which information can be transmitted over a communication channel
 
 ## Key Figures
 - Claude Shannon: American mathematician, known as 'the father of information theory'
-- Norbert Wiener: American mathematician who established the field of cybernetics
+- Norbert Wiener [url:/people/wiener.html]: American mathematician who established the field of cybernetics
 
 # Cybernetics
 
@@ -38,7 +38,7 @@ class TestMarkdownOntologyParser(unittest.TestCase):
 - Homeostasis: The ability of a system to maintain stability despite external changes
 
 ## Cybernetic Applications
-- AI Systems: Application of cybernetic principles to artificial intelligence
+- AI Systems [url:/applications/ai-systems.html]: Application of cybernetic principles to artificial intelligence
 - Biological Systems: Study of regulatory mechanisms in living organisms
 """
         # Expected parsed structure
@@ -47,12 +47,12 @@ class TestMarkdownOntologyParser(unittest.TestCase):
                 "title": "Information Theory",
                 "subsections": {
                     "Foundational Concepts": [
-                        {"name": "Shannon Entropy", "description": "A mathematical measure of information content or uncertainty"},
+                        {"name": "Shannon Entropy", "description": "A mathematical measure of information content or uncertainty", "external_url": "/articles/shannon-entropy.html"},
                         {"name": "Channel Capacity", "description": "The maximum rate at which information can be transmitted over a communication channel"}
                     ],
                     "Key Figures": [
                         {"name": "Claude Shannon", "description": "American mathematician, known as 'the father of information theory'"},
-                        {"name": "Norbert Wiener", "description": "American mathematician who established the field of cybernetics"}
+                        {"name": "Norbert Wiener", "description": "American mathematician who established the field of cybernetics", "external_url": "/people/wiener.html"}
                     ]
                 }
             },
@@ -64,7 +64,7 @@ class TestMarkdownOntologyParser(unittest.TestCase):
                         {"name": "Homeostasis", "description": "The ability of a system to maintain stability despite external changes"}
                     ],
                     "Cybernetic Applications": [
-                        {"name": "AI Systems", "description": "Application of cybernetic principles to artificial intelligence"},
+                        {"name": "AI Systems", "description": "Application of cybernetic principles to artificial intelligence", "external_url": "/applications/ai-systems.html"},
                         {"name": "Biological Systems", "description": "Study of regulatory mechanisms in living organisms"}
                     ]
                 }
@@ -74,6 +74,8 @@ class TestMarkdownOntologyParser(unittest.TestCase):
     def test_parse_markdown_ontology(self):
         """Test parsing markdown into structured ontology."""
         result = parse_markdown_ontology(self.sample_markdown)
+        # Set maxDiff to None to see full difference if test fails
+        self.maxDiff = None
         self.assertEqual(result, self.expected_structure)
 
     def test_extract_entities(self):
@@ -111,6 +113,21 @@ class TestMarkdownOntologyParser(unittest.TestCase):
         self.assertIn("information_theory", node_ids)
         self.assertIn("claude_shannon", node_ids)
         self.assertIn("cybernetics", node_ids)
+        
+        # Check for external_url in nodes
+        found_url_nodes = []
+        for node in knowledge_graph["nodes"]:
+            if "external_url" in node:
+                found_url_nodes.append(node["id"])
+        
+        # Should find external URLs for these nodes
+        self.assertIn("shannon_entropy", found_url_nodes)
+        self.assertIn("norbert_wiener", found_url_nodes)
+        self.assertIn("ai_systems", found_url_nodes)
+        
+        # Check specific external URLs
+        shannon_node = next(node for node in knowledge_graph["nodes"] if node["id"] == "shannon_entropy")
+        self.assertEqual(shannon_node["external_url"], "/articles/shannon-entropy.html")
         
         # Check edges count (base relationship connections)
         # The exact number may vary based on implementation details

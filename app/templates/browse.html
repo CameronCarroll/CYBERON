@@ -272,6 +272,18 @@
                 `;
             }
             
+            // Check for external URL
+            if (details.attributes.external_url) {
+                html += `
+                    <div class="my-3 p-3 bg-blue-50 rounded">
+                        <h4 class="font-bold mb-2">External Resource</h4>
+                        <a href="${details.attributes.external_url}" target="_blank" class="text-blue-600 hover:underline break-all">
+                            ${details.attributes.external_url}
+                        </a>
+                    </div>
+                `;
+            }
+            
             // Incoming connections
             if (details.incoming && details.incoming.length > 0) {
                 html += `<h4 class="font-bold mb-2">Incoming Connections</h4><ul class="space-y-1 ml-4">`;

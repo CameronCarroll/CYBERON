@@ -17,21 +17,21 @@ def parse_markdown_ontology(markdown_text: str) -> Dict:
     if not markdown_text.strip():
         return {}
     
-    # Convert markdown to HTML for easier parsing
-    html = markdown.markdown(markdown_text)
-    soup = BeautifulSoup(html, 'html.parser')
+    # Process the markdown lines directly without BeautifulSoup
+    lines = markdown_text.strip().split('\n')
     
     structured_ontology = {}
     current_section = None
     current_subsection = None
     
-    # Find all headings and list items
-    elements = soup.find_all(['h1', 'h2', 'h3', 'li'])
-    
-    for element in elements:
-        if element.name == 'h1':
-            # Create a new top-level section
-            section_title = element.text.strip()
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+            
+        # Process H1 (main section)
+        if line.startswith('# '):
+            section_title = line[2:].strip()
             section_id = make_id(section_title)
             structured_ontology[section_id] = {
                 "title": section_title,
@@ -39,40 +39,65 @@ def parse_markdown_ontology(markdown_text: str) -> Dict:
             }
             current_section = section_id
             current_subsection = None
-        
-        elif element.name == 'h2' and current_section:
-            # Create a new subsection within the current section
-            subsection_title = element.text.strip()
-            structured_ontology[current_section]["subsections"][subsection_title] = []
-            current_subsection = subsection_title
-        
-        elif element.name == 'h3' and current_section:
-            # H3 headings are treated as specialized subsections
-            # Depending on your requirements, you might want to handle these differently
-            subsection_title = element.text.strip()
-            structured_ontology[current_section]["subsections"][subsection_title] = []
-            current_subsection = subsection_title
-        
-        elif element.name == 'li' and current_section and current_subsection:
-            # Process list items as entities with descriptions
-            item_text = element.text.strip()
             
-            # Split item on the first colon to separate name and description
-            parts = item_text.split(':', 1)
-            if len(parts) == 2:
-                name = parts[0].strip()
-                description = parts[1].strip()
+        # Process H2 (subsection)
+        elif line.startswith('## ') and current_section:
+            subsection_title = line[3:].strip()
+            structured_ontology[current_section]["subsections"][subsection_title] = []
+            current_subsection = subsection_title
+            
+        # Process H3 (specialized subsection)
+        elif line.startswith('### ') and current_section:
+            subsection_title = line[4:].strip()
+            structured_ontology[current_section]["subsections"][subsection_title] = []
+            current_subsection = subsection_title
+            
+        # Process list items
+        elif line.startswith('- ') and current_section and current_subsection:
+            # Extract the item content without the leading '-'
+            item_content = line[2:].strip()
+            
+            # Process URL notation, e.g., "Entity Name [url:/path/to/resource.html]: Description"
+            url_pattern = re.compile(r'(.*?)\s*\[url:(.*?)\](.*)')
+            url_match = url_pattern.match(item_content)
+            
+            # Check if there's a URL
+            if url_match:
+                name = url_match.group(1).strip()
+                external_url = url_match.group(2).strip()
+                rest = url_match.group(3).strip()
                 
-                structured_ontology[current_section]["subsections"][current_subsection].append({
-                    "name": name,
-                    "description": description
-                })
+                # Check if there's a description after the colon
+                if rest.startswith(':'):
+                    description = rest[1:].strip()
+                    structured_ontology[current_section]["subsections"][current_subsection].append({
+                        "name": name,
+                        "description": description,
+                        "external_url": external_url
+                    })
+                else:
+                    # Item has a URL but no description
+                    structured_ontology[current_section]["subsections"][current_subsection].append({
+                        "name": name,
+                        "description": "",
+                        "external_url": external_url
+                    })
             else:
-                # Handle items without descriptions
-                structured_ontology[current_section]["subsections"][current_subsection].append({
-                    "name": item_text,
-                    "description": ""
-                })
+                # No URL, standard format "Entity Name: Description"
+                parts = item_content.split(':', 1)
+                if len(parts) == 2:
+                    name = parts[0].strip()
+                    description = parts[1].strip()
+                    structured_ontology[current_section]["subsections"][current_subsection].append({
+                        "name": name,
+                        "description": description
+                    })
+                else:
+                    # Item without a description
+                    structured_ontology[current_section]["subsections"][current_subsection].append({
+                        "name": item_content,
+                        "description": ""
+                    })
     
     # Verify we have at least one top-level section, otherwise the markdown was malformed
     if not structured_ontology:
@@ -184,11 +209,18 @@ def convert_to_knowledge_graph(structured_ontology: Dict) -> Dict:
                 
                 # Add item node if not already added
                 if not any(node["id"] == item_id for node in nodes):
-                    nodes.append({
+                    # Create node with basic info
+                    node_data = {
                         "id": item_id,
                         "label": item_name,
                         "type": item_type
-                    })
+                    }
+                    
+                    # Add external_url if it exists in the item
+                    if "external_url" in item:
+                        node_data["external_url"] = item["external_url"]
+                    
+                    nodes.append(node_data)
                 
                 # Connect item to subsection
                 edges.append({

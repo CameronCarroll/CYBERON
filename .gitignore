@@ -1,6 +1,12 @@
 # Python bytecode
-__pycache__/
+*/__pycache__/
 *.py[cod]
 *$py.class
 uploads/*
 old/*
+*.pyc
+CLAUDE_INSTRUCTIONS
+app/data/*
+app/uploads/*
+app/utils/__pycache__/*
+app/models/__pycache__/*

@@ -2,7 +2,7 @@
 
 ## The Cybernetics-AI Relationship
 - Early convergence (1940s-1950s): Macy Conferences and shared origins
-- Divergence period (1956-1980s): Rise of symbolic AI and separate paths
+- Divergence period (1956-1980s) [url:https://cameroncarroll.github.io/cybergarden/pages/foundations.html]: Rise of symbolic AI and separate paths
 - Modern re-convergence (1990s-present): Neural networks to transformers
 
 ## Foundational Figures in Both Domains

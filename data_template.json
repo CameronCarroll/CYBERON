@@ -13,7 +13,8 @@
                 "id": "bayesian_statistics",
                 "title": "Bayesian Statistics",
                 "type": "concept",
-                "description": "Statistical paradigm that applies probability to statistical problems, updating beliefs based on new evidence"
+                "description": "Statistical paradigm that applies probability to statistical problems, updating beliefs based on new evidence",
+                "external_url": "/articles/bayesian-statistics.html"
               },
               {
                 "id": "frequentist_inference",
@@ -25,7 +26,8 @@
                 "id": "conditional_probability",
                 "title": "Conditional Probability",
                 "type": "concept",
-                "description": "Measure of the probability of an event given that another event has occurred"
+                "description": "Measure of the probability of an event given that another event has occurred",
+                "external_url": "/articles/conditional-probability.html"
               }
             ]
           },
@@ -193,9 +195,9 @@
     "nodes": [
       {"id": "mathematical_foundations", "label": "Mathematical Foundations", "type": "category"},
       {"id": "probability_theory", "label": "Probability Theory", "type": "category"},
-      {"id": "bayesian_statistics", "label": "Bayesian Statistics", "type": "concept"},
+      {"id": "bayesian_statistics", "label": "Bayesian Statistics", "type": "concept", "external_url": "/articles/bayesian-statistics.html"},
       {"id": "frequentist_inference", "label": "Frequentist Inference", "type": "concept"},
-      {"id": "conditional_probability", "label": "Conditional Probability", "type": "concept"},
+      {"id": "conditional_probability", "label": "Conditional Probability", "type": "concept", "external_url": "/articles/conditional-probability.html"},
       {"id": "linear_algebra", "label": "Linear Algebra", "type": "category"},
       {"id": "vector_spaces", "label": "Vector Spaces", "type": "concept"},
       {"id": "matrix_decomposition", "label": "Matrix Decomposition", "type": "concept"},
@@ -204,7 +206,7 @@
       {"id": "supervised_learning", "label": "Supervised Learning", "type": "category"},
       {"id": "classification", "label": "Classification", "type": "concept"},
       {"id": "regression", "label": "Regression", "type": "concept"},
-      {"id": "neural_networks", "label": "Neural Networks", "type": "concept"},
+      {"id": "neural_networks", "label": "Neural Networks", "type": "concept", "external_url": "/articles/neural-networks.html"},
       {"id": "unsupervised_learning", "label": "Unsupervised Learning", "type": "category"},
       {"id": "clustering", "label": "Clustering", "type": "concept"},
       {"id": "dimensionality_reduction", "label": "Dimensionality Reduction", "type": "concept"},
@@ -215,11 +217,11 @@
       {"id": "multi_agent_learning", "label": "Multi-Agent Learning", "type": "concept"},
       {"id": "key_contributors", "label": "Key Contributors", "type": "category"},
       {"id": "modern_pioneers", "label": "Modern Pioneers", "type": "category"},
-      {"id": "geoffrey_hinton", "label": "Geoffrey Hinton", "type": "person"},
-      {"id": "yann_lecun", "label": "Yann LeCun", "type": "person"},
+      {"id": "geoffrey_hinton", "label": "Geoffrey Hinton", "type": "person", "external_url": "/people/geoffrey-hinton.html"},
+      {"id": "yann_lecun", "label": "Yann LeCun", "type": "person", "external_url": "/people/yann-lecun.html"},
       {"id": "yoshua_bengio", "label": "Yoshua Bengio", "type": "person"},
       {"id": "foundational_theorists", "label": "Foundational Theorists", "type": "category"},
-      {"id": "alan_turing", "label": "Alan Turing", "type": "person"},
+      {"id": "alan_turing", "label": "Alan Turing", "type": "person", "external_url": "/people/alan-turing.html"},
       {"id": "john_mccarthy", "label": "John McCarthy", "type": "person"},
       {"id": "marvin_minsky", "label": "Marvin Minsky", "type": "person"}
     ],

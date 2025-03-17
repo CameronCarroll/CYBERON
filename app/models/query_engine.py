@@ -40,10 +40,19 @@ class CyberneticsQueryEngine:
         
         # Add nodes
         for node in self.knowledge_graph.get("nodes", []):
+            # Create node attributes dictionary with all node properties
+            node_attrs = {
+                "label": node.get("label", node["id"]),
+                "type": node.get("type", "unknown")
+            }
+            
+            # Add external_url if present
+            if "external_url" in node:
+                node_attrs["external_url"] = node["external_url"]
+            
             self.graph.add_node(
                 node["id"],
-                label=node.get("label", node["id"]),
-                type=node.get("type", "unknown")
+                **node_attrs
             )
         
         # Add edges

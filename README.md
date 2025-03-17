@@ -1,6 +1,6 @@
 # Cyberon - Cybernetics Digital Garden
 
-A Flask web application for exploring and visualizing knowledge ontologies using graph technology. Originally designed for cybernetics, but adaptable to any domain knowledge structure.
+A Flask web application for exploring and visualizing knowledge ontologies using graph technology. Originally designed for cybernetics, but adaptable to any domain knowledge structure. Supports linking knowledge graph nodes to external content via the external_url field.
 
 ## Features
 
@@ -10,6 +10,7 @@ A Flask web application for exploring and visualizing knowledge ontologies using
 - Explore connections between concepts
 - Find paths between entities
 - Analyze concept hierarchies and evolution
+- Link knowledge graph nodes to external content via URLs
 
 ## Installation
 
@@ -33,9 +34,9 @@ pip install -r requirements.txt
 python run.py
 ```
 
-2. Open your web browser and navigate to `http://localhost:5000`
+2. Open your web browser and navigate to `http://localhost:5001`
 
-3. Upload an ontology text file to begin exploring
+3. Upload an ontology markdown file to begin exploring
 
 ## Creating Your Own Ontology
 
@@ -48,11 +49,12 @@ The system accepts markdown-formatted ontology files with a specific structure:
 
 ## Subsection Title
 - Concept Name: Description of the concept
-- Another Concept: Its description
+- Another Concept [url:/path/to/external-content.html]: Its description with external link
+- Yet Another Concept: Description without external link
 
 ## Key Figures 
 - Person Name: Description of the person
-- Another Person: Their description
+- Another Person [url:/people/person-page.html]: Description with external link
 
 # Another Section Title
 
@@ -65,6 +67,7 @@ The system accepts markdown-formatted ontology files with a specific structure:
 - Use H2 (`##`) for subsections 
 - Use bullet points (`-`) for concepts or entities
 - Add a colon (`:`) after each entity name to provide a description
+- Optionally add `[url:/path/to/resource.html]` before the colon to link to external content
 
 ### System Behavior
 - Entities in subsections containing "Key Figures", "People", or "Person" are categorized as people
@@ -108,7 +111,8 @@ The system processes markdown files into a JSON structure with two main componen
 ```json
 {
   "nodes": [
-    {"id": "entity_id", "label": "Entity Name", "type": "concept|person|category"},
+    {"id": "entity_id", "label": "Entity Name", "type": "concept|person|category", "external_url": "/optional/path/to/resource.html"},
+    {"id": "another_entity", "label": "Another Entity", "type": "concept|person|category"},
     ...
   ],
   "edges": [
@@ -117,6 +121,8 @@ The system processes markdown files into a JSON structure with two main componen
   ]
 }
 ```
+
+The `external_url` field is optional and only included when an entity has an associated external resource.
 
 ## Customizing for Other Domains
 

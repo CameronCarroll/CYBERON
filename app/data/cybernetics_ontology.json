@@ -10,7 +10,8 @@
           },
           {
             "name": "Divergence period (1956-1980s)",
-            "description": "Rise of symbolic AI and separate paths"
+            "description": "Rise of symbolic AI and separate paths",
+            "external_url": "https://cameroncarroll.github.io/cybergarden/pages/foundations.html"
           },
           {
             "name": "Modern re-convergence (1990s-present)",
@@ -962,7 +963,8 @@
       {
         "id": "divergence_period__1956_1980s",
         "label": "Divergence period (1956-1980s)",
-        "type": "concept"
+        "type": "concept",
+        "external_url": "https://cameroncarroll.github.io/cybergarden/pages/foundations.html"
       },
       {
         "id": "modern_re_convergence__1990s_present",
