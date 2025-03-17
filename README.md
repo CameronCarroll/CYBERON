@@ -1,10 +1,10 @@
 # Cyberon - Cybernetics Digital Garden
 
-A Flask web application for exploring and visualizing cybernetics ontologies using knowledge graph technology.
+A Flask web application for exploring and visualizing knowledge ontologies using graph technology. Originally designed for cybernetics, but adaptable to any domain knowledge structure.
 
 ## Features
 
-- Upload and parse cybernetics ontology text files
+- Upload and parse ontology text files in markdown format
 - Interactive knowledge graph visualization
 - Search for concepts and entities
 - Explore connections between concepts
@@ -37,6 +37,131 @@ python run.py
 
 3. Upload an ontology text file to begin exploring
 
+## Creating Your Own Ontology
+
+### Markdown Format
+
+The system accepts markdown-formatted ontology files with a specific structure:
+
+```markdown
+# Main Section Title
+
+## Subsection Title
+- Concept Name: Description of the concept
+- Another Concept: Its description
+
+## Key Figures 
+- Person Name: Description of the person
+- Another Person: Their description
+
+# Another Section Title
+
+## Another Subsection
+- Concept: Description
+```
+
+**Key points:**
+- Use H1 (`#`) for main sections
+- Use H2 (`##`) for subsections 
+- Use bullet points (`-`) for concepts or entities
+- Add a colon (`:`) after each entity name to provide a description
+
+### System Behavior
+- Entities in subsections containing "Key Figures", "People", or "Person" are categorized as people
+- All other entities are categorized as concepts
+- Entities within the same subsection are automatically related to each other
+
+## Data Structure
+
+The system processes markdown files into a JSON structure with two main components:
+
+### 1. Structured Ontology
+
+```json
+{
+  "section_id": {
+    "title": "Section Title",
+    "subsections": {
+      "Subsection Name": [
+        {
+          "name": "Entity Name",
+          "description": "Entity Description"
+        },
+        {
+          "name": "Another Entity",
+          "description": "Another Description"
+        }
+      ],
+      "Another Subsection": [
+        ...
+      ]
+    }
+  },
+  "another_section_id": {
+    ...
+  }
+}
+```
+
+### 2. Knowledge Graph
+
+```json
+{
+  "nodes": [
+    {"id": "entity_id", "label": "Entity Name", "type": "concept|person|category"},
+    ...
+  ],
+  "edges": [
+    {"source": "source_id", "target": "target_id", "label": "relationship_type"},
+    ...
+  ]
+}
+```
+
+## Customizing for Other Domains
+
+While Cyberon was built for cybernetics, you can use it for any domain knowledge by:
+
+1. **Creating your own ontology file**:
+   - Structure your markdown file as shown above
+   - Use consistent naming patterns for your entities
+   - Group related concepts in the same subsections
+   - Use descriptive section and subsection titles
+
+2. **Modifying classification rules** (optional):
+   - Edit `extract_entities()` in `app/utils/ontology_parser.py` to customize entity type detection based on your domain
+
+3. **Enhancing relationship detection** (optional):
+   - Edit `convert_to_knowledge_graph()` in `app/utils/ontology_parser.py` to add custom relationship types or detection rules
+
+## Example: Creating a Literature Ontology
+
+```markdown
+# Victorian Literature
+
+## Major Authors
+- Charles Dickens: English novelist known for Oliver Twist and Great Expectations
+- George Eliot: Pen name of Mary Ann Evans, author of Middlemarch
+- Thomas Hardy: English novelist and poet known for Far from the Madding Crowd
+
+## Literary Movements
+- Realism: Attempted to represent subject matter truthfully
+- Gothic Fiction: Genre combining fiction, horror and Romanticism
+- Naturalism: Literary movement seeking to replicate everyday reality
+
+# Modernist Literature
+
+## Key Figures
+- Virginia Woolf: British author known for Mrs Dalloway and To The Lighthouse
+- James Joyce: Irish novelist and poet, author of Ulysses
+- T.S. Eliot: American-born British poet known for The Waste Land
+
+## Techniques
+- Stream of Consciousness: Narrative mode depicting point-by-point thoughts of characters
+- Unreliable Narrator: Narrator whose credibility is compromised
+- Fragmentation: Breaking narrative into pieces to reflect modern experience
+```
+
 ## Testing
 
 To run the tests:
@@ -64,15 +189,12 @@ cyberon/
 ├── app/                     # Application package
 │   ├── __init__.py          # Application factory
 │   ├── models/              # Data models
-│   │   └── query_engine.py  # Cybernetics query engine
+│   │   └── query_engine.py  # Ontology query engine
 │   ├── routes/              # Route blueprints
 │   │   ├── api.py           # API endpoints
 │   │   ├── main.py          # Main routes
 │   │   └── visualization.py # Visualization routes
 │   ├── static/              # Static files
-│   │   ├── css/             # CSS files
-│   │   ├── js/              # JavaScript files
-│   │   └── libs/            # Third-party libraries
 │   ├── templates/           # HTML templates
 │   └── utils/               # Utility functions
 │       └── ontology_parser.py # Ontology parsing utilities
@@ -83,95 +205,14 @@ cyberon/
 └── run.py                   # Application entry point
 ```
 
-# Input file format
-```Markdown
-# Main Domain/Section
+## API Endpoints
 
-## Subsection
-- Concept Name: Description of the concept
-- Another Concept: Its description
-
-## Key Figures
-- Person Name: Description of the person
-- Another Person: Their description
-
-# Another Domain/Section
-
-## Another Subsection
-- Concept: Description
-```
-
-
-# Function signature for writing parsers
-```python
-def parse_ontology_file(input_file_path, output_json_path, format_type='default'):
-    """
-    Parse an ontology text file into a hierarchical structure and convert it to JSON for the Cybernetics Digital Garden application.
-    
-    Args:
-        input_file_path (str): Path to the input ontology text file
-        output_json_path (str): Path where the output JSON should be saved
-        format_type (str): The format of the input file. Options:
-            - 'markdown': Markdown formatted with headers and lists
-            - 'json': Already in JSON but needs transformation to app's required schema?
-    
-    Returns:
-        dict: The generated ontology data structure with 'structured_ontology' and 'knowledge_graph' keys
-        
-    Structured_ontology follows a hierarchical format:
-    {
-        "categories": [
-            {
-                "id": "unique_id",
-                "title": "Category Title",
-                "children": [
-                    {
-                        "id": "subcategory_id",
-                        "title": "Subcategory Title",
-                        "children": [...] or "type": "concept" for leaf nodes
-                    },
-                    ...
-                ]
-            },
-            ...
-        ]
-    }
-    
-    Knowledge_graph represents relationships between entities:
-    {
-        "nodes": [
-            {"id": "node_id", "label": "Node Label", "type": "concept|category|person|domain"},
-            ...
-        ],
-        "edges": [
-            {"source": "source_id", "target": "target_id", "label": "relationship_type"},
-            ...
-        ]
-    }
-    
-    Raises:
-        ValueError: If the format_type is not supported or input file cannot be parsed
-        FileNotFoundError: If the input file doesn't exist
-    """
-    # Implementation would vary based on format_type
-    
-    # Helper functions would be needed for:
-    # 1. Parsing different input formats
-    # 2. Generating unique IDs (e.g., by slugifying titles)
-    # 3. Building the hierarchical structure
-    # 4. Converting the hierarchical structure to a knowledge graph
-    
-    # Return the complete structure
-    return {
-        "structured_ontology": {
-            "categories": [...]
-        },
-        "knowledge_graph": {
-            "nodes": [...],
-            "edges": [...]
-        }
-    }
-```
+- `/api/graph-data`: Graph nodes and edges for visualization
+- `/api/entity/<entity_id>`: Entity details with relationships
+- `/api/search`: Text search across entities
+- `/api/paths`: Path finding between entities
+- `/api/concepts/central`: Central concept identification
+- `/api/concepts/evolution`: Evolution chains of concepts
 
 ## License
 
@@ -181,4 +222,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - NetworkX for graph analysis
 - Flask for web framework
-- vis.js for network visualization
+- vis.js and D3.js for network visualization
