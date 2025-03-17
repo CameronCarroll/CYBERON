@@ -11,6 +11,18 @@ from typing import Dict, List, Any, Optional, Callable, Tuple
 
 from jsonschema import validate, ValidationError
 from app.mcp.transports import StdioTransport, Transport
+from app.mcp.handlers import (
+    initialize_handler, 
+    capabilities_handler,
+    # Work Package 2 - Query engine handlers
+    set_query_engine,
+    entity_search_handler,
+    entity_info_handler,
+    find_paths_handler,
+    find_connections_handler,
+    get_entity_types_handler,
+    get_relationship_types_handler
+)
 
 logger = logging.getLogger(__name__)
 
@@ -36,11 +48,18 @@ class MCPServer:
             },
             "supports": {
                 "resources": False,  # Will be implemented in Work Package 3
-                "tools": False,      # Will be implemented in Work Package 4
+                "tools": True,       # Basic tools implemented in Work Package 2
                 "prompts": False     # Will be implemented in Work Package 6
             }
         }
         self.request_handlers: Dict[str, Callable] = {}
+        self.query_engine = None
+        
+        # Initialize handlers
+        from app.mcp.handlers.core import set_server_capabilities
+        
+        # Set server capabilities for handlers
+        set_server_capabilities(self.capabilities)
         
         # Register core request handlers
         self._register_core_handlers()
@@ -49,8 +68,17 @@ class MCPServer:
     
     def _register_core_handlers(self) -> None:
         """Register core request handlers for the MCP protocol."""
-        self.register_handler("initialize", self._handle_initialize)
-        self.register_handler("server/capabilities", self._handle_capabilities)
+        # Core protocol handlers
+        self.register_handler("initialize", initialize_handler)
+        self.register_handler("server/capabilities", capabilities_handler)
+        
+        # Work Package 2 - Query engine handlers
+        self.register_handler("cyberon/search", entity_search_handler)
+        self.register_handler("cyberon/entity", entity_info_handler)
+        self.register_handler("cyberon/paths", find_paths_handler)
+        self.register_handler("cyberon/connections", find_connections_handler)
+        self.register_handler("cyberon/entity_types", get_entity_types_handler)
+        self.register_handler("cyberon/relationship_types", get_relationship_types_handler)
     
     def register_handler(self, method: str, handler: Callable) -> None:
         """
@@ -88,6 +116,17 @@ class MCPServer:
         """
         transport = StdioTransport()
         return self.register_transport(transport)
+    
+    def set_query_engine(self, engine) -> None:
+        """
+        Set the query engine for the MCP server.
+        
+        Args:
+            engine: The CyberneticsQueryEngine instance
+        """
+        self.query_engine = engine
+        set_query_engine(engine)
+        logger.info("Query engine set for MCP server")
     
     def handle_message(self, message: str, transport_id: str) -> Optional[str]:
         """
@@ -200,37 +239,6 @@ class MCPServer:
         }
         
         return json.dumps(response)
-    
-    def _handle_initialize(self, params: Dict[str, Any], transport_id: str) -> Dict[str, Any]:
-        """
-        Handle an initialize request from a client.
-        
-        Args:
-            params: The request parameters
-            transport_id: The transport ID
-            
-        Returns:
-            The initialization response
-        """
-        client_name = params.get("client_info", {}).get("name", "Unknown Client")
-        client_version = params.get("client_info", {}).get("version", "Unknown Version")
-        logger.info(f"Client connected: {client_name} {client_version}")
-        
-        # Return server capabilities
-        return self.capabilities
-    
-    def _handle_capabilities(self, params: Dict[str, Any], transport_id: str) -> Dict[str, Any]:
-        """
-        Handle a capabilities request from a client.
-        
-        Args:
-            params: The request parameters
-            transport_id: The transport ID
-            
-        Returns:
-            The server capabilities
-        """
-        return self.capabilities
     
     def start(self) -> None:
         """

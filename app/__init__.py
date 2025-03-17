@@ -1,4 +1,5 @@
 import os
+import threading
 from flask import Flask, request, jsonify
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -25,6 +26,10 @@ limiter = Limiter(
     storage_uri="memory://"
 )
 
+# Global MCP server instance
+mcp_server = None
+mcp_server_thread = None
+
 def create_app(test_config=None, testing=False):
     """Create and configure the Flask application"""
     app = Flask(__name__, instance_relative_config=True)
@@ -32,7 +37,8 @@ def create_app(test_config=None, testing=False):
         SECRET_KEY='dev',
         UPLOAD_FOLDER=os.path.join(app.root_path, 'uploads'),
         DATA_FOLDER=os.path.join(app.root_path, 'data'),
-        TESTING=testing
+        TESTING=testing,
+        MCP_ENABLED=os.environ.get('MCP_ENABLED', 'true').lower() == 'true'
     )
 
     if test_config:
@@ -93,6 +99,10 @@ def create_app(test_config=None, testing=False):
     with app.app_context():
         main.load_query_engine()
         print(f"Query engine initialized during app startup: {main.query_engine is not None}")
+        
+        # Initialize MCP server if enabled and not in testing mode
+        if app.config['MCP_ENABLED'] and not testing:
+            initialize_mcp_server(app, main.query_engine)
     
     # Register existing blueprints
     app.register_blueprint(api.bp, url_prefix='/api')
@@ -107,4 +117,69 @@ def create_app(test_config=None, testing=False):
     from app.utils.error_handling import register_error_handlers
     register_error_handlers(app)
 
+    # Register cleanup
+    @app.teardown_appcontext
+    def cleanup(exception=None):
+        global mcp_server
+        if exception:
+            app.logger.error(f"Exception during teardown: {exception}")
+        
+        # Stop MCP server if it's running and we're shutting down the app
+        if mcp_server is not None:
+            app.logger.info("Stopping MCP server during app cleanup")
+            try:
+                mcp_server.stop()
+            except Exception as e:
+                app.logger.error(f"Error stopping MCP server: {e}")
+
     return app
+
+def initialize_mcp_server(app, query_engine):
+    """
+    Initialize the MCP server with the query engine.
+    
+    Args:
+        app: The Flask application
+        query_engine: The CyberneticsQueryEngine instance
+    """
+    global mcp_server, mcp_server_thread
+    
+    if mcp_server is not None:
+        app.logger.warning("MCP server already initialized")
+        return
+    
+    try:
+        from app.mcp import MCPServer
+        
+        app.logger.info("Initializing MCP server")
+        mcp_server = MCPServer()
+        
+        # Set the query engine for the MCP server
+        if query_engine is not None:
+            mcp_server.set_query_engine(query_engine)
+            app.logger.info("Query engine set for MCP server")
+        else:
+            app.logger.warning("No query engine available for MCP server")
+        
+        # Set up STDIO transport
+        app.logger.info("Setting up STDIO transport for MCP server")
+        mcp_server.create_stdio_transport()
+        
+        # Start the server in a separate thread
+        def run_mcp_server():
+            try:
+                app.logger.info("Starting MCP server in background thread")
+                mcp_server.start()
+                app.logger.info("MCP server started")
+            except Exception as e:
+                app.logger.exception(f"Error running MCP server: {e}")
+        
+        mcp_server_thread = threading.Thread(target=run_mcp_server, daemon=True)
+        mcp_server_thread.start()
+        app.logger.info("MCP server thread started")
+        
+    except ImportError:
+        app.logger.error("MCP module not available, MCP server not initialized")
+    except Exception as e:
+        app.logger.exception(f"Error initializing MCP server: {e}")
+        mcp_server = None

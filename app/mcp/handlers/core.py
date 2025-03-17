@@ -12,6 +12,22 @@ logger = logging.getLogger(__name__)
 
 # Server capabilities - will be set by the MCPServer on initialization
 SERVER_CAPABILITIES = None
+SERVER_INSTRUCTIONS = """
+CYBERON MCP Server provides access to a cybernetics ontology database. You can:
+
+1. Search for entities in the ontology
+2. Retrieve detailed information about entities
+3. Find paths between entities
+4. Discover connected entities
+
+Available methods:
+- cyberon/search: Search for entities by name or keyword
+- cyberon/entity: Get detailed information about a specific entity
+- cyberon/paths: Find paths between two entities
+- cyberon/connections: Find entities connected to a specific entity
+
+For specific usage details, refer to the method descriptions.
+"""
 
 def set_server_capabilities(capabilities: Dict[str, Any]) -> None:
     """
@@ -50,8 +66,11 @@ def initialize_handler(params: Dict[str, Any], transport_id: str) -> Dict[str, A
     # we would need to handle version compatibility
     logger.info(f"Protocol version negotiation: client={client_protocol_version}, server={server_protocol_version}")
     
-    # Return server capabilities
-    return SERVER_CAPABILITIES
+    # Prepare the response with server capabilities and instructions
+    response = dict(SERVER_CAPABILITIES)
+    response["instructions"] = SERVER_INSTRUCTIONS.strip()
+    
+    return response
 
 def capabilities_handler(params: Dict[str, Any], transport_id: str) -> Dict[str, Any]:
     """
