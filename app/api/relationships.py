@@ -2,10 +2,12 @@ from flask import Blueprint, request, jsonify
 import app.routes.main as main_module
 from app.utils.validation import validate_relationship, validate_relationship_update
 from app.utils.response import success_response, error_response
+from app import limiter
 
 bp = Blueprint('relationships', __name__)
 
 @bp.route('/relationships', methods=['POST'])
+@limiter.limit("5 per minute")
 def create_relationship():
     """Create a new relationship between entities"""
     # Get the latest reference to query_engine
@@ -113,6 +115,7 @@ def update_relationship(relationship_id):
         return error_response(f"Error updating relationship: {str(e)}", 500)
 
 @bp.route('/relationships/<relationship_id>', methods=['DELETE'])
+@limiter.limit("5 per minute")
 def delete_relationship(relationship_id):
     """Delete a relationship"""
     # Get the latest reference to query_engine
@@ -141,6 +144,7 @@ def delete_relationship(relationship_id):
         return error_response(f"Error deleting relationship: {str(e)}", 500)
 
 @bp.route('/relationships', methods=['GET'])
+@limiter.limit("30 per minute")
 def list_relationships():
     """List relationships with optional filtering"""
     # Get the latest reference to query_engine

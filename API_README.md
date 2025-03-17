@@ -6,6 +6,37 @@ The Cybernetics Digital Garden provides a RESTful API for programmatic access to
 
 Currently, the API does not require authentication.
 
+### Rate Limiting
+
+To prevent abuse and ensure system stability, the API implements rate limiting. The following limits apply:
+
+- Default limits: 200 requests per day, 50 requests per hour, 10 requests per minute
+- Create/Delete operations: 5 requests per minute
+- List/Query operations: 30 requests per minute
+- Graph traversal operations: 20 requests per minute
+- Graph statistics: 10 requests per minute
+
+When you exceed the rate limit, you'll receive a 429 (Too Many Requests) response with details about when you can retry:
+
+```json
+{
+  "success": false,
+  "error": "Too many requests. Please slow down.",
+  "retry_after": "1 minute",
+  "message": "The API is rate limited to prevent abuse. Please reduce your request frequency."
+}
+```
+
+Note: Requests from localhost (127.0.0.1, ::1) and certain development IPs are exempt from rate limiting.
+
+Rate limit headers are included in responses:
+```
+X-RateLimit-Limit: 200 per day
+X-RateLimit-Remaining: varies
+```
+
+For higher-throughput applications that need to exceed these limits, please contact the API administrator.
+
 ### Response Format
 
 All API endpoints return responses in JSON format with a consistent structure:

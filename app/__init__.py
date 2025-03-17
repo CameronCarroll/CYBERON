@@ -1,5 +1,29 @@
 import os
-from flask import Flask
+from flask import Flask, request, jsonify
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
+# Custom key function that allows whitelisting certain IPs
+def get_rate_limit_key():
+    # IPs that are exempt from rate limiting (localhost and development IPs)
+    whitelisted_ips = {'127.0.0.1', '::1', '192.168.1.1', '10.0.0.1'}
+    
+    # Get the client's IP address
+    ip_address = get_remote_address()
+    
+    # Return None for whitelisted IPs (which disables rate limiting for them)
+    if ip_address in whitelisted_ips:
+        return None
+    
+    # Otherwise, return the IP address for rate limiting
+    return ip_address
+
+# Initialize limiter without app
+limiter = Limiter(
+    key_func=get_rate_limit_key,
+    default_limits=["200 per day", "50 per hour", "10 per minute"],
+    storage_uri="memory://"
+)
 
 def create_app(test_config=None, testing=False):
     """Create and configure the Flask application"""
@@ -19,6 +43,43 @@ def create_app(test_config=None, testing=False):
     if not testing:
         os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
         os.makedirs(app.config['DATA_FOLDER'], exist_ok=True)
+    
+    # Initialize limiter with app
+    limiter.init_app(app)
+    
+    # Rate limit error handler
+    @app.errorhandler(429)
+    def ratelimit_error(e):
+        # Log the rate limit violation
+        app.logger.warning(
+            f"Rate limit exceeded: {request.remote_addr} - {request.method} {request.path}"
+        )
+        
+        return jsonify({
+            "success": False,
+            "error": "Too many requests. Please slow down.",
+            "retry_after": e.description,
+            "message": "The API is rate limited to prevent abuse. Please reduce your request frequency."
+        }), 429
+    
+    # Disable rate limiting for tests
+    if testing:
+        limiter.enabled = False
+    
+    # Configure global rate limit defaults for API endpoints
+    # These will be applied in addition to any endpoint-specific limits
+    @app.after_request
+    def inject_rate_limit_headers(response):
+        """Add rate limit headers to responses"""
+        try:
+            # Add rate limit headers if not already present
+            if response.status_code != 429 and limiter.enabled:
+                response.headers.add('X-RateLimit-Limit', '200 per day')
+                response.headers.add('X-RateLimit-Remaining', 'varies')
+        except:
+            # Silently fail if headers can't be added
+            pass
+        return response
 
     # Register blueprints
     from app.routes import main, api, visualization

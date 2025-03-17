@@ -2,10 +2,13 @@ from flask import Blueprint, request, jsonify
 import app.routes.main as main_module
 from app.utils.validation import validate_entity, validate_entity_update
 from app.utils.response import success_response, error_response
+from app import limiter
+import datetime
 
 bp = Blueprint('entities', __name__)
 
 @bp.route('/entities', methods=['POST'])
+@limiter.limit("5 per minute")
 def create_entity():
     """Create a new entity"""
     # Get the latest reference to query_engine
@@ -100,6 +103,7 @@ def update_entity(entity_id):
         return error_response(f"Error updating entity: {str(e)}", 500)
 
 @bp.route('/entities/<entity_id>', methods=['DELETE'])
+@limiter.limit("5 per minute")
 def delete_entity(entity_id):
     """Delete an entity"""
     # Get the latest reference to query_engine
@@ -136,6 +140,7 @@ def delete_entity(entity_id):
         return error_response(f"Error deleting entity: {str(e)}", 500)
 
 @bp.route('/entities', methods=['GET'])
+@limiter.limit("30 per minute")
 def list_entities():
     """List entities with optional filtering"""
     # Get the latest reference to query_engine
@@ -179,3 +184,13 @@ def list_entities():
         })
     except Exception as e:
         return error_response(f"Error listing entities: {str(e)}", 500)
+
+@bp.route('/test-rate-limit', methods=['GET'])
+# Force rate limiting regardless of IP by using a fixed key
+@limiter.limit("3 per minute", key_func=lambda: "test_client")
+def test_rate_limit():
+    """A simple endpoint to test rate limiting"""
+    return success_response({
+        "message": "This endpoint is limited to 3 requests per minute",
+        "timestamp": datetime.datetime.now().isoformat()
+    })

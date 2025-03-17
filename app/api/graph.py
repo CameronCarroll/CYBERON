@@ -1,10 +1,12 @@
 from flask import Blueprint, request, jsonify
 import app.routes.main as main_module
 from app.utils.response import success_response, error_response
+from app import limiter
 
 bp = Blueprint('graph', __name__)
 
 @bp.route('/paths', methods=['GET'])
+@limiter.limit("20 per minute")
 def find_paths():
     """Find paths between entities"""
     # Get the latest reference to query_engine
@@ -160,6 +162,7 @@ def get_relationship_types():
         return error_response(f"Error getting relationship types: {str(e)}", 500)
 
 @bp.route('/stats', methods=['GET'])
+@limiter.limit("10 per minute")
 def get_graph_stats():
     """Get statistics about the graph"""
     # Get the latest reference to query_engine
