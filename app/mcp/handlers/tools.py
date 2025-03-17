@@ -363,12 +363,28 @@ def find_central_entities_tool(params: Dict[str, Any], transport_id: str) -> Dic
     
     limit = int(params.get("limit", 10))
     entity_type = params.get("entity_type")
+    centrality_metric = params.get("centrality_metric", "degree")
+    min_connections = int(params.get("min_connections", 0))
     
     try:
         entities = QUERY_ENGINE.get_central_entities(limit, entity_type)
         
+        # Filter by minimum connections if specified
+        if min_connections > 0:
+            entities = [e for e in entities if e.get("connections", 0) >= min_connections]
+        
+        # Organize results by type for better analysis
+        entities_by_type = {}
+        for entity in entities:
+            entity_type = entity.get("type", "unknown")
+            if entity_type not in entities_by_type:
+                entities_by_type[entity_type] = []
+            entities_by_type[entity_type].append(entity)
+        
         return {
             "entities": entities,
+            "entities_by_type": entities_by_type,
+            "centrality_metric": centrality_metric,
             "total": len(entities)
         }
     except Exception as e:
@@ -411,6 +427,150 @@ def summarize_ontology_tool(params: Dict[str, Any], transport_id: str) -> Dict[s
         }
     except Exception as e:
         logger.exception(f"Error summarizing ontology: {e}")
+        return {"error": str(e)}
+
+# Advanced tool implementations
+
+def concept_hierarchy_tool(params: Dict[str, Any], transport_id: str) -> Dict[str, Any]:
+    """
+    Analyze the concept hierarchy in the ontology.
+    
+    Args:
+        params: The parameters
+        transport_id: The transport ID
+        
+    Returns:
+        Hierarchy analysis with root concepts and depth information
+    """
+    _ensure_query_engine()
+    
+    include_full_hierarchy = params.get("include_full_hierarchy", False)
+    root_concept_id = params.get("root_concept_id")
+    
+    try:
+        # Get concept hierarchy analysis
+        hierarchy_analysis = QUERY_ENGINE.analyze_concept_hierarchy()
+        
+        # If a specific root concept is requested, filter the results
+        if root_concept_id:
+            if root_concept_id in hierarchy_analysis.get("hierarchies", {}):
+                # Extract just this hierarchy
+                specific_hierarchy = hierarchy_analysis["hierarchies"][root_concept_id]
+                root_info = next((r for r in hierarchy_analysis["root_nodes"] 
+                                if r["id"] == root_concept_id), None)
+                
+                return {
+                    "root_concept": root_info,
+                    "hierarchy": specific_hierarchy,
+                    "max_depth": root_info["max_depth"] if root_info else 0
+                }
+            else:
+                return {"error": f"Concept {root_concept_id} is not a root node or does not exist"}
+        
+        # Default response with summary
+        result = {
+            "root_nodes": hierarchy_analysis["root_nodes"],
+            "total_roots": len(hierarchy_analysis["root_nodes"]),
+            "max_depth": max([node["max_depth"] for node in hierarchy_analysis["root_nodes"]], default=0)
+        }
+        
+        # Include full hierarchies if requested
+        if include_full_hierarchy:
+            result["hierarchies"] = hierarchy_analysis["hierarchies"]
+            
+        return result
+    except Exception as e:
+        logger.exception(f"Error analyzing concept hierarchy: {e}")
+        return {"error": str(e)}
+
+def related_concepts_tool(params: Dict[str, Any], transport_id: str) -> Dict[str, Any]:
+    """
+    Discover concepts related to a given concept.
+    
+    Args:
+        params: The parameters
+        transport_id: The transport ID
+        
+    Returns:
+        Related concepts grouped by relationship type
+    """
+    _ensure_query_engine()
+    
+    concept_id = params.get("concept_id")
+    relationship_types = params.get("relationship_types")
+    include_inverse = params.get("include_inverse", True)
+    
+    if not concept_id:
+        return {"error": "Concept ID is required"}
+    
+    try:
+        # Get related concepts
+        related = QUERY_ENGINE.get_related_concepts(concept_id, relationship_types)
+        
+        # If there's an error, return it
+        if "error" in related:
+            return related
+        
+        # If not including inverse relationships, filter them out
+        if not include_inverse:
+            related = {k: v for k, v in related.items() if not k.startswith("inverse_")}
+        
+        # Get the entity details for context
+        entity = QUERY_ENGINE.query_entity(concept_id)
+        
+        return {
+            "concept": {
+                "id": concept_id,
+                "label": entity.get("attributes", {}).get("label", concept_id),
+                "type": entity.get("attributes", {}).get("type", "unknown")
+            },
+            "related_concepts": related,
+            "relationship_count": sum(len(concepts) for concepts in related.values())
+        }
+    except Exception as e:
+        logger.exception(f"Error finding related concepts: {e}")
+        return {"error": str(e)}
+
+def concept_evolution_tool(params: Dict[str, Any], transport_id: str) -> Dict[str, Any]:
+    """
+    Trace the evolution of concepts over time.
+    
+    Args:
+        params: The parameters
+        transport_id: The transport ID
+        
+    Returns:
+        Evolution chains of concepts
+    """
+    _ensure_query_engine()
+    
+    concept_id = params.get("concept_id")
+    
+    try:
+        # Get concept evolution chains
+        evolution_chains = QUERY_ENGINE.get_concept_evolution()
+        
+        # If a specific concept is requested, filter the results
+        if concept_id:
+            # Find chains containing the concept
+            matching_chains = []
+            for chain in evolution_chains:
+                if any(node["id"] == concept_id for node in chain):
+                    matching_chains.append(chain)
+            
+            return {
+                "evolution_chains": matching_chains,
+                "chain_count": len(matching_chains),
+                "concept_id": concept_id
+            }
+        
+        # Return all evolution chains
+        return {
+            "evolution_chains": evolution_chains,
+            "chain_count": len(evolution_chains)
+        }
+    except Exception as e:
+        logger.exception(f"Error tracing concept evolution: {e}")
         return {"error": str(e)}
 
 # Register tools with schemas
@@ -498,6 +658,17 @@ def register_default_tools():
                 "entity_type": {
                     "type": "string",
                     "description": "Optional filter by entity type"
+                },
+                "centrality_metric": {
+                    "type": "string",
+                    "description": "Centrality metric to use (degree, betweenness, closeness)",
+                    "enum": ["degree", "betweenness", "closeness"],
+                    "default": "degree"
+                },
+                "min_connections": {
+                    "type": "integer",
+                    "description": "Minimum number of connections an entity must have",
+                    "default": 0
                 }
             }
         }
@@ -511,5 +682,69 @@ def register_default_tools():
         schema={
             "type": "object",
             "properties": {}
+        }
+    )
+    
+    # Concept Hierarchy Tool
+    register_tool(
+        name="cyberon.tools.concept_hierarchy",
+        description="Analyze the hierarchy of concepts in the ontology",
+        handler=concept_hierarchy_tool,
+        schema={
+            "type": "object",
+            "properties": {
+                "include_full_hierarchy": {
+                    "type": "boolean",
+                    "description": "Whether to include full hierarchy details",
+                    "default": False
+                },
+                "root_concept_id": {
+                    "type": "string",
+                    "description": "Optional specific root concept to analyze"
+                }
+            }
+        }
+    )
+    
+    # Related Concepts Tool
+    register_tool(
+        name="cyberon.tools.related_concepts",
+        description="Discover concepts related to a given concept",
+        handler=related_concepts_tool,
+        schema={
+            "type": "object",
+            "properties": {
+                "concept_id": {
+                    "type": "string",
+                    "description": "The ID of the concept to find related concepts for"
+                },
+                "relationship_types": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Optional filter by relationship types"
+                },
+                "include_inverse": {
+                    "type": "boolean",
+                    "description": "Whether to include inverse relationships",
+                    "default": True
+                }
+            },
+            "required": ["concept_id"]
+        }
+    )
+    
+    # Concept Evolution Tool
+    register_tool(
+        name="cyberon.tools.concept_evolution",
+        description="Trace the evolution of concepts over time",
+        handler=concept_evolution_tool,
+        schema={
+            "type": "object",
+            "properties": {
+                "concept_id": {
+                    "type": "string",
+                    "description": "Optional specific concept to trace evolution for"
+                }
+            }
         }
     )

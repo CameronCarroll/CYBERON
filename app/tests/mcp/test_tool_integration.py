@@ -19,7 +19,10 @@ from app.mcp.handlers.tools import (
     analyze_entity_tool,
     compare_entities_tool,
     find_central_entities_tool,
-    summarize_ontology_tool
+    summarize_ontology_tool,
+    concept_hierarchy_tool,
+    related_concepts_tool,
+    concept_evolution_tool
 )
 
 class TestToolHandlers:
@@ -81,11 +84,61 @@ class TestToolHandlers:
         
         # Configure mock for central entities
         mock_central_entities = [
-            {"id": "entity1", "label": "Entity 1", "centrality": 0.9},
-            {"id": "entity2", "label": "Entity 2", "centrality": 0.8},
-            {"id": "entity3", "label": "Entity 3", "centrality": 0.7}
+            {"id": "entity1", "label": "Entity 1", "centrality": 0.9, "connections": 5, "type": "concept"},
+            {"id": "entity2", "label": "Entity 2", "centrality": 0.8, "connections": 4, "type": "person"},
+            {"id": "entity3", "label": "Entity 3", "centrality": 0.7, "connections": 3, "type": "concept"}
         ]
         self.mock_query_engine.get_central_entities.return_value = mock_central_entities
+        
+        # Configure mock for concept hierarchy
+        mock_hierarchy = {
+            "root_nodes": [
+                {"id": "root1", "label": "Root 1", "type": "concept", "max_depth": 3},
+                {"id": "root2", "label": "Root 2", "type": "concept", "max_depth": 2}
+            ],
+            "hierarchies": {
+                "root1": {
+                    "0": [{"id": "root1", "label": "Root 1", "type": "concept"}],
+                    "1": [{"id": "entity1", "label": "Entity 1", "type": "concept"}],
+                    "2": [{"id": "entity2", "label": "Entity 2", "type": "concept"}],
+                    "3": [{"id": "entity3", "label": "Entity 3", "type": "concept"}]
+                },
+                "root2": {
+                    "0": [{"id": "root2", "label": "Root 2", "type": "concept"}],
+                    "1": [{"id": "entity4", "label": "Entity 4", "type": "concept"}],
+                    "2": [{"id": "entity5", "label": "Entity 5", "type": "concept"}]
+                }
+            }
+        }
+        self.mock_query_engine.analyze_concept_hierarchy.return_value = mock_hierarchy
+        
+        # Configure mock for related concepts
+        mock_related = {
+            "part_of": [
+                {"id": "entity2", "label": "Entity 2", "type": "concept", "direction": "outgoing"}
+            ],
+            "has_part": [
+                {"id": "entity3", "label": "Entity 3", "type": "concept", "direction": "outgoing"}
+            ],
+            "inverse_influenced_by": [
+                {"id": "entity4", "label": "Entity 4", "type": "concept", "direction": "incoming"}
+            ]
+        }
+        self.mock_query_engine.get_related_concepts.return_value = mock_related
+        
+        # Configure mock for concept evolution
+        mock_evolution = [
+            [
+                {"id": "concept1", "label": "Concept 1", "type": "concept"},
+                {"id": "concept2", "label": "Concept 2", "type": "concept"},
+                {"id": "concept3", "label": "Concept 3", "type": "concept"}
+            ],
+            [
+                {"id": "concept4", "label": "Concept 4", "type": "concept"},
+                {"id": "concept5", "label": "Concept 5", "type": "concept"}
+            ]
+        ]
+        self.mock_query_engine.get_concept_evolution.return_value = mock_evolution
         
         # Set up a mock transport ID
         self.transport_id = "test-transport"
@@ -196,6 +249,73 @@ class TestToolHandlers:
         
         # Verify result
         assert "error" in result
+        
+    def test_execute_tool_handler_concept_hierarchy(self):
+        """Test the execute_tool_handler function with concept_hierarchy tool."""
+        # Call the handler
+        result = execute_tool_handler({
+            "name": "cyberon.tools.concept_hierarchy",
+            "params": {
+                "include_full_hierarchy": True
+            }
+        }, self.transport_id)
+        
+        # Verify result
+        assert "name" in result
+        assert "timestamp" in result
+        assert "result" in result
+        assert result["name"] == "cyberon.tools.concept_hierarchy"
+        
+        # Verify tool result
+        tool_result = result["result"]
+        assert "root_nodes" in tool_result
+        assert "total_roots" in tool_result
+        assert "max_depth" in tool_result
+        assert "hierarchies" in tool_result
+        
+    def test_execute_tool_handler_related_concepts(self):
+        """Test the execute_tool_handler function with related_concepts tool."""
+        # Call the handler
+        result = execute_tool_handler({
+            "name": "cyberon.tools.related_concepts",
+            "params": {
+                "concept_id": "entity1"
+            }
+        }, self.transport_id)
+        
+        # Verify result
+        assert "name" in result
+        assert "timestamp" in result
+        assert "result" in result
+        assert result["name"] == "cyberon.tools.related_concepts"
+        
+        # Verify tool result
+        tool_result = result["result"]
+        assert "concept" in tool_result
+        assert "related_concepts" in tool_result
+        assert "relationship_count" in tool_result
+        
+    def test_execute_tool_handler_concept_evolution(self):
+        """Test the execute_tool_handler function with concept_evolution tool."""
+        # Call the handler
+        result = execute_tool_handler({
+            "name": "cyberon.tools.concept_evolution",
+            "params": {
+                "concept_id": "concept1"
+            }
+        }, self.transport_id)
+        
+        # Verify result
+        assert "name" in result
+        assert "timestamp" in result
+        assert "result" in result
+        assert result["name"] == "cyberon.tools.concept_evolution"
+        
+        # Verify tool result
+        tool_result = result["result"]
+        assert "evolution_chains" in tool_result
+        assert "chain_count" in tool_result
+        assert "concept_id" in tool_result
     
     def test_search_entities_tool(self):
         """Test the search_entities_tool function."""
@@ -283,3 +403,75 @@ class TestToolHandlers:
         self.mock_query_engine.get_entity_types.assert_called_once()
         self.mock_query_engine.get_relationship_types.assert_called_once()
         self.mock_query_engine.get_central_entities.assert_called_once()
+    
+    def test_concept_hierarchy_tool(self):
+        """Test the concept_hierarchy_tool function."""
+        # Call the tool directly
+        result = concept_hierarchy_tool({}, self.transport_id)
+        
+        # Verify result
+        assert "root_nodes" in result
+        assert "total_roots" in result
+        assert "max_depth" in result
+        assert result["total_roots"] == 2
+        
+        # Call with full hierarchy flag
+        result = concept_hierarchy_tool({"include_full_hierarchy": True}, self.transport_id)
+        
+        # Verify hierarchies are included
+        assert "hierarchies" in result
+        
+        # Call with specific root concept
+        result = concept_hierarchy_tool({"root_concept_id": "root1"}, self.transport_id)
+        
+        # Verify specific hierarchy info
+        assert "root_concept" in result
+        assert "hierarchy" in result
+        assert result["root_concept"]["id"] == "root1"
+        
+        # Verify mock was called correctly
+        self.mock_query_engine.analyze_concept_hierarchy.assert_called()
+    
+    def test_related_concepts_tool(self):
+        """Test the related_concepts_tool function."""
+        # Call the tool directly
+        result = related_concepts_tool({"concept_id": "entity1"}, self.transport_id)
+        
+        # Verify result
+        assert "concept" in result
+        assert "related_concepts" in result
+        assert "relationship_count" in result
+        assert result["concept"]["id"] == "entity1"
+        
+        # Call with relationship type filter and no inverse
+        result = related_concepts_tool({
+            "concept_id": "entity1", 
+            "relationship_types": ["part_of"], 
+            "include_inverse": False
+        }, self.transport_id)
+        
+        # Verify mock was called correctly
+        self.mock_query_engine.get_related_concepts.assert_called_with("entity1", ["part_of"])
+        self.mock_query_engine.query_entity.assert_called_with("entity1")
+    
+    def test_concept_evolution_tool(self):
+        """Test the concept_evolution_tool function."""
+        # Call the tool directly
+        result = concept_evolution_tool({}, self.transport_id)
+        
+        # Verify result
+        assert "evolution_chains" in result
+        assert "chain_count" in result
+        assert result["chain_count"] == 2
+        
+        # Call with specific concept
+        result = concept_evolution_tool({"concept_id": "concept1"}, self.transport_id)
+        
+        # Verify filtered result
+        assert "evolution_chains" in result
+        assert "chain_count" in result
+        assert "concept_id" in result
+        assert result["concept_id"] == "concept1"
+        
+        # Verify mock was called correctly
+        self.mock_query_engine.get_concept_evolution.assert_called()

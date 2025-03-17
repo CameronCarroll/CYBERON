@@ -270,7 +270,8 @@ See the following files for implementation details:
 - `WP1_IMPLEMENTATION_REPORT.md`: Core MCP server implementation
 - `WP2_IMPLEMENTATION_REPORT.md`: Query engine integration
 - `WP3_IMPLEMENTATION_REPORT.md`: Resource implementation
-- `WP4_IMPLEMENTATION_REPORT.md`: Tools implementation
+- `WP4_IMPLEMENTATION_REPORT.md`: Basic tools implementation
+- `WP5_IMPLEMENTATION_REPORT.md`: Advanced tools implementation
 
 ## Using Tools
 
@@ -392,6 +393,204 @@ Response:
         {"id": "second_order_cybernetics", "count": 1},
         {"id": "feedback", "count": 1}
       ]
+    }
+  }
+}
+```
+
+## Advanced Tools
+
+The MCP server provides advanced ontology analysis tools that extend the basic tools with more sophisticated capabilities:
+
+### Concept Hierarchy Analysis
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 7,
+  "method": "tools/execute",
+  "params": {
+    "name": "cyberon.tools.concept_hierarchy",
+    "params": {
+      "include_full_hierarchy": true,
+      "root_concept_id": "cybernetics"
+    }
+  }
+}
+```
+
+Response:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 7,
+  "result": {
+    "name": "cyberon.tools.concept_hierarchy",
+    "timestamp": "2023-07-14T15:24:12.456789",
+    "result": {
+      "root_concept": {
+        "id": "cybernetics",
+        "label": "Cybernetics",
+        "type": "concept",
+        "max_depth": 4
+      },
+      "hierarchy": {
+        "0": [{"id": "cybernetics", "label": "Cybernetics", "type": "concept"}],
+        "1": [
+          {"id": "first_order_cybernetics", "label": "First-Order Cybernetics", "type": "concept"},
+          {"id": "second_order_cybernetics", "label": "Second-Order Cybernetics", "type": "concept"}
+        ],
+        "2": [
+          {"id": "control_systems", "label": "Control Systems", "type": "concept"},
+          {"id": "feedback_loops", "label": "Feedback Loops", "type": "concept"}
+        ]
+      },
+      "max_depth": 4
+    }
+  }
+}
+```
+
+### Related Concepts Discovery
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 8,
+  "method": "tools/execute",
+  "params": {
+    "name": "cyberon.tools.related_concepts",
+    "params": {
+      "concept_id": "cybernetics",
+      "relationship_types": ["influenced_by", "part_of"],
+      "include_inverse": true
+    }
+  }
+}
+```
+
+Response:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 8,
+  "result": {
+    "name": "cyberon.tools.related_concepts",
+    "timestamp": "2023-07-14T15:26:45.123456",
+    "result": {
+      "concept": {
+        "id": "cybernetics",
+        "label": "Cybernetics",
+        "type": "concept"
+      },
+      "related_concepts": {
+        "influenced_by": [
+          {"id": "systems_theory", "label": "Systems Theory", "type": "concept", "direction": "outgoing"}
+        ],
+        "part_of": [
+          {"id": "control_theory", "label": "Control Theory", "type": "concept", "direction": "outgoing"}
+        ],
+        "inverse_part_of": [
+          {"id": "first_order_cybernetics", "label": "First-Order Cybernetics", "type": "concept", "direction": "incoming"},
+          {"id": "second_order_cybernetics", "label": "Second-Order Cybernetics", "type": "concept", "direction": "incoming"}
+        ]
+      },
+      "relationship_count": 4
+    }
+  }
+}
+```
+
+### Enhanced Central Entities Search
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 9,
+  "method": "tools/execute",
+  "params": {
+    "name": "cyberon.tools.central_entities",
+    "params": {
+      "limit": 5,
+      "entity_type": "concept",
+      "centrality_metric": "degree",
+      "min_connections": 3
+    }
+  }
+}
+```
+
+Response:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 9,
+  "result": {
+    "name": "cyberon.tools.central_entities",
+    "timestamp": "2023-07-14T15:28:30.789012",
+    "result": {
+      "entities": [
+        {"id": "cybernetics", "label": "Cybernetics", "type": "concept", "centrality": 0.95, "connections": 23},
+        {"id": "systems_theory", "label": "Systems Theory", "type": "concept", "centrality": 0.82, "connections": 18},
+        {"id": "information_theory", "label": "Information Theory", "type": "concept", "centrality": 0.78, "connections": 15},
+        {"id": "complexity", "label": "Complexity", "type": "concept", "centrality": 0.65, "connections": 12},
+        {"id": "feedback", "label": "Feedback", "type": "concept", "centrality": 0.61, "connections": 10}
+      ],
+      "entities_by_type": {
+        "concept": [
+          {"id": "cybernetics", "label": "Cybernetics", "type": "concept", "centrality": 0.95, "connections": 23},
+          {"id": "systems_theory", "label": "Systems Theory", "type": "concept", "centrality": 0.82, "connections": 18},
+          {"id": "information_theory", "label": "Information Theory", "type": "concept", "centrality": 0.78, "connections": 15},
+          {"id": "complexity", "label": "Complexity", "type": "concept", "centrality": 0.65, "connections": 12},
+          {"id": "feedback", "label": "Feedback", "type": "concept", "centrality": 0.61, "connections": 10}
+        ]
+      },
+      "centrality_metric": "degree",
+      "total": 5
+    }
+  }
+}
+```
+
+### Concept Evolution Tracing
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 10,
+  "method": "tools/execute",
+  "params": {
+    "name": "cyberon.tools.concept_evolution",
+    "params": {
+      "concept_id": "cybernetics"
+    }
+  }
+}
+```
+
+Response:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 10,
+  "result": {
+    "name": "cyberon.tools.concept_evolution",
+    "timestamp": "2023-07-14T15:30:15.456789",
+    "result": {
+      "evolution_chains": [
+        [
+          {"id": "control_theory", "label": "Control Theory", "type": "concept"},
+          {"id": "cybernetics", "label": "Cybernetics", "type": "concept"},
+          {"id": "second_order_cybernetics", "label": "Second-Order Cybernetics", "type": "concept"},
+          {"id": "organizational_cybernetics", "label": "Organizational Cybernetics", "type": "concept"}
+        ]
+      ],
+      "chain_count": 1,
+      "concept_id": "cybernetics"
     }
   }
 }
