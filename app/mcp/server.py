@@ -24,6 +24,30 @@ from app.mcp.handlers import (
     get_relationship_types_handler
 )
 
+# Work Package 3 - Resource handlers
+from app.mcp.handlers.resources import (
+    list_resources_handler,
+    list_resource_templates_handler,
+    read_resource_handler,
+    resource_subscription_handler,
+    resource_unsubscription_handler
+)
+
+# Work Package 4 - Tool handlers
+from app.mcp.handlers.tools import (
+    list_tools_handler,
+    get_tool_schema_handler,
+    execute_tool_handler,
+    register_default_tools
+)
+
+# Work Package 6 - Prompt handlers
+from app.mcp.handlers.prompts import (
+    list_prompts_handler,
+    get_prompt_handler,
+    register_default_prompts
+)
+
 logger = logging.getLogger(__name__)
 
 class MCPServer:

@@ -255,6 +255,32 @@ The MCP server is designed to work with Claude and other LLMs that support the M
 3. Find connections between concepts
 4. Navigate the knowledge graph
 
+### Client Integration
+
+An example MCP client is provided in `app/mcp/client.py` that demonstrates:
+
+1. Proper initialization and capability negotiation
+2. Correct JSON-RPC message formatting
+3. Structured error handling
+4. Examples for all supported MCP methods
+5. Feature detection and conditional execution
+
+LLM clients can follow this reference implementation to integrate with the MCP server, especially for:
+
+```python
+# Example of initializing a connection
+client = MCPClient(transport)
+client.initialize()
+
+# Example of executing a tool
+results = client.execute_tool("cyberon.tools.search", {"query": "cybernetics"})
+
+# Example of getting a prompt
+prompt = client.get_prompt("cyberon.prompts.entity_analysis", {"entity_id": "cybernetics"})
+```
+
+The client implements all MCP methods and handles feature detection, ensuring compatibility with different server configurations.
+
 ## Development and Testing
 
 To run the MCP tests:
@@ -273,6 +299,7 @@ See the following files for implementation details:
 - `WP4_IMPLEMENTATION_REPORT.md`: Basic tools implementation
 - `WP5_IMPLEMENTATION_REPORT.md`: Advanced tools implementation
 - `WP6_IMPLEMENTATION_REPORT.md`: Prompts implementation
+- `WP7_IMPLEMENTATION_REPORT.md`: Integration testing and examples
 
 ## Using Tools
 
