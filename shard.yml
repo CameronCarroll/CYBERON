@@ -1,0 +1,26 @@
+name: cyberon-mcp-client
+version: 0.1.0
+
+authors:
+  - Cyberon Team
+
+description: |
+  Crystal client for the Cyberon MCP protocol
+
+dependencies:
+  # Add any dependencies here
+  # For example:
+  # http:
+  #  github: crystal-lang/crystal-db
+  #  version: ~> 0.5
+
+development_dependencies:
+  # Add any development dependencies here
+
+targets:
+  cyberon-mcp-client:
+    main: src/client_main.cr
+
+crystal: ">= 1.0.0"
+
+license: MIT

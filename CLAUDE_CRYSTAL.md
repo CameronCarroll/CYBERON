@@ -1,0 +1,21 @@
+Crystal Gotchas and Best Practices
+
+  - Constructor vs Methods: Avoid naming instance methods initialize as this is reserved for constructors. Use alternatives like init_connection or setup.
+  - Type Safety: Crystal is strongly typed. Return types must match exactly what's declared (e.g., Hash(String, JSON::Any) vs a hash with mixed types).
+  - Global Variables: Use class variables (@@var) instead of global variables ($var). Crystal discourages global variables.
+  - JSON Handling: When working with JSON:
+    - Use JSON::Any for dynamic JSON structures
+    - Create proper return objects with explicit types
+    - Handle nested JSON structures carefully
+    - Use as_h?, as_a?, as_bool? methods to safely unwrap JSON::Any values
+  - Module Namespacing: Keep related code in namespaces to avoid conflicts, e.g., module CyberonMCP; module Features; end; end
+  - Error Handling: Use specific error types (e.g., IO::Error not IOError) and custom error classes for domain-specific errors.
+  - Logging: Use the built-in Log module rather than rolling your own or using external loggers. Configure via Log.builder.bind.
+  - Testing:
+    - Reset state between tests for clean isolation
+    - Initialize fresh test instances when testing different configurations
+    - Mock external dependencies via interface abstractions
+  - Standard Library: Use Crystal's standard library conventions (e.g., STDOUT, STDERR instead of $stdout, $stderr).
+  - Method Parameters: Be explicit with parameter types, including nullable types with ? when appropriate.
+  - Dynamic Features: When working with dynamic features, convert tuples to arrays for runtime slicing (e.g., feature_path.to_a).
+  - Hash Initialization: Use {} of KeyType => ValueType instead of Hash{key => value} for more flexible type handling.

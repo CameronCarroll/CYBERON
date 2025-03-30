@@ -67,7 +67,7 @@ def main():
     # Parse command line arguments
     parser = argparse.ArgumentParser(description="CYBERON MCP Server")
     parser.add_argument("--debug", action="store_true", help="Enable debug logging")
-    parser.add_argument("--transport", default="namedpipe", choices=["namedpipe"], help="Transport to use")
+    parser.add_argument("--transport", default="stdio", choices=["stdio"], help="Transport to use")
     parser.add_argument("--data-file", default="data/cybernetics_ontology.json", 
                         help="Path to the ontology data file")
     args = parser.parse_args()
@@ -96,12 +96,12 @@ def main():
             logger.warning("Running without query engine - some functionality will be limited")
         
         # Set up the requested transport
-        if args.transport == "namedpipe":
-            transport_id = server.create_namedpipe_transport() # Get ID just in case
-            if not transport_id: # Add check if create_namedpipe_transport could fail
-                 raise RuntimeError("Failed to create NamedPipe transport")
+        if args.transport == "stdio":
+            transport_id = server.create_stdio_transport() # Get ID just in case
+            if not transport_id: # Add check if create_stdio_transport could fail
+                 raise RuntimeError("Failed to create Stdio transport")
         else:
-             # Handle other transport types or raise error if only namedpipe supported
+             # Handle other transport types or raise error if only stdio supported
              raise NotImplementedError(f"Transport type '{args.transport}' not supported")
         
         # Start the server

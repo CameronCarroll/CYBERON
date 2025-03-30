@@ -10,7 +10,7 @@ import uuid
 from typing import Dict, List, Any, Optional, Callable, Tuple
 
 from jsonschema import validate, ValidationError
-from app.mcp.transports import NamedPipeTransport, Transport
+from app.mcp.transports import StdioTransport, Transport
 from app.mcp.handlers import (
     initialize_handler, 
     capabilities_handler,
@@ -152,14 +152,14 @@ class MCPServer:
         logger.info(f"Registered transport {transport_id} of type {type(transport).__name__}")
         return transport_id
     
-    def create_namedpipe_transport(self) -> str:
+    def create_stdio_transport(self) -> str:
         """
-        Create and register a Named Pipe transport.
+        Create and register a STDIO transport.
         
         Returns:
             The transport ID
         """
-        transport = NamedPipeTransport()
+        transport = StdioTransport()
         return self.register_transport(transport)
     
     def set_query_engine(self, engine) -> None:

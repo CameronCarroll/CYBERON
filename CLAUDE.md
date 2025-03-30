@@ -1,5 +1,7 @@
 # Cyberon Project Guide
 
+When working with Crystal code (for the client application), refer to CLAUDE_CRYSTAL.md
+
 ## Test Commands
 - Run all tests: `pytest`
 - Run specific test file: `pytest app/tests/test_api.py`

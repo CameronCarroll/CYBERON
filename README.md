@@ -1,6 +1,10 @@
-# Cyberon - Cybernetics Digital Garden
+# CYBERON - Cybernetic Ontology
 
-A Flask web application for exploring and visualizing knowledge ontologies using graph technology. Originally designed for cybernetics, but adaptable to any domain knowledge structure. Supports linking knowledge graph nodes to external content via the external_url field.
+Human interface: A Flask web application for exploring and visualizing knowledge ontologies using graph technology. Originally designed for cybernetics, but adaptable to any domain knowledge structure. Supports linking knowledge graph nodes to external content via the external_url field.
+
+LLM interface: MCP server (Python) and client (Crystal lang)
+
+Graph & query engine underneath for managing, querying and reasoning over structured ontologies.
 
 ## Documentation
 
