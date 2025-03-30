@@ -26,35 +26,122 @@ This application includes a Model Context Protocol server that allows LLMs and o
 - Tool execution for ontology analysis
 - Prompt templates for natural language interaction
 
-### Starting the MCP Server
+# CYBERON Setup Instructions
 
-The MCP server starts automatically with the Flask application
+## Prerequisites
+- Python 3.8 or higher
+- Flask and dependencies (see requirements.txt)
+- `sudo` access for systemd service installation
 
 ## Installation
 
 1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/cyberon.git
+   cd cyberon
+   ```
+
+2. Install required Python packages:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. Create the directory for named pipes:
+   ```bash
+   sudo mkdir -p /run/cyberon
+   ```
+
+4. Create the named pipes:
+   ```bash
+   sudo mkfifo /run/cyberon/mcp_in.pipe
+   sudo mkfifo /run/cyberon/mcp_out.pipe
+   ```
+
+5. Set appropriate permissions (replace `yourusername` with your actual username):
+   ```bash
+   sudo chown yourusername:yourusername /run/cyberon/mcp_in.pipe
+   sudo chown yourusername:yourusername /run/cyberon/mcp_out.pipe
+   sudo chmod 660 /run/cyberon/mcp_in.pipe
+   sudo chmod 660 /run/cyberon/mcp_out.pipe
+   ```
+
+6. Create the systemd service file:
+   ```bash
+   sudo nano /etc/systemd/system/cyberon-mcp.service
+   ```
+
+7. Add the following content to the service file (adjust paths and username as needed):
+   ```
+   [Unit]
+   Description=CYBERON MCP Server Stdio
+   After=network.target
+   
+   [Service]
+   Type=simple
+   User=yourusername
+   Group=yourusername
+   WorkingDirectory=/path/to/cyberon/
+   ExecStart=/bin/sh -c 'exec /usr/bin/python /path/to/cyberon/mcp_server.py --data-file=/path/to/cyberon/data_template.json < /run/cyberon/mcp_in.pipe > /run/cyberon/mcp_out.pipe'
+   Restart=on-failure
+   RestartSec=5
+   StandardError=journal
+   
+   [Install]
+   WantedBy=multi-user.target
+   ```
+
+8. Reload systemd, enable and start the service:
+   ```bash
+   sudo systemctl daemon-reload
+   sudo systemctl enable cyberon-mcp.service
+   sudo systemctl start cyberon-mcp.service
+   ```
+
+9. Verify the service is running:
+   ```bash
+   sudo systemctl status cyberon-mcp.service
+   ```
+
+## Using the Web Interface
+
+1. Start the Flask web server:
+   ```bash
+   python run.py
+   ```
+
+2. Open your browser and navigate to http://localhost:5001
+
+## Using the MCP Client
+
+The MCP client communicates with the server through the named pipes:
+
 ```bash
-git clone https://github.com/yourusername/cyberon.git
-cd cyberon
+python app/mcp/client.py
 ```
 
-2. Create a virtual environment and install dependencies:
+For testing or debugging pipe communication, you can use the simple debug client:
+
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
+python app/mcp/simple_client.py
 ```
 
-## Usage
+## Troubleshooting
 
-1. Start the application:
+- **Service won't start**: Check permissions on the named pipes and verify paths in the systemd service file.
+- **Permission denied**: Ensure the pipes have correct ownership and permissions for your user.
+- **Communication errors**: Verify both pipes exist and the service is running.
+
+If you encounter issues with the named pipes, you can check the system journal:
+
 ```bash
-python run.py
+journalctl -u cyberon-mcp.service -f
 ```
 
-2. Open your web browser and navigate to `http://localhost:5001`
+## Additional Notes
 
-3. Upload an ontology markdown file to begin exploring
+- The named pipes must be created before starting the service
+- If you change the location of the named pipes, update both the systemd service file and any client configurations
+- For persistent named pipes across reboots, consider adding their creation to a system startup script
 
 ## Creating Your Own Ontology
 
