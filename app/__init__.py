@@ -113,4 +113,5 @@ def create_app(test_config=None, testing=False):
     def cleanup(exception=None):
         if exception:
             app.logger.error(f"Exception during teardown: {exception}")
-        return app
+
+    return app
