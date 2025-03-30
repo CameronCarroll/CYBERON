@@ -84,47 +84,49 @@ class StdioTransport(Transport):
     
     def _read_loop(self) -> None:
         """Read messages from stdin and pass them to the message handler."""
+        # Use stderr for critical debug prints, as stdout is the data pipe
+        print("StdioTransport: _read_loop started.", file=sys.stderr, flush=True)
+        loop_iteration = 0
         while self._running:
+            loop_iteration += 1
+            print(f"StdioTransport: _read_loop iteration {loop_iteration}, self._running={self._running}", file=sys.stderr, flush=True)
             try:
-                # Read a line from stdin
+                print("StdioTransport: Attempting sys.stdin.readline()...", file=sys.stderr, flush=True)
                 line = sys.stdin.readline()
-                
-                # Check if we've reached EOF
+                print(f"StdioTransport: sys.stdin.readline() returned '{line!r}'", file=sys.stderr, flush=True) # Show exactly what was read
+
                 if not line:
-                    logger.info("Reached EOF on stdin, stopping transport")
-                    self._running = False
-                    break
-                
-                # Trim trailing newline if present
+                    print("StdioTransport: Read EOF on stdin, stopping loop.", file=sys.stderr, flush=True)
+                    self._running = False # Ensure flag is set
+                    break # Exit loop on EOF
+
                 line = line.rstrip('\n')
-                
-                # Skip empty lines
+                print(f"StdioTransport: Stripped line: '{line}'", file=sys.stderr, flush=True)
+
                 if not line:
+                    print("StdioTransport: Skipping empty line.", file=sys.stderr, flush=True)
                     continue
-                
-                # Process the message if we have a handler
+
+                print(f"StdioTransport: Processing line: '{line}'", file=sys.stderr, flush=True)
                 if self._message_handler:
                     response = self._message_handler(line, self._transport_id)
                     if response:
+                        print(f"StdioTransport: Handler returned response, calling send_message.", file=sys.stderr, flush=True)
                         self.send_message(response)
+                    else:
+                            print(f"StdioTransport: Handler returned no response.", file=sys.stderr, flush=True)
                 else:
+                    print("StdioTransport: No message handler registered.", file=sys.stderr, flush=True)
                     logger.warning("Received message but no handler is registered")
-                    
+
             except Exception as e:
-                logger.error(f"Error in read loop: {e}")
-                
-                # Try to send an error response
-                if self._message_handler:
-                    try:
-                        error_response = json.dumps({
-                            "jsonrpc": "2.0",
-                            "id": None,
-                            "error": {
-                                "code": -32603,
-                                "message": "Internal error",
-                                "data": str(e)
-                            }
-                        })
-                        self.send_message(error_response)
-                    except Exception:
-                        pass  # If we can't send the error, there's not much we can do
+                # Log exception details to stderr immediately
+                import traceback
+                print(f"StdioTransport: !!! EXCEPTION IN READ LOOP !!!", file=sys.stderr, flush=True)
+                print(f"Error: {e}", file=sys.stderr, flush=True)
+                traceback.print_exc(file=sys.stderr)
+                print("StdioTransport: Setting self._running=False due to exception.", file=sys.stderr, flush=True)
+                self._running = False
+                break # Exit loop on unhandled exception
+
+        print("StdioTransport: _read_loop finished.", file=sys.stderr, flush=True)

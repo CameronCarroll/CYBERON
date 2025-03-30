@@ -99,32 +99,40 @@ def main():
         # Set up the requested transport
         if args.transport == "stdio":
             logger.info("Using STDIO transport")
-            server.create_stdio_transport()
+            transport_id = server.create_stdio_transport() # Get ID just in case
+            if not transport_id: # Add check if create_stdio_transport could fail
+                 raise RuntimeError("Failed to create STDIO transport")
+        else:
+             # Handle other transport types or raise error if only stdio supported
+             raise NotImplementedError(f"Transport type '{args.transport}' not supported")
         
         # Start the server
-        logger.info("Starting MCP server")
+        logger.info("Starting MCP server and blocking for input...")
         server.start()
-        
-        # For STDIO transport, the server will run in background threads
-        # and we need to keep the main thread alive
-        if args.transport == "stdio":
-            # Use signal.pause() to wait for signals on Unix systems
-            if hasattr(signal, 'pause'):
-                signal.pause()
-            else:
-                # On Windows or other platforms without signal.pause()
-                import time
-                while True:
-                    time.sleep(1)
-    
+
+        # --- Explicitly Wait ---
+        # Keep the main thread alive. The server logic runs in the transport's
+        # background thread now. The main thread only needs to wait for a
+        # shutdown signal (handled by signal_handler) or KeyboardInterrupt.
+        logger.info("MCP Server setup complete. Main thread waiting for signals (e.g., Ctrl+C)...")
+        while True:
+            # Sleep for a long time; signal handlers will interrupt this.
+            # Or use signal.pause() if available and preferred on Unix.
+            time.sleep(3600) # Sleep for an hour, signals will wake it up
+
     except KeyboardInterrupt:
-        logger.info("Keyboard interrupt received, shutting down...")
-        if server_instance:
-            server_instance.stop()
+        logger.info("Keyboard interrupt received by main thread, initiating shutdown...")
     except Exception as e:
-        logger.exception(f"Error running MCP server: {e}")
-        return 1
-    
+        logger.exception(f"Error in MCP server main execution: {e}")
+        return 1 # Indicate error exit status
+    finally:
+        # Ensure shutdown happens cleanly
+        logger.info("Main thread entering finally block, ensuring server stop...")
+        if server_instance:
+            server_instance.stop() # This will stop the transport thread
+        logger.info("Server stop called.")
+
+    logger.info("MCP server process main thread exiting.")
     return 0
 
 if __name__ == "__main__":

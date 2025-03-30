@@ -681,4 +681,4 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     
     # Run demo with mock responses to avoid stdin/stdout issues
-    demo_usage(use_mock=True)
+    demo_usage(use_mock=False)
