@@ -11,6 +11,7 @@ import os
 import argparse
 import logging
 import signal
+import time
 from typing import Optional
 
 from app.mcp import MCPServer
@@ -52,9 +53,8 @@ def load_query_engine(data_file: str) -> Optional[CyberneticsQueryEngine]:
             logger.error(f"Data file not found: {data_file}")
             return None
         
-        logger.info(f"Loading query engine from {data_file}")
         engine = CyberneticsQueryEngine(data_file)
-        logger.info(f"Query engine loaded with {engine.graph.number_of_nodes()} nodes and {engine.graph.number_of_edges()} edges")
+        logger.info(f"Query engine loaded {data_file} with {engine.graph.number_of_nodes()} nodes and {engine.graph.number_of_edges()} edges")
         return engine
     except Exception as e:
         logger.exception(f"Error loading query engine: {e}")
@@ -67,7 +67,7 @@ def main():
     # Parse command line arguments
     parser = argparse.ArgumentParser(description="CYBERON MCP Server")
     parser.add_argument("--debug", action="store_true", help="Enable debug logging")
-    parser.add_argument("--transport", default="stdio", choices=["stdio"], help="Transport to use")
+    parser.add_argument("--transport", default="namedpipe", choices=["namedpipe"], help="Transport to use")
     parser.add_argument("--data-file", default="data/cybernetics_ontology.json", 
                         help="Path to the ontology data file")
     args = parser.parse_args()
@@ -83,7 +83,6 @@ def main():
     
     # Create and start the server
     try:
-        logger.info("Initializing MCP server")
         server = MCPServer()
         server_instance = server
         
@@ -97,17 +96,15 @@ def main():
             logger.warning("Running without query engine - some functionality will be limited")
         
         # Set up the requested transport
-        if args.transport == "stdio":
-            logger.info("Using STDIO transport")
-            transport_id = server.create_stdio_transport() # Get ID just in case
-            if not transport_id: # Add check if create_stdio_transport could fail
-                 raise RuntimeError("Failed to create STDIO transport")
+        if args.transport == "namedpipe":
+            transport_id = server.create_namedpipe_transport() # Get ID just in case
+            if not transport_id: # Add check if create_namedpipe_transport could fail
+                 raise RuntimeError("Failed to create NamedPipe transport")
         else:
-             # Handle other transport types or raise error if only stdio supported
+             # Handle other transport types or raise error if only namedpipe supported
              raise NotImplementedError(f"Transport type '{args.transport}' not supported")
         
         # Start the server
-        logger.info("Starting MCP server and blocking for input...")
         server.start()
 
         # --- Explicitly Wait ---

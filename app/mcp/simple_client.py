@@ -43,7 +43,7 @@ request_payload = {
 #     "jsonrpc": "2.0",
 #     "id": 3,
 #     "method": "cyberon/search",
-#     "params": { "query": "test", "limit": 1 }
+#     "params": { "query": "bayesian", "limit": 3 }
 # }
 
 # --- Script Logic ---

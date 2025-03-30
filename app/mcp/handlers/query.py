@@ -25,7 +25,6 @@ def set_query_engine(engine: Any) -> None:
     """
     global QUERY_ENGINE
     QUERY_ENGINE = engine
-    logger.info("Query engine set for MCP server")
 
 def _ensure_query_engine() -> bool:
     """Check if the query engine is available."""

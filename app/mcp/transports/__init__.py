@@ -6,6 +6,6 @@ between MCP clients and the server.
 """
 
 from app.mcp.transports.base import Transport
-from app.mcp.transports.stdio import StdioTransport
+from app.mcp.transports.stdio import NamedPipeTransport
 
-__all__ = ["Transport", "StdioTransport"]
+__all__ = ["Transport", "NamedPipeTransport"]
