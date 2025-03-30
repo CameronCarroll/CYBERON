@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# simple_client.py
 """
 Simplified MCP Debug Client using basic file I/O for named pipes.
 

@@ -59,7 +59,10 @@ class TestMCPServer:
     def test_register_transport(self):
         """Test that transports can be registered."""
         server = TestMCPServerClass()
-        transport = MagicMock(spec=Transport)
+        
+        # Create a transport mock with required methods explicitly defined
+        transport = MagicMock()
+        transport.set_message_handler = MagicMock()
         
         # Register the transport
         transport_id = server.register_transport(transport)

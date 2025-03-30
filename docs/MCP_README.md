@@ -2,6 +2,8 @@
 
 CYBERON now includes support for the Model Context Protocol (MCP), providing a structured way for LLMs and other clients to interact with the cybernetics ontology.
 
+_Does MCP stand for Mind Control Protocol? I am... pretty sure yes._
+
 ## Overview
 
 The Model Context Protocol integration allows:

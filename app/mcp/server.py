@@ -14,7 +14,6 @@ from app.mcp.transports import NamedPipeTransport, Transport
 from app.mcp.handlers import (
     initialize_handler, 
     capabilities_handler,
-    # Work Package 2 - Query engine handlers
     set_query_engine,
     entity_search_handler,
     entity_info_handler,
@@ -24,7 +23,7 @@ from app.mcp.handlers import (
     get_relationship_types_handler
 )
 
-# Work Package 3 - Resource handlers
+# Resource handlers
 from app.mcp.handlers.resources import (
     list_resources_handler,
     list_resource_templates_handler,
@@ -33,7 +32,7 @@ from app.mcp.handlers.resources import (
     resource_unsubscription_handler
 )
 
-# Work Package 4 - Tool handlers
+# Tool handlers
 from app.mcp.handlers.tools import (
     list_tools_handler,
     get_tool_schema_handler,
@@ -41,7 +40,7 @@ from app.mcp.handlers.tools import (
     register_default_tools
 )
 
-# Work Package 6 - Prompt handlers
+# Prompt handlers
 from app.mcp.handlers.prompts import (
     list_prompts_handler,
     get_prompt_handler,
@@ -71,9 +70,9 @@ class MCPServer:
                 "vendor": "CYBERON Project"
             },
             "supports": {
-                "resources": True,   # Implemented in Work Package 3
-                "tools": True,       # Implemented in Work Package 4
-                "prompts": True      # Implemented in Work Package 6
+                "resources": True,
+                "tools": True,
+                "prompts": True
             }
         }
         self.request_handlers: Dict[str, Callable] = {}
@@ -96,7 +95,7 @@ class MCPServer:
         self.register_handler("initialize", initialize_handler)
         self.register_handler("server/capabilities", capabilities_handler)
         
-        # Work Package 2 - Query engine handlers
+        # Query engine handlers
         self.register_handler("cyberon/search", entity_search_handler)
         self.register_handler("cyberon/entity", entity_info_handler)
         self.register_handler("cyberon/paths", find_paths_handler)
@@ -104,14 +103,14 @@ class MCPServer:
         self.register_handler("cyberon/entity_types", get_entity_types_handler)
         self.register_handler("cyberon/relationship_types", get_relationship_types_handler)
         
-        # Work Package 3 - Resource handlers
+        # Resource handlers
         self.register_handler("resources/list", list_resources_handler)
         self.register_handler("resources/templates/list", list_resource_templates_handler)
         self.register_handler("resources/read", read_resource_handler)
         self.register_handler("resources/subscribe", resource_subscription_handler)
         self.register_handler("resources/unsubscribe", resource_unsubscription_handler)
         
-        # Work Package 4 - Tool handlers
+        # Tool handlers
         self.register_handler("tools/list", list_tools_handler)
         self.register_handler("tools/schema", get_tool_schema_handler)
         self.register_handler("tools/execute", execute_tool_handler)
@@ -119,7 +118,7 @@ class MCPServer:
         # Register default tools
         register_default_tools()
         
-        # Work Package 6 - Prompt handlers
+        # Prompt handlers
         self.register_handler("prompts/list", list_prompts_handler)
         self.register_handler("prompts/get", get_prompt_handler)
         

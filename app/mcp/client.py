@@ -1,8 +1,8 @@
+# client.py
 """
 Example MCP client implementation for the CYBERON project.
 
-This module provides a reference implementation of an MCP client that connects to
-the CYBERON MCP server. It demonstrates:
+This module provides a reference implementation of an MCP client that connects to the CYBERON MCP server. It demonstrates:
 1. Proper initialization and capability negotiation
 2. Correct JSON-RPC message formatting and handling
 3. Structured error handling and recovery
@@ -682,3 +682,6 @@ if __name__ == "__main__":
     
     # Run demo with mock responses to avoid stdin/stdout issues
     demo_usage(use_mock=False)
+
+
+    

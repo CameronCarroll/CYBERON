@@ -158,7 +158,7 @@ class NamedPipeTransport(Transport):
 
         if self._read_thread and self._read_thread.is_alive():
             logger.debug("Waiting for transport thread to join...")
-            self._read_thread.join(timeout=2.0) # Increased timeout slightly
+            self._read_thread.join(timeout=2.0)
             if self._read_thread.is_alive():
                  logger.warning("Transport thread did not join cleanly.")
         
