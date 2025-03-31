@@ -35,7 +35,7 @@ module CyberonMCP
     def self.log_level=(level : Log::Severity)
       Log.builder.bind("mcp_client", level, Log::IOBackend.new)
     end
-    
+
     # Creates a new Client instance.
     def initialize(transport : Transport? = nil, client_name : String = "Crystal MCP Client", client_version : String = "0.1.0")
       @transport = transport
@@ -101,7 +101,7 @@ module CyberonMCP
         @server_capabilities = {} of String => JSON::Any
         self.class.logger.warn { "Server did not return 'supports' or 'capabilities' field in initialization response" }
       end
-      
+
       @initialized = true
 
       self.class.logger.info { "MCP client initialized successfully with server." }
@@ -126,7 +126,7 @@ module CyberonMCP
       response = send_request("shutdown", {} of String => String)
       if error = response["error"]?
         err_obj = error.as_h
-        
+
         # Check if it's a "method not found" error
         if err_obj["code"]?.try(&.as_i?) == -32601
           self.class.logger.warn { "Shutdown method not supported by this server" }
@@ -149,7 +149,7 @@ module CyberonMCP
           # Send exit notification first
           send_notification("exit", {} of String => String)
           self.class.logger.info { "Sent 'exit' notification." }
-          
+
           # Close the transport
           @transport.not_nil!.close
           self.class.logger.info { "Transport closed." }
@@ -161,7 +161,7 @@ module CyberonMCP
       end
       @initialized = false
     end
-    
+
     # Helper method for tests to reset the request ID counter
     def reset_next_id_for_tests
       @next_id = 1
@@ -196,7 +196,7 @@ module CyberonMCP
         # Optional: ID check
         response_id = parsed_response["id"]?
         if !parsed_response.has_key?("error") && response_id && response_id.raw != request_id
-           self.class.logger.warn { "Received response with mismatched ID. Expected #{request_id}, got #{response_id.raw}" }
+          self.class.logger.warn { "Received response with mismatched ID. Expected #{request_id}, got #{response_id.raw}" }
         end
         parsed_response
       rescue ex : JSON::ParseException
@@ -241,7 +241,7 @@ module CyberonMCP
       current_value = @server_capabilities
       # Convert tuple to array for dynamic slicing
       path_array = feature_path.to_a
-      
+
       feature_path.each_with_index do |key, index|
         # Build current path string by joining elements up to current index
         current_path = path_array[0..index].join('.')
@@ -276,7 +276,7 @@ module CyberonMCP
           if index == 0
             raise MCPValueError.new("Server capabilities structure is invalid")
           else
-            raise MCPValueError.new("Server capability path '#{path_array[0..index-1].join('.')}' is not a valid object")
+            raise MCPValueError.new("Server capability path '#{path_array[0..index - 1].join('.')}' is not a valid object")
           end
         end
       end
@@ -288,13 +288,13 @@ module CyberonMCP
       error_obj["data"] = data unless data.nil?
       # Ensure the error object itself is valid JSON::Any for the outer hash
       error_json = JSON.parse(error_obj.to_json)
-      
+
       # Create a result with all values as JSON::Any
       result = {} of String => JSON::Any
       result["jsonrpc"] = JSON::Any.new("2.0")
       result["id"] = JSON::Any.new(nil)
       result["error"] = error_json
-      
+
       result
     end
   end
