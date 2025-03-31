@@ -79,7 +79,7 @@ module CyberonMCP
         @initialized = false
       end
 
-      params = {"clientInfo" => @client_info}
+      params = {"client_info" => @client_info}
       response = send_request("initialize", params)
 
       if error = response["error"]?
@@ -92,7 +92,16 @@ module CyberonMCP
         raise MCPValueError.new("Invalid initialization response: 'result' field is missing or not an object.")
       end
 
-      @server_capabilities = result["capabilities"].as_h? || {} of String => JSON::Any
+      # Server can use either "supports" (actual server) or "capabilities" (documentation)
+      if supports = result["supports"]?.try(&.as_h?)
+        @server_capabilities = supports
+      elsif capabilities = result["capabilities"]?.try(&.as_h?)
+        @server_capabilities = capabilities
+      else
+        @server_capabilities = {} of String => JSON::Any
+        self.class.logger.warn { "Server did not return 'supports' or 'capabilities' field in initialization response" }
+      end
+      
       @initialized = true
 
       self.class.logger.info { "MCP client initialized successfully with server." }
@@ -111,24 +120,42 @@ module CyberonMCP
     end
 
     # Sends a shutdown request
+    # Note: Not all MCP servers implement this method
     def shutdown : Bool
       ensure_initialized
       response = send_request("shutdown", {} of String => String)
       if error = response["error"]?
         err_obj = error.as_h
-        self.class.logger.error { "Shutdown request failed: #{err_obj["message"]} (Code: #{err_obj["code"]})" }
-        false
+        
+        # Check if it's a "method not found" error
+        if err_obj["code"]?.try(&.as_i?) == -32601
+          self.class.logger.warn { "Shutdown method not supported by this server" }
+          # Return true as we'll just skip this step
+          return true
+        else
+          self.class.logger.error { "Shutdown request failed: #{err_obj["message"]} (Code: #{err_obj["code"]})" }
+          return false
+        end
       else
         self.class.logger.info { "Shutdown request acknowledged by server." }
-        true
+        return true
       end
     end
 
-    # Sends an exit notification
+    # Sends an exit notification and properly closes the transport
     def exit
       if @transport
-        send_notification("exit", {} of String => String)
-        self.class.logger.info { "Sent 'exit' notification." }
+        begin
+          # Send exit notification first
+          send_notification("exit", {} of String => String)
+          self.class.logger.info { "Sent 'exit' notification." }
+          
+          # Close the transport
+          @transport.not_nil!.close
+          self.class.logger.info { "Transport closed." }
+        rescue ex
+          self.class.logger.warn { "Error during transport exit/close: #{ex.message}" }
+        end
       else
         self.class.logger.warn { "Cannot send 'exit' notification, no transport available." }
       end
@@ -140,12 +167,15 @@ module CyberonMCP
       @next_id = 1
     end
 
-    # --- Private Helper Methods ---
+    # --- Helper Methods ---
 
     # Sends a request and returns the response hash
-    private def send_request(method : String, params) : Hash(String, JSON::Any)
-      transport = @transport.not_nil! # ensure_initialized should have caught nil transport
+    def send_request(method : String, params) : Hash(String, JSON::Any)
+      unless @transport
+        raise MCPRuntimeError.new("No transport set for the client. Call set_transport first.")
+      end
 
+      transport = @transport.not_nil!
       request_id = @next_id
       @next_id += 1
 

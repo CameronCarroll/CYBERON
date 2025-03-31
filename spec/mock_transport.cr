@@ -16,6 +16,8 @@ class MockTransport
   @expectations : Hash(String, String | Exception)
   # Stores requests actually received
   @received_requests : Array(String)
+  # For tracking if close was called
+  @closed : Bool = false
 
   def initialize
     @expectations = {} of String => String | Exception
@@ -29,6 +31,10 @@ class MockTransport
 
   # The core mock method
   def send_and_receive(message : String) : String
+    if @closed
+      raise IO::Error.new("MockTransport: Attempted to use closed transport")
+    end
+    
     @received_requests << message
 
     response_or_error = @expectations[message]?
@@ -45,6 +51,16 @@ class MockTransport
       # Should not happen with the type restriction, but defensive programming
       raise "MockTransport: Invalid expectation type for request '#{message}'"
     end
+  end
+
+  # Implement close method required by Transport interface
+  def close
+    @closed = true
+  end
+  
+  # Check if close was called
+  def closed?
+    @closed
   end
 
   # Helper to check if a specific request was received (useful for notifications)
@@ -65,6 +81,7 @@ class MockTransport
   def reset
      @expectations.clear
      @received_requests.clear
+     @closed = false
   end
   
   # Clear only received requests but keep expectations

@@ -13,13 +13,13 @@ import os
 import time
 import subprocess
 import threading
-import signal # For better termination
+import signal
 
 # --- Configuration ---
 
 # IMPORTANT: Path to the server script RELATIVE TO WHERE YOU RUN THIS CLIENT
 # or an absolute path.
-SERVER_SCRIPT_PATH = "mcp_server.py" # <--- CHANGE THIS if server.py is elsewhere
+SERVER_SCRIPT_PATH = "mcp_server.py" # <--- This is in the main directory
 
 # Path to the python executable to use for the server
 # Uses the same python that's running this script by default.
