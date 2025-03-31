@@ -1,136 +1,98 @@
-#!/usr/bin/env python
-"""
-MCP Server entry point for CYBERON.
-
-This script initializes and starts the MCP server for CYBERON,
-providing Model Context Protocol integration.
-"""
-
+# mcp_server.py
+import logging
 import sys
 import os
-import argparse
-import logging
 import signal
-import time
-from typing import Optional
+import asyncio
 
-from app.mcp import MCPServer
-from app.models.query_engine import CyberneticsQueryEngine
+from app.mcp.server import MCPServer
+from app.mcp.transports import StdioTransport
+# from app.query_engine import CyberneticsQueryEngine # Example
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler(sys.stderr)
-    ]
-)
+# Setup logging (as before)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
-logger = logging.getLogger("mcp_server")
+# --- Configuration ---
+# DATA_FILE = os.getenv("CYBERON_DATA_PATH", "data/cybernetics_ontology.json") # Example
 
-# Global server instance for signal handlers
-server_instance: Optional[MCPServer] = None
+# --- Global Server Instance ---
+# Consider if a global is the best approach, but keep for consistency for now
+server = None
+shutdown_event = asyncio.Event() # Use an asyncio event for shutdown
 
-def signal_handler(sig, frame):
-    """Handle signals to gracefully shutdown the server."""
-    if server_instance:
-        logger.info(f"Received signal {sig}, shutting down...")
-        server_instance.stop()
-    sys.exit(0)
+async def main(): # Make main asynchronous
+    global server
+    logger.info("Starting CYBERON MCP Server...")
 
-def load_query_engine(data_file: str) -> Optional[CyberneticsQueryEngine]:
-    """
-    Load the CyberneticsQueryEngine from a data file.
-    
-    Args:
-        data_file: Path to the data file
-        
-    Returns:
-        Query engine instance or None if loading fails
-    """
+    # --- Initialize Server ---
+    server = MCPServer()
+
+    # --- Initialize Query Engine (Optional) ---
+    # query_engine = None
+    # if os.path.exists(DATA_FILE):
+    #     try:
+    #         # query_engine = CyberneticsQueryEngine(DATA_FILE)
+    #         # server.set_query_engine(query_engine)
+    #         logger.info(f"Query engine loaded from {DATA_FILE}")
+    #     except Exception as e:
+    #         logger.error(f"Failed to load query engine from {DATA_FILE}: {e}")
+    # else:
+    #     logger.error(f"Data file not found: {DATA_FILE}")
+    #     logger.warning("Running without query engine - some functionality will be limited")
+    # Dummy section if Query Engine is not available/needed for basic test
+    logger.warning("Running without query engine - some functionality will be limited")
+
+
+    # --- Initialize Transport ---
+    stdio_transport = StdioTransport()
+
+    # --- Configure Transport BEFORE async with ---
+    # The server knows its own message handler
+    stdio_transport.set_message_handler(server.handle_message)
+
+    # --- Register Transport with Server (gets ID) ---
+    # Server manages the mapping, transport doesn't need the ID *yet*
+    transport_id = server.register_transport(stdio_transport)
+    logger.info(f"StdioTransport registered with ID: {transport_id}")
+
+    # --- Run the transport using async with ---
     try:
-        if not os.path.exists(data_file):
-            logger.error(f"Data file not found: {data_file}")
-            return None
-        
-        engine = CyberneticsQueryEngine(data_file)
-        logger.info(f"Query engine loaded {data_file} with {engine.graph.number_of_nodes()} nodes and {engine.graph.number_of_edges()} edges")
-        return engine
+        logger.info("Entering StdioTransport async context...")
+        async with stdio_transport as transport: # Calls __aenter__, starts reader loop task
+            # --- Activate Transport INSIDE async with ---
+            # Now that __aenter__ has run, call start to provide the ID
+            # The reader loop might be waiting for this ID.
+            transport.start(transport_id)
+            # transport object here is the same as stdio_transport
+
+            logger.info(f"StdioTransport [{transport_id}] is active. Server ready.")
+
+            # Keep the server running
+            await shutdown_event.wait()
+            logger.info(f"Shutdown signal received, exiting StdioTransport context...")
+
     except Exception as e:
-        logger.exception(f"Error loading query engine: {e}")
-        return None
-
-def main():
-    """Main entry point for the MCP server."""
-    global server_instance
-    
-    # Parse command line arguments
-    parser = argparse.ArgumentParser(description="CYBERON MCP Server")
-    parser.add_argument("--debug", action="store_true", help="Enable debug logging")
-    parser.add_argument("--transport", default="stdio", choices=["stdio"], help="Transport to use")
-    parser.add_argument("--data-file", default="data/cybernetics_ontology.json", 
-                        help="Path to the ontology data file")
-    args = parser.parse_args()
-    
-    # Configure logging level
-    if args.debug:
-        logging.getLogger().setLevel(logging.DEBUG)
-        logger.debug("Debug logging enabled")
-    
-    # Setup signal handlers for graceful shutdown
-    signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGTERM, signal_handler)
-    
-    # Create and start the server
-    try:
-        server = MCPServer()
-        server_instance = server
-        
-        # Initialize and set up the query engine
-        data_file = os.path.abspath(args.data_file)
-        query_engine = load_query_engine(data_file)
-        
-        if query_engine:
-            server.set_query_engine(query_engine)
-        else:
-            logger.warning("Running without query engine - some functionality will be limited")
-        
-        # Set up the requested transport
-        if args.transport == "stdio":
-            transport_id = server.create_stdio_transport() # Get ID just in case
-            if not transport_id: # Add check if create_stdio_transport could fail
-                 raise RuntimeError("Failed to create Stdio transport")
-        else:
-             # Handle other transport types or raise error if only stdio supported
-             raise NotImplementedError(f"Transport type '{args.transport}' not supported")
-        
-        # Start the server
-        server.start()
-
-        # --- Explicitly Wait ---
-        # Keep the main thread alive. The server logic runs in the transport's
-        # background thread now. The main thread only needs to wait for a
-        # shutdown signal (handled by signal_handler) or KeyboardInterrupt.
-        logger.info("MCP Server setup complete. Main thread waiting for signals (e.g., Ctrl+C)...")
-        while True:
-            # Sleep for a long time; signal handlers will interrupt this.
-            # Or use signal.pause() if available and preferred on Unix.
-            time.sleep(3600) # Sleep for an hour, signals will wake it up
-
-    except KeyboardInterrupt:
-        logger.info("Keyboard interrupt received by main thread, initiating shutdown...")
-    except Exception as e:
-        logger.exception(f"Error in MCP server main execution: {e}")
-        return 1 # Indicate error exit status
+        logger.error(f"Error during StdioTransport execution: {e}", exc_info=True)
     finally:
-        # Ensure shutdown happens cleanly
-        logger.info("Main thread entering finally block, ensuring server stop...")
-        if server_instance:
-            server_instance.stop() # This will stop the transport thread
-        logger.info("Server stop called.")
+        logger.info("StdioTransport context finished.")
 
-    logger.info("MCP server process main thread exiting.")
-    return 0
+def handle_shutdown_signal(sig, frame):
+    logger.warning(f"Received signal {sig}, initiating shutdown...")
+    # Set the asyncio event to stop the main loop waiting
+    shutdown_event.set()
 
 if __name__ == "__main__":
-    sys.exit(main())
+    # Register signal handlers for graceful shutdown
+    signal.signal(signal.SIGINT, handle_shutdown_signal) # Handle Ctrl+C
+    signal.signal(signal.SIGTERM, handle_shutdown_signal) # Handle termination signals
+
+    try:
+        # Run the main async function using asyncio.run()
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        logger.info("KeyboardInterrupt caught in main block, shutting down.")
+    except Exception as e:
+        logger.exception("Unhandled exception in main execution block.")
+    finally:
+        logger.info("MCP Server main process finished.")

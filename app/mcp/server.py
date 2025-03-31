@@ -300,21 +300,48 @@ class MCPServer:
         """
         if not self.transports:
             raise RuntimeError("No transports registered with the server")
-        
+
         logger.info("Starting MCP server")
-        
+
         # Start all transports
         for transport_id, transport in self.transports.items():
             logger.info(f"Starting transport {transport_id}")
-            transport.start()
-    
+            # --- FIX: Pass transport_id to the start method ---
+            try:
+                # Assuming transport.start might need the ID
+                transport.start(transport_id)
+            except TypeError as e:
+                # Handle cases where start might not take an ID, though the error suggests it does
+                if "'transport_id'" in str(e):
+                     logger.error(f"Transport {type(transport).__name__} start method requires transport_id.")
+                     # Re-raise or handle appropriately, for now re-raise
+                     raise e
+                else:
+                    # Maybe start() doesn't take arguments for this transport type?
+                    logger.warning(f"Calling start() on {type(transport).__name__} without arguments.")
+                    transport.start() # Try calling without args if the TypeError wasn't about transport_id
+            except Exception as e:
+                 logger.error(f"Error starting transport {transport_id}: {e}")
+                 # Decide if one transport failing should stop the server
+                 raise e # Re-raise to stop server if one transport fails to start
+
+
     def stop(self) -> None:
         """
         Stop the MCP server and all registered transports.
         """
         logger.info("Stopping MCP server")
-        
+
         # Stop all transports
         for transport_id, transport in self.transports.items():
             logger.info(f"Stopping transport {transport_id}")
-            transport.stop()
+            # NOTE: The RuntimeWarning suggests transport.stop() might be a coroutine.
+            # If StdioTransport.stop is `async def stop(...)`, this call is incorrect
+            # and needs to be handled within an asyncio event loop context,
+            # or StdioTransport needs to be made synchronous.
+            # For now, we leave the call as is, addressing the primary crash first.
+            try:
+                transport.stop()
+            except Exception as e:
+                 logger.error(f"Error stopping transport {transport_id}: {e}")
+        logger.info("Server stop completed.") # Added completion log

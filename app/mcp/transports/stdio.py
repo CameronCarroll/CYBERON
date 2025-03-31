@@ -5,16 +5,86 @@ import logging
 import anyio
 import asyncio
 import json
-from typing import Callable, Optional, TypeVar, Generic
+from typing import Callable, Optional, TypeVar, Generic, Any, Mapping
 
 # Ensure direct import from anyio.streams.text
 from anyio.streams.text import TextReceiveStream, TextSendStream
+from anyio.abc import ByteReceiveStream, ByteSendStream
 from .base import Transport, MessageType  # Assuming base.py is in the same directory
 
 logger = logging.getLogger(__name__)
 
 # For StdioTransport, the MessageType will be string (raw JSON)
 StrMessageType = str
+
+class StdinByteStream(ByteReceiveStream):
+    """Adapts a standard IO buffer to the anyio ByteReceiveStream interface."""
+    
+    def __init__(self, buffer):
+        self._buffer = buffer
+        self._closed = False
+    
+    async def receive(self) -> bytes:
+        """Read a line from stdin as bytes."""
+        if self._closed:
+            raise anyio.ClosedResourceError("Stream is closed")
+            
+        # Run blocking read in a thread pool
+        try:
+            line = await anyio.to_thread.run_sync(self._buffer.readline)
+            if not line:  # EOF
+                self._closed = True
+                raise anyio.EndOfStream()
+            return line
+        except Exception as e:
+            logger.error(f"Error reading from stdin: {e}")
+            self._closed = True
+            raise anyio.EndOfStream() from e
+    
+    async def aclose(self) -> None:
+        """Mark the stream as closed."""
+        self._closed = True
+        # We don't actually close stdin
+    
+    @property
+    def extra_attributes(self) -> Mapping[Any, Callable[[], Any]]:
+        """Return any extra attributes for the stream."""
+        return {}
+
+class StdoutByteStream(ByteSendStream):
+    """Adapts a standard IO buffer to the anyio ByteSendStream interface."""
+    
+    def __init__(self, buffer):
+        self._buffer = buffer
+        self._closed = False
+    
+    async def send(self, item: bytes) -> None:
+        """Write bytes to stdout and flush."""
+        if self._closed:
+            raise anyio.ClosedResourceError("Stream is closed")
+            
+        try:
+            # Write and flush in a thread pool
+            await anyio.to_thread.run_sync(self._send_and_flush, item)
+        except Exception as e:
+            logger.error(f"Error writing to stdout: {e}")
+            self._closed = True
+            raise anyio.BrokenResourceError("Failed to write to stdout") from e
+    
+    def _send_and_flush(self, data: bytes) -> None:
+        """Synchronous helper to write and flush."""
+        self._buffer.write(data)
+        self._buffer.flush()
+    
+    async def aclose(self) -> None:
+        """Mark the stream as closed."""
+        self._closed = True
+        # We don't actually close stdout
+    
+    @property
+    def extra_attributes(self) -> Mapping[Any, Callable[[], Any]]:
+        """Return any extra attributes for the stream."""
+        return {}
 
 class StdioTransport(Transport[StrMessageType]):
     """
@@ -41,64 +111,78 @@ class StdioTransport(Transport[StrMessageType]):
 
     async def _reader_loop(self):
         """Background task to read messages from stdin and pass them to the handler."""
-        if not self._receive_stream or not self._message_handler or not self._transport_id or not self._stop_event:
-            logger.error("StdioTransport reader loop started without being fully initialized.")
+
+        # Wait for essential state
+        while self._message_handler is None or self._transport_id is None:
+            if self._closed or (self._stop_event and self._stop_event.is_set()):
+                logger.warning(f"StdioTransport reader loop terminating before activation due to transport closure/stop signal.")
+                return
+            logger.debug("StdioTransport reader loop waiting for handler and transport ID...")
+            await anyio.sleep(0.05)
+
+        # Capture local vars
+        transport_id = self._transport_id
+        message_handler = self._message_handler
+        receive_stream = self._receive_stream
+        stop_event = self._stop_event
+
+        if not receive_stream or not message_handler or not transport_id or not stop_event:
+            logger.error("StdioTransport reader loop failed initialization check even after waiting.")
             return
 
-        logger.info(f"StdioTransport [{self._transport_id}] reader loop starting.")
+        logger.info(f"StdioTransport [{transport_id}] reader loop activated and starting.")
         try:
-            # No need to wrap receive_stream in async with here, it's managed by __aenter__/__aexit__
-            while not self._closed and not self._stop_event.is_set(): # Check stop event directly
+            # Loop while not closed and stop not signaled
+            while not self._closed and not stop_event.is_set():
                 try:
-                    # Read the next line (TextReceiveStream handles decoding and line splitting)
-                    # Use move_on_after for graceful shutdown check
-                    try:
-                        async with anyio.move_on_after(0.2) as scope:
-                            message = await self._receive_stream.receive()
-                            
-                            # TextReceiveStream.receive already strips newline
-                            # Only process message if we got one (didn't time out)
-                            if not message:
-                                continue # Skip empty lines (shouldn't happen with TextReceiveStream unless input is just newline)
-                        
-                        # If move_on_after timed out, the scope will be cancelled
-                        if scope.cancelled_caught:
-                            # No message received within timeout, check if we should stop
-                            if self._stop_event.is_set() or self._closed:
-                                break
-                            continue
-                    except Exception as e:
-                        # This handles any exceptions that might occur during the receive operation
-                        logger.error(f"Error receiving message: {e}")
-                        if self._stop_event.is_set() or self._closed:
-                            break
+                    # --- Simplified Read ---
+                    # Block here until a line is received, EOF, or error
+                    logger.debug(f"StdioTransport [{transport_id}] waiting to receive...")
+                    message = await receive_stream.receive()
+                    logger.debug(f"StdioTransport [{transport_id}] receive() returned.")
+
+                    # TextReceiveStream usually strips newline and raises EndOfStream
+                    # If message is None or empty string for any reason, log and continue
+                    if message is None: # Defensive check
+                         logger.warning(f"StdioTransport [{transport_id}] receive() returned None, skipping.")
+                         await anyio.sleep(0.01) # Avoid tight loop if stream behaves oddly
+                         continue
+                    if not message: # Empty line received (e.g., user just pressed Enter)
+                        logger.debug(f"StdioTransport [{transport_id}] received empty line, skipping.")
                         continue
 
-                    logger.debug(f"StdioTransport [{self._transport_id}] received: {message[:100]}{'...' if len(message) > 100 else ''}")
-
-                    # Process the message using the handler provided by the server
-                    # Run handler potentially concurrently? For now, sequential.
-                    response = self._message_handler(message, self._transport_id)
-
-                    if response:
-                        await self.send(response)
+                    # --- Process Message ---
+                    logger.debug(f"StdioTransport [{transport_id}] received: {message[:100]}{'...' if len(message) > 100 else ''}")
+                    try:
+                        response = message_handler(message, transport_id)
+                        if response:
+                            await self.send(response)
+                    except Exception as handler_exc:
+                         logger.exception(f"StdioTransport [{transport_id}] error in message handler for message: {message[:100]}")
+                         # Continue processing next message unless error is critical
 
                 except anyio.EndOfStream:
-                    logger.info(f"StdioTransport [{self._transport_id}] input stream closed (EOF).")
+                    logger.info(f"StdioTransport [{transport_id}] input stream closed (EOF).")
                     break # Exit loop cleanly
                 except anyio.ClosedResourceError:
-                    logger.warning(f"StdioTransport [{self._transport_id}] stream closed while reading.")
+                    logger.warning(f"StdioTransport [{transport_id}] receive stream closed unexpectedly.")
+                    break # Exit loop
+                except Exception as receive_exc:
+                    # Handle unexpected errors during receive/processing
+                    logger.exception(f"StdioTransport [{transport_id}] error receiving/processing message: {receive_exc}")
+                    # Break the loop on unknown errors for safety
                     break
-                except Exception as e:
-                    # Avoid tight loop on persistent errors
-                    # Log error but continue reading if possible? Or break? Let's break for safety.
-                    logger.exception(f"StdioTransport [{self._transport_id}] error in reader loop: {e}")
-                    break # Exit loop on unexpected errors
-        except Exception as e:
-             logger.exception(f"StdioTransport [{self._transport_id}] reader task encountered an unhandled error: {e}")
+
+                # --- Yield control ---
+                # Give other tasks a chance to run after successfully processing a message.
+                # This is important for responsiveness and shutdown handling.
+                await anyio.sleep(0)
+
+        except Exception as task_exc:
+             logger.exception(f"StdioTransport [{transport_id}] reader task encountered an unhandled error: {task_exc}")
         finally:
-            logger.info(f"StdioTransport [{self._transport_id}] reader loop finished.")
-            # If the reader stops unexpectedly, ensure the transport is closed
+            logger.info(f"StdioTransport [{transport_id}] reader loop finished.")
+            # Ensure transport is closed if the reader stops unexpectedly
             if not self._closed:
                  await self.close()
 
@@ -164,14 +248,14 @@ class StdioTransport(Transport[StrMessageType]):
 
         self._task_group = None # Ensure task group is reset
         try:
-            # Get async wrappers for stdin/stdout byte streams
-            stdin_bytes = anyio.wrap_file(sys.stdin.buffer)
-            stdout_bytes = anyio.wrap_file(sys.stdout.buffer)
+            # Create proper byte stream wrappers that implement receive/send
+            stdin_stream = StdinByteStream(sys.stdin.buffer)
+            stdout_stream = StdoutByteStream(sys.stdout.buffer)
 
             # Create text streams with explicit UTF-8 encoding and error handling
             # Use the correctly imported classes
-            self._receive_stream = TextReceiveStream(stdin_bytes)
-            self._send_stream = TextSendStream(stdout_bytes)
+            self._receive_stream = TextReceiveStream(stdin_stream)
+            self._send_stream = TextSendStream(stdout_stream)
 
             self._stop_event = anyio.Event()
             self._task_group = anyio.create_task_group()
