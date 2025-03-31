@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 logger = logging.getLogger(__name__)
 
 # --- Configuration ---
-DATA_FILE = os.getenv("CYBERON_DATA_PATH", "data/cybernetics_ontology.json")
+DATA_FILE = os.getenv("CYBERON_DATA_PATH", "app/data/cybernetics_ontology.json")
 
 # --- Global Server Instance ---
 # Consider if a global is the best approach, but keep for consistency for now
@@ -31,17 +31,14 @@ async def main(): # Make main asynchronous
     query_engine = None
     if os.path.exists(DATA_FILE):
         try:
-            # query_engine = CyberneticsQueryEngine(DATA_FILE)
-            # server.set_query_engine(query_engine)
+            query_engine = CyberneticsQueryEngine(DATA_FILE)
+            server.set_query_engine(query_engine)
             logger.info(f"Query engine loaded from {DATA_FILE}")
         except Exception as e:
             logger.error(f"Failed to load query engine from {DATA_FILE}: {e}")
     else:
         logger.error(f"Data file not found: {DATA_FILE}")
         logger.warning("Running without query engine - some functionality will be limited")
-    # Dummy section if Query Engine is not available/needed for basic test
-    logger.warning("Running without query engine - some functionality will be limited")
-
 
     # --- Initialize Transport ---
     stdio_transport = StdioTransport()

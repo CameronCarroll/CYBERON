@@ -104,6 +104,8 @@ begin
   print_color(server_info_pretty, COLOR_MAGENTA)
   print_divider("-", 70, COLOR_MAGENTA)
   
+  debugger
+
   # Try some requests based on capabilities
   if client.server_capabilities.dig?("cyberon", "search")
     print_color("Testing search functionality...", COLOR_CYAN)
