@@ -2,94 +2,148 @@ import re
 import json
 from typing import Dict, List, Set, Tuple, Any, Optional
 
-def parse_markdown_ontology(markdown_text: str) -> Dict:
+def make_id(text: str) -> str:
     """
-    Parse a markdown-formatted ontology document into a structured dictionary
-    
-    Args:
-        markdown_text: Markdown text content
-        
-    Returns:
-        Dictionary representation of the structured ontology
+    Convert a title or name to a valid ID format (lowercase, underscore-separated).
     """
-    if not markdown_text.strip():
-        return {}
+    # Replace sequences of non-alphanumeric characters with a single underscore
+    s = re.sub(r'[^a-z0-9]+', '_', text.lower())
+    # Remove leading/trailing underscores
+    return s.strip('_')
 
-    lines = markdown_text.strip().split('\n')
-    structured_ontology = {}
-    current_section = None
-    current_subsection = None
-    
-    for line in lines:
-        line = line.strip()
-        if not line:
-            continue
-            
-        # Process H1 (main section)
+def parse_markdown_ontology(markdown_text: str) -> Dict[str, Any]:
+    """
+    Parse a markdown-formatted ontology document into a structured dictionary.
+    Handles multi-line attributes/relationships and attribute URLs.
+
+    Args:
+        markdown_text: Markdown text content.
+
+    Returns:
+        Dictionary representing the structured ontology, organized by section.
+        Example: {'biology': {'title': 'Biology', 'entities': [...]}}
+    """
+    structured_ontology: Dict[str, Any] = {}
+    lines = [line for line in markdown_text.strip().split('\n') if line.strip() and not line.strip().startswith('##')] # Ignore empty lines and H2
+
+    current_section_id: Optional[str] = None
+    current_entity: Optional[Dict[str, Any]] = None
+    parsing_state: Optional[str] = None # 'attributes' or 'relationships'
+    last_attribute_line: Optional[str] = None
+    last_relationship_line: Optional[str] = None
+
+    i = 0
+    while i < len(lines):
+        line = lines[i].strip()
+
+        # Section Header
         if line.startswith('# '):
             section_title = line[2:].strip()
             section_id = make_id(section_title)
-            structured_ontology[section_id] = {
-                "title": section_title,
-                "subsections": {}
-            }
-            current_section = section_id
-            current_subsection = None
-        
-        # Process H2 (subsection)
-        elif line.startswith('## ') and current_section:
-            subsection_title = line[3:].strip()
-            structured_ontology[current_section]["subsections"][subsection_title] = []
-            current_subsection = subsection_title
-        
-        # Process list items (Entities)
-        elif line.startswith('- Entity: ') and current_section and current_subsection:
-            entity_name = line[9:].strip()
-            entity_data = {"name": entity_name, "description": "", "type": ""}
-            
-            # Consume subsequent lines for description, type, attributes, and relationships
-            i = lines.index(line) + 1
-            while i < len(lines) and not lines[i].startswith(('#', '##', '-')):
-                sub_line = lines[i].strip()
-                if sub_line.startswith("Description:"):
-                    entity_data["description"] = sub_line[12:].strip()
-                elif sub_line.startswith("Type:"):
-                    entity_data["type"] = sub_line[6:].strip()
-                elif sub_line.startswith("Attributes:"):
-                    entity_data["attributes"] = []
-                    i += 1
-                    while i < len(lines) and lines[i].strip().startswith("- Attribute:"):
-                        attr_line = lines[i].strip()
-                        attr_name = attr_line[11:].split("Value:")[0].strip()
-                        attr_value = attr_line[11:].split("Value:")[1].strip()
-                        entity_data["attributes"].append({"name": attr_name, "value": attr_value})
-                        i += 1
-                    i -= 1 # adjust i back since the outer loop will increment it
-                elif sub_line.startswith("Relationships:"):
-                    entity_data["relationships"] = []
-                    i += 1
-                    while i < len(lines) and lines[i].strip().startswith("- Relationship:"):
-                        rel_line = lines[i].strip()
-                        rel_type = rel_line[14:].split("Target:")[0].strip()
-                        rel_target = rel_line[14:].split("Target:")[1].strip()
-                        entity_data["relationships"].append({"type": rel_type, "target": rel_target})
-                        i += 1
-                    i -= 1  # adjust i back since the outer loop will increment it
-                i += 1
-            structured_ontology[current_section]["subsections"][current_subsection].append(entity_data)
-    return structured_ontology
+            if section_id not in structured_ontology:
+                structured_ontology[section_id] = {"title": section_title, "entities": []}
+            current_section_id = section_id
+            current_entity = None # Reset entity context when section changes
+            parsing_state = None
+            i += 1
+            continue
 
-def make_id(text: str) -> str:
-    """
-    Convert a title or name to a valid ID format
-    
-    Args:
-        text: The input text to convert
-        
-    Returns:
-        A lowercase, underscore-separated ID
-    """
-    return re.sub(r'[^a-z0-9_]', '_', text.lower()).strip('_')
+        # Start of Entity
+        if line.startswith('- Entity:'):
+            if current_section_id is None:
+                # Or raise an error, or log a warning
+                print(f"Warning: Entity definition found before any section header: {line}")
+                i += 1
+                continue
+            entity_name = line[len('- Entity:'):].strip()
+            current_entity = {
+                "name": entity_name,
+                "description": None,
+                "type": None,
+                "attributes": [],
+                "relationships": []
+            }
+            structured_ontology[current_section_id]["entities"].append(current_entity)
+            parsing_state = None # Reset state for new entity
+            i += 1
+            continue
+
+        # Inside an Entity definition
+        if current_entity is not None:
+            # Description
+            if line.startswith('Description:'):
+                current_entity['description'] = line[len('Description:'):].strip()
+                parsing_state = None
+            # Type
+            elif line.startswith('Type:'):
+                current_entity['type'] = line[len('Type:'):].strip()
+                parsing_state = None
+            # Attributes Header
+            elif line.startswith('Attributes:'):
+                parsing_state = 'attributes'
+            # Relationships Header
+            elif line.startswith('Relationships:'):
+                parsing_state = 'relationships'
+
+            # Parsing Attributes Block
+            elif parsing_state == 'attributes':
+                if line.startswith('- Attribute:'):
+                    # Store this line and expect Value: on the next line
+                    last_attribute_line = line
+                elif line.startswith('Value:') and last_attribute_line is not None:
+                    attr_value = line[len('Value:'):].strip()
+                    # Process the stored attribute line
+                    attr_line_content = last_attribute_line[len('- Attribute:'):].strip()
+                    url_match = re.search(r'^(.*)\[url:(.*)\]$', attr_line_content)
+                    attr_name: str
+                    attr_url: Optional[str] = None
+                    if url_match:
+                        attr_name = url_match.group(1).strip()
+                        attr_url = url_match.group(2).strip()
+                    else:
+                        attr_name = attr_line_content.strip()
+
+                    current_entity['attributes'].append({
+                        "name": attr_name,
+                        "value": attr_value,
+                        "url": attr_url
+                    })
+                    last_attribute_line = None # Reset after processing
+                else:
+                    # Line doesn't match expected attribute structure, reset state? Or log warning?
+                    # Assuming here it might be a malformed entry or end of block
+                    # parsing_state = None # Or handle more gracefully if needed
+                    pass # Keep parsing_state='attributes' until Relationships: or new entity/section
+            
+            # Parsing Relationships Block
+            elif parsing_state == 'relationships':
+                if line.startswith('- Relationship:'):
+                    # Store this line and expect Target: on the next line
+                    last_relationship_line = line
+                elif line.startswith('Target:') and last_relationship_line is not None:
+                    # Strip potential inline comments
+                    target_name = line[len('Target:'):].split('#')[0].strip()
+                    # Process the stored relationship line
+                    rel_type = last_relationship_line[len('- Relationship:'):].strip()
+
+                    current_entity['relationships'].append({
+                        "type": rel_type,
+                        "target": target_name
+                    })
+                    last_relationship_line = None # Reset after processing
+                else:
+                     # Line doesn't match expected relationship structure
+                     # parsing_state = None
+                     pass
+
+            # Line doesn't match any known entity property/block start
+            else:
+                 # Could be whitespace within entity block, or malformed. Ignored for now.
+                 pass
+
+        i += 1 # Move to the next line
+
+    return structured_ontology
 
 def extract_entities(structured_ontology: Dict) -> Tuple[Set[str], Set[str], Dict[str, List[Dict]]]:
     """
@@ -121,78 +175,77 @@ def extract_entities(structured_ontology: Dict) -> Tuple[Set[str], Set[str], Dic
     
     return people, concepts, domains
 
-def convert_to_knowledge_graph(structured_ontology: Dict) -> Dict:
+def convert_to_knowledge_graph(structured_ontology: Dict[str, Any]) -> Dict[str, List[Dict[str, Any]]]:
     """
-    Convert the structured ontology into a knowledge graph format
-    
+    Convert the structured ontology into the specified knowledge graph JSON format.
+
     Args:
-        structured_ontology: Dictionary with the structured ontology
-        
+        structured_ontology: Dictionary generated by parse_markdown_ontology.
+
     Returns:
-        Knowledge graph as a dictionary with "nodes" and "edges" lists
+        Knowledge graph as a dictionary with "nodes" and "edges" lists.
     """
-    people, concepts, domains = extract_entities(structured_ontology)
-    
-    nodes = []
-    edges = []
-    
+    nodes: List[Dict[str, Any]] = []
+    edges: List[Dict[str, Any]] = []
+    node_ids: Set[str] = set() # Keep track of added nodes to avoid duplicates
+
     for section_id, section_data in structured_ontology.items():
-        section_title = section_data["title"]
-        nodes.append({
-            "id": section_id,
-            "label": section_title,
-            "type": "category"
-        })
-        
-        for subsection_name, items in section_data["subsections"].items():
-            subsection_id = make_id(subsection_name)
+        # Add section node if not already added (though unlikely with this structure)
+        if section_id not in node_ids:
             nodes.append({
-                "id": subsection_id,
-                "label": subsection_name,
-                "type": "category"
+                "id": section_id,
+                "label": section_data['title'],
+                "type": "category" # As per original example output
             })
-            edges.append({
-                "source": section_id,
-                "target": subsection_id,
-                "label": "contains"
-            })
-            
-            for item in items:
-                item_name = item["name"]
-                item_id = make_id(item_name)
-                item_type = item["type"] # Get the type directly from the item
-                
-                # Add the node only if it doesn't exist
-                if not any(node["id"] == item_id for node in nodes):
-                    node_data = {
-                        "id": item_id,
-                        "label": item_name,
-                        "type": item_type,
-                    }
-                    if "attributes" in item:
-                        node_data["attributes"] = item["attributes"]
-                    nodes.append(node_data)
-                
+            node_ids.add(section_id)
+
+        # Process entities within the section
+        for entity in section_data['entities']:
+            entity_id = make_id(entity['name'])
+
+            # Create or update node for the entity
+            # Check if node exists primarily for target entities that might be defined later
+            node_entry = next((node for node in nodes if node["id"] == entity_id), None)
+            if node_entry is None:
+                 node_entry = {"id": entity_id}
+                 nodes.append(node_entry)
+                 node_ids.add(entity_id)
+
+            # Populate node details (overwrite if target was defined before source)
+            node_entry["label"] = entity['name']
+            if entity['type']:
+                node_entry["type"] = entity['type']
+            if entity['description']:
+                node_entry["description"] = entity['description']
+
+            # Add attributes as direct key-value pairs
+            for attribute in entity['attributes']:
+                attr_id = make_id(attribute['name'])
+                node_entry[attr_id] = attribute['value']
+                if attribute['url']:
+                    node_entry[f"{attr_id}_url"] = attribute['url']
+
+            # Create edges for relationships
+            for relationship in entity['relationships']:
+                target_id = make_id(relationship['target'])
+                # Ensure target node exists (create a basic one if not)
+                if target_id not in node_ids:
+                    # Find target entity details if defined elsewhere, otherwise create placeholder
+                    target_label = relationship['target'] # Default label
+                    target_type = "Unknown" # Default type
+                    # Look ahead (or back) for target definition (optional enhancement)
+                    # For simplicity now, just create placeholder if completely missing
+                    nodes.append({"id": target_id, "label": target_label, "type": target_type})
+                    node_ids.add(target_id)
+
+
                 edges.append({
-                    "source": subsection_id,
-                    "target": item_id,
-                    "label": "includes"
+                    "source": entity_id,
+                    "target": target_id,
+                    "label": relationship['type']
                 })
-                
-                # Add relationships
-                if "relationships" in item:
-                    for rel in item["relationships"]:
-                        target_id = make_id(rel["target"])
-                        edges.append({
-                            "source": item_id,
-                            "target": target_id,
-                            "label": rel["type"]
-                        })
-    
-    return {
-        "nodes": nodes,
-        "edges": edges
-    }
+
+    return {"nodes": nodes, "edges": edges}
 
 def extract_markdown_to_json(input_file: str, output_file: str) -> None:
     """
