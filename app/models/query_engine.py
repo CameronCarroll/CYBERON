@@ -20,51 +20,26 @@ class CyberneticsQueryEngine:
         """
         self.data_source = data_source
         self.load_data(data_source)
-        self.build_graph()
         
-    def load_data(self, data_source: str) -> None:
-        """Load ontology data from JSON file or dictionary"""
+    def load_data(self, data_source: str | Dict) -> None:
+        """Load ontology data from JSON file or dictionary."""
         if isinstance(data_source, str):
             with open(data_source, 'r', encoding='utf-8') as f:
-                self.data = json.load(f)
+                # Load the entire structure from JSON into self.data
+                self.data = json.load(f) 
         else:
-            self.data = data_source
+            # Or use the provided dictionary directly
+            self.data = data_source 
             
-        # Extract structured ontology and knowledge graph
+        # Extract the graph part (which should be a node-link formatted dictionary)
+        graph_data = self.data.get("knowledge_graph", {}) 
+        
+        # Directly create the NetworkX graph object from the node-link dictionary.
+        # This function parses the dict and builds the graph with nodes, edges, and attributes.
+        self.graph = nx.node_link_graph(graph_data, edges="edges") 
+
+        # Extract the structured ontology part (the non-graph data)
         self.structured_ontology = self.data.get("structured_ontology", {})
-        self.knowledge_graph = self.data.get("knowledge_graph", {
-            "nodes": [],
-            "edges": []
-        })
-    
-    def build_graph(self) -> None:
-        """Build a NetworkX graph from the knowledge graph data"""
-        self.graph = nx.DiGraph()
-        
-        # Add nodes
-        for node in self.knowledge_graph.get("nodes", []):
-            # Create node attributes dictionary with all node properties
-            node_attrs = {
-                "label": node.get("label", node["id"]),
-                "type": node.get("type", "unknown")
-            }
-            
-            # Add external_url if present
-            if "external_url" in node:
-                node_attrs["external_url"] = node["external_url"]
-            
-            self.graph.add_node(
-                node["id"],
-                **node_attrs
-            )
-        
-        # Add edges
-        for edge in self.knowledge_graph.get("edges", []):
-            self.graph.add_edge(
-                edge["source"],
-                edge["target"],
-                label=edge.get("label", "")
-            )
     
     def query_entity(self, entity_id: str) -> Dict:
         """
@@ -1086,45 +1061,27 @@ class CyberneticsQueryEngine:
         
     def save_changes(self) -> bool:
         """
-        Save changes to the knowledge graph to disk
+        Save changes to the knowledge graph to disk using node-link format
+        for the graph part.
         
         Returns:
             Boolean indicating success
         """
         try:
-            # Convert NetworkX graph to knowledge graph format
-            nodes = []
-            for node_id, attrs in self.graph.nodes(data=True):
-                node = {"id": node_id}
-                for key, value in attrs.items():
-                    node[key] = value
-                nodes.append(node)
+            # Convert the current NetworkX graph (self.graph) into 
+            # a Python dictionary formatted according to the node-link spec.
+            graph_data_dict = nx.node_link_data(self.graph) 
             
-            edges = []
-            for source, target, data in self.graph.edges(data=True):
-                edge = {
-                    "source": source,
-                    "target": target
-                }
-                for key, value in data.items():
-                    edge[key] = value
-                edges.append(edge)
+            # Place this dictionary into main data structure under the 'knowledge_graph' key.
+            # self.data holds structured_ontology and updated graph dict.
+            self.data['knowledge_graph'] = graph_data_dict 
             
-            # Create updated knowledge graph data
-            updated_knowledge_graph = {
-                "nodes": nodes,
-                "edges": edges
-            }
-            
-            # Update the data
-            self.data["knowledge_graph"] = updated_knowledge_graph
-            
-            # Save to file if data source is a file path
+            # Save the entire self.data dictionary to JSON file
             if isinstance(self.data_source, str):
                 with open(self.data_source, 'w', encoding='utf-8') as f:
-                    json.dump(self.data, f, indent=2)
+                    # json.dump serializes Python dicts (including nested ones) to JSON.
+                    json.dump(self.data, f, indent=2) 
             
             return True
         except Exception as e:
             print(f"Error saving changes: {e}")
-            return False
