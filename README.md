@@ -1,6 +1,6 @@
 # CYBERON - Cybernetic Ontology
 
-Human interface: A Flask web application for exploring and visualizing knowledge ontologies using graph technology. Originally designed for cybernetics, but adaptable to any domain knowledge structure. Supports linking knowledge graph nodes to external content via the external_url field.
+Human interface: A Flask web application for exploring and visualizing knowledge ontologies using graph technology. Originally designed for cybernetics, but adaptable to any domain knowledge structure. Supports associating attributes within the ontology to external URLs, making them accessible in the knowledge graph.
 
 LLM interface: MCP server (Python) and client (Crystal lang)
 
@@ -18,7 +18,7 @@ Graph & query engine underneath for managing, querying and reasoning over struct
 - Explore connections between concepts
 - Find paths between entities
 - Analyze concept hierarchies and evolution
-- Link knowledge graph nodes to external content via URLs
+- Associate attributes within the ontology to external URLs, making them accessible in the knowledge graph
 
 ## Model Context Protocol (MCP) Server
 
@@ -41,7 +41,7 @@ This application includes a Model Context Protocol server that allows LLMs and o
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/cyberon.git
+   git clone [https://github.com/CameronCarroll/cyberon.git](https://github.com/CameronCarroll/cyberon.git)
    cd cyberon
    ```
 
@@ -79,7 +79,7 @@ This application includes a Model Context Protocol server that allows LLMs and o
    [Unit]
    Description=CYBERON MCP Server Stdio
    After=network.target
-   
+
    [Service]
    Type=simple
    User=yourusername
@@ -89,7 +89,7 @@ This application includes a Model Context Protocol server that allows LLMs and o
    Restart=on-failure
    RestartSec=5
    StandardError=journal
-   
+
    [Install]
    WantedBy=multi-user.target
    ```
@@ -151,254 +151,186 @@ journalctl -u cyberon-mcp.service -f
 
 ### Markdown Format
 
-The system accepts markdown-formatted ontology files with a specific structure:
+The system processes markdown-formatted ontology files adhering to the following structure. Each file should represent a distinct knowledge domain.
 
-```markdown
-# Main Section Title
+```Markdown
+# Section Name
 
-## Subsection Title
-- Concept Name: Description of the concept
-- Another Concept [url:/path/to/external-content.html]: Its description with external link
-- Yet Another Concept: Description without external link
+# Section Name defines a top-level category within the ontology.
+# All entities belong to the most recently defined section.
+# Lines starting with '##' are currently ignored by the parser.
 
-## Key Figures 
-- Person Name: Description of the person
-- Another Person [url:/people/person-page.html]: Description with external link
+- Entity: EntityName1
+  # Defines a new entity within the current section. Must start with '- Entity:'.
+  Description: A brief description of this entity.
+  # Optional: Provides a human-readable description.
+  Type: EntityType
+  # Optional: Specifies the classification of the entity (e.g., Species, Organ, Concept, Person).
+  Attributes:
+    # Optional: Marks the beginning of the attribute list for this entity.
+    - Attribute: AttributeName1
+      # Defines an attribute. Must start with '- Attribute:'.
+      Value: Some Value
+      # Provides the value for the *immediately preceding* '- Attribute:'. Required if attribute defined.
+    - Attribute: AttributeName2 [url:/path/to/resource]
+      # Defines an attribute with an associated external URL.
+      Value: Another Value
+      # Provides the value for AttributeName2.
+  Relationships:
+    # Optional: Marks the beginning of the relationship list for this entity.
+    - Relationship: relationship_type_1
+      # Defines a relationship type originating from EntityName1. Must start with '- Relationship:'.
+      Target: TargetEntityName1
+      # Specifies the target entity for the *immediately preceding* '- Relationship:'. Required if relationship defined.
+      # Inline comments after the target name (e.g., Target: TargetEntityName1 # comment) are ignored.
+    - Relationship: relationship_type_2
+      Target: TargetEntityName2
 
-# Another Section Title
+- Entity: EntityName2
+  Description: Another entity.
+  Type: AnotherType
+  # This entity has no explicitly defined attributes or relationships in this example.
 
-## Another Subsection
-- Concept: Description
+# Another Section Name
+
+# Entities defined below will belong to "Another Section Name".
+
+- Entity: TargetEntityName1
+  Description: The target of the first relationship from EntityName1.
+  Type: TargetType
+
+- Entity: TargetEntityName2
+  Description: The target of the second relationship from EntityName1.
+  Type: TargetType
 ```
 
-**Key points:**
-- Use H1 (`#`) for main sections
-- Use H2 (`##`) for subsections 
-- Use bullet points (`-`) for concepts or entities
-- Add a colon (`:`) after each entity name to provide a description
-- Optionally add `[url:/path/to/resource.html]` before the colon to link to external content
+### Key Syntax Points
 
-### System Behavior
-- Entities in subsections containing "Key Figures", "People", or "Person" are categorized as people
-- All other entities are categorized as concepts
-- Entities within the same subsection are automatically related to each other
+#### Sections:
 
-## Data Structure
+- Use H1 (# Section Name) to define top-level categories.
+- Entities belong to the last defined section.
+- ## headings are ignored.
 
-The system processes markdown files into a JSON structure with two main components:
+#### Entities:
 
-### 1. Structured Ontology
+- Define entities using a bullet point followed by `Entity:` and the entity name (e.g., `- Entity: EntityName`).
 
-```json
-{
-  "section_id": {
-    "title": "Section Title",
-    "subsections": {
-      "Subsection Name": [
-        {
-          "name": "Entity Name",
-          "description": "Entity Description"
-        },
-        {
-          "name": "Another Entity",
-          "description": "Another Description"
-        }
-      ],
-      "Another Subsection": [
-        ...
-      ]
-    }
-  },
-  "another_section_id": {
-    ...
-  }
-}
-```
+##### Entity Properties:
 
-### 2. Knowledge Graph
+- Define properties directly under the `- Entity:` line (indentation helps readability but is not strictly enforced beyond line order):
+  - `Description:` Text (Optional description)
+  - `Type:` Text (Optional type classification)
+
+#### Attributes Block:
+
+- Start with `Attributes:`.
+- List attributes using `- Attribute: AttributeName`.
+  - Optionally include `[url:/path/...]` at the end of the `- Attribute:` line (before any potential newline) to associate a URL.
+- Provide the attribute's value on the next line using `Value:` AttributeValue.
+
+  **Important:** Each `- Attribute:` must be immediately followed by a `Value:`.
+
+#### Relationships Block:
+
+- Start with `Relationships:`.
+- Define relationships using `- Relationship: relationship_type`.
+- Specify the target entity on the next line using `Target:` TargetEntityName.
+  - Inline comments (`# ...`) after the target name are stripped.
+
+  **Important:** Each `- Relationship:` must be immediately followed by a `Target:`.
+
+#### Order Matters:
+
+- `Value:` must immediately follow the `- Attribute:` it belongs to.
+- `Target:` must immediately follow the `- Relationship:` it belongs to.
+- Attributes must be under an `Attributes:` heading.
+- Relationships must be under a `Relationships:` heading.
+
+### System Behavior (Based on Parser Logic)
+
+#### Structure:
+
+- The final output organizes entities under the section (#) they were defined in.
+
+#### Entity Typing:
+
+- An entity's type (e.g., "Person", "Concept", "Species") is determined only by the value provided in its `Type:` field. There is no automatic inference based on section names.
+
+#### Relationships:
+
+- Relationships between entities are created only if explicitly defined using the `Relationships:` block, `- Relationship:` type, and `Target:` name syntax. There are no automatic relationships created based on co-location within the file.
+
+#### IDs:
+
+- Unique IDs for nodes and attributes in the knowledge graph are generated automatically by lowercasing names and replacing non-alphanumeric characters with underscores (e.g., "Average Height" becomes `average_height`).
+
+---
+
+## Data Output: Knowledge Graph
+
+The system processes the markdown ontology into a standard knowledge graph format represented in JSON. This JSON contains two main keys: `nodes` and `edges`.
 
 ```json
 {
   "nodes": [
-    {"id": "entity_id", "label": "Entity Name", "type": "concept|person|category", "external_url": "/optional/path/to/resource.html"},
-    {"id": "another_entity", "label": "Another Entity", "type": "concept|person|category"},
-    ...
+    {
+      "id": "entityname1",
+      "label": "EntityName1",
+      "type": "EntityType",
+      "description": "A brief description of this entity.",
+      "attributename1": "Some Value",
+      "attributename2": "Another Value",
+      "attributename2_url": "/path/to/resource"
+    },
+    {
+      "id": "entityname2",
+      "label": "EntityName2",
+      "type": "AnotherType",
+      "description": "Another entity."
+    },
+    {
+      "id": "targetentityname1",
+      "label": "TargetEntityName1",
+      "type": "TargetType",
+      "description": "The target of the first relationship from EntityName1."
+    },
+    {
+       "id": "targetentityname2",
+       "label": "TargetEntityName2",
+       "type": "TargetType",
+       "description": "The target of the second relationship from EntityName1."
+    }
   ],
   "edges": [
-    {"source": "source_id", "target": "target_id", "label": "relationship_type"},
-    ...
+    {
+      "source": "entityname1",
+      "target": "targetentityname1",
+      "label": "relationship_type_1"
+    },
+    {
+      "source": "entityname1",
+      "target": "targetentityname2",
+      "label": "relationship_type_2"
+    }
   ]
 }
 ```
 
-The `external_url` field is optional and only included when an entity has an associated external resource.
+**Explanation:**
 
-## Customizing for Other Domains
+* **`nodes`**: An array of objects, where each object represents an entity from the markdown file.
+    * `id`: A lower-case, underscore-separated unique identifier generated from the entity name.
+    * `label`: The original entity name as defined in the markdown (`- Entity: EntityName`).
+    * `type`: The entity type specified using the `Type:` field in the markdown.
+    * `description`: The description provided using the `Description:` field.
+    * *Attributes*: Attributes defined under the `Attributes:` block become direct key-value pairs on the node object. The key is the generated ID for the attribute name (e.g., `attributename1`).
+    * *Attribute URLs*: If an attribute in the markdown had a `[url:/...]` associated with it, an additional field is added to the node with `_url` appended to the attribute ID key (e.g., `attributename2_url`).
+* **`edges`**: An array of objects representing the relationships defined in the markdown.
+    * `source`: The `id` of the entity where the relationship originates.
+    * `target`: The `id` of the entity the relationship points to.
+    * `label`: The relationship type defined using `- Relationship: relationship_type`.
 
-While Cyberon was built for cybernetics, you can adapt it to any domain knowledge graph:
-
-### 1. Customizing Entity Type Detection
-
-The default parser classifies entities as either "person" or "concept" based on subsection names. To add custom entity types:
-
-```python
-# In app/utils/ontology_parser.py
-def extract_entities(structured_ontology: Dict):
-    people = set()
-    concepts = set()
-    literary_works = set()  # New entity type
-    domains = {}
-    
-    # Process each section
-    for section_id, section_data in structured_ontology.items():
-        section_title = section_data["title"]
-        
-        # Process each subsection
-        for subsection_name, items in section_data["subsections"].items():
-            # Create a domain entry
-            domain_name = f"{section_title} - {subsection_name}"
-            domains[domain_name] = items
-            
-            # Categorize items based on subsection name patterns
-            if any(term in subsection_name.lower() for term in 
-                  ["key figures", "people", "person", "authors", "poets"]):
-                # Items in these subsections are people
-                for item in items:
-                    people.add(item["name"])
-            elif any(term in subsection_name.lower() for term in 
-                    ["works", "novels", "poems", "publications"]):
-                # Items in these subsections are literary works
-                for item in items:
-                    literary_works.add(item["name"])
-            else:
-                # All other items are concepts
-                for item in items:
-                    concepts.add(item["name"])
-    
-    return people, concepts, literary_works, domains
-```
-
-Then update `convert_to_knowledge_graph()` to use your new entity type:
-
-```python
-# Determine item type
-if item_name in people:
-    item_type = "person"
-elif item_name in literary_works:
-    item_type = "literary_work"
-else:
-    item_type = "concept"
-```
-
-### 2. Adding Custom Relationship Types
-
-The default system creates generic relationships like "contains" and "includes". Here's how to add domain-specific relationships:
-
-```python
-# In convert_to_knowledge_graph()
-# After adding basic section-subsection-item relationships
-
-# Add author-to-work relationships
-for section_id, section_data in structured_ontology.items():
-    author_subsection = None
-    works_subsection = None
-    
-    # Find author and works subsections in the same section
-    for subsection_name, items in section_data["subsections"].items():
-        if any(term in subsection_name.lower() for term in ["authors", "poets", "key figures"]):
-            author_subsection = subsection_name
-        elif any(term in subsection_name.lower() for term in ["works", "novels", "poems"]):
-            works_subsection = subsection_name
-    
-    # Create authored_by relationships if both subsections exist
-    if author_subsection and works_subsection:
-        for author_item in section_data["subsections"][author_subsection]:
-            author_id = make_id(author_item["name"])
-            for work_item in section_data["subsections"][works_subsection]:
-                work_id = make_id(work_item["name"])
-                
-                # Create "authored_by" relationship
-                edges.append({
-                    "source": work_id,
-                    "target": author_id,
-                    "label": "authored_by"
-                })
-```
-
-### 3. Implementing Relationship Detection Rules
-
-You can implement more sophisticated relationship detection using NLP-style pattern matching:
-
-```python
-# Add relationships based on description text analysis
-for section_id, section_data in structured_ontology.items():
-    for subsection_name, items in section_data["subsections"].items():
-        for item in items:
-            item_id = make_id(item["name"])
-            description = item["description"].lower()
-            
-            # Check for influence relationships in descriptions
-            for other_item in items:
-                if item == other_item:
-                    continue
-                    
-                other_id = make_id(other_item["name"])
-                
-                # Look for name mentions in descriptions
-                if other_item["name"].lower() in description:
-                    # Check for specific relationship patterns
-                    if any(pattern in description for pattern in 
-                          ["influence", "inspired", "based on"]):
-                        edges.append({
-                            "source": item_id,
-                            "target": other_id,
-                            "label": "influenced_by"
-                        })
-                    elif any(pattern in description for pattern in 
-                            ["critique", "criticize", "response to"]):
-                        edges.append({
-                            "source": item_id,
-                            "target": other_id,
-                            "label": "critiques"
-                        })
-```
-
-### Example: Literary Movement Ontology
-
-Here's a complete example using these customizations:
-
-```markdown
-# Romantic Period
-
-## Key Authors
-- William Wordsworth: English Romantic poet who helped launch the Romantic Age with the publication of Lyrical Ballads
-- Samuel Taylor Coleridge: English poet and critic, influenced by William Wordsworth and known for supernatural poems
-- Lord Byron: Leading figure of the Romantic movement, known for his satirical work "Don Juan"
-
-## Major Works
-- Lyrical Ballads: Collection of poems by Wordsworth and Coleridge that marked the beginning of the English Romantic movement
-- The Prelude: Wordsworth's autobiographical poem, considered his masterpiece
-- Don Juan: Byron's satirical epic poem that critiques social and sexual conventions
-
-## Prominent Themes
-- Nature: Central importance in Romantic literature as a source of inspiration and spiritual truth
-- Imagination: Valued over reason and associated with creativity and spiritual truth
-- Individualism: Focus on the individual and inner experience
-
-# Victorian Period
-
-## Notable Authors
-- Charles Dickens: English writer known for creating some of literature's most memorable characters
-- George Eliot: Pen name of Mary Ann Evans, known for realistic novels that examine social issues
-- Thomas Hardy: English novelist and poet whose works were influenced by Romanticism but critique Victorian society
-
-## Significant Works
-- Great Expectations: Novel by Charles Dickens that depicts the personal growth of an orphan named Pip
-- Middlemarch: George Eliot's study of provincial life, considered one of the greatest novels in English
-- Tess of the d'Urbervilles: Thomas Hardy's novel that critiques Victorian notions of social and sexual purity
-```
-
-When parsed with your customized code, this would produce nodes of types "person", "literary_work", and "concept", with relationships including basic ones like "contains" and "includes", plus domain-specific ones like "authored_by", "influenced_by", and "critiques".
 
 ## Testing
 
