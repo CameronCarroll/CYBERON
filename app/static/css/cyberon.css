@@ -1,209 +1,260 @@
-/* Cyberon - Cybernetic Chic Theme */
+/* Cyberon - Subdued Cybernetics Theme (Heavy Revision) */
 
 :root {
-    /* Main color palette */
-    --color-bg-primary: #121212;
-    --color-bg-secondary: #1e1e1e;
-    --color-bg-tertiary: #2d2d2d;
-    
-    /* Neon accent colors */
-    --color-neon-cyan: #00f0ff;
-    --color-neon-magenta: #ff00ff;
-    --color-neon-green: #00ff8e;
-    --color-neon-yellow: #fffc00;
-    
-    /* Text colors */
-    --color-text-primary: #ffffff;
-    --color-text-secondary: #b0b0b0;
-    --color-text-muted: #707070;
-    
-    /* Border colors */
-    --color-border: #3a3a3a;
-    
-    /* Font families */
-    --font-sans: 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-mono: 'JetBrains Mono', 'Fira Code', 'Roboto Mono', monospace;
-  }
+  /* Main color palette (kept dark) */
+  --color-bg-primary: #101010; /* Slightly deeper black */
+  --color-bg-secondary: #1a1a1a; 
+  --color-bg-tertiary: #282828; 
   
-  /* Base styles */
-  body {
-    background-color: var(--color-bg-primary);
-    color: var(--color-text-primary);
-    font-family: var(--font-sans);
-  }
+  /* --- REMOVED most neon definitions, kept Cyan as potential accent --- */
+  --color-accent-cyan: #00BCD4; /* A less intense, more standard cyan */
+  /* --color-neon-magenta: #ff00ff; */
+  /* --color-neon-green: #00ff8e; */
+  /* --color-neon-yellow: #fffc00; */
   
-  /* Navigation */
-  nav {
-    background-color: var(--color-bg-secondary) !important;
-    border-bottom: 1px solid var(--color-border);
-  }
+  /* --- CHANGED: Text colors are less bright --- */
+  --color-text-primary: #dcdcdc; /* Off-white */
+  --color-text-secondary: #999999; /* Gray */
+  --color-text-muted: #666666;   /* Darker Gray */
   
-  nav .text-xl {
-    color: var(--color-neon-cyan);
-    font-family: var(--font-mono);
-    letter-spacing: 0.5px;
-  }
+  /* Border colors (adjusted slightly) */
+  --color-border: #383838; /* Slightly darker border */
   
-  /* Cards and containers */
-  .bg-white {
-    background-color: var(--color-bg-secondary) !important;
-    border: 1px solid var(--color-border);
-  }
-  
-  .shadow-md {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
-  }
-  
-  /* Headings */
-  h1, h2, h3, h4, h5, h6 {
-    color: var(--color-text-primary);
-  }
-  
-  h1 {
-    color: var(--color-neon-cyan);
-    font-family: var(--font-mono);
-    letter-spacing: 0.5px;
-  }
-  
-  h2 {
-    color: var(--color-neon-magenta);
-  }
-  
-  /* Links */
-  a {
-    color: var(--color-neon-cyan) !important;
-  }
-  
-  a:hover {
-    color: var(--color-neon-green) !important;
-    text-decoration: none !important;
-    text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
-  }
-  
-  /* Buttons */
-  .bg-blue-600 {
-    background-color: var(--color-bg-tertiary) !important;
-    border: 1px solid var(--color-neon-cyan);
-    color: var(--color-neon-cyan) !important;
-  }
-  
-  .bg-blue-600:hover {
-    background-color: var(--color-neon-cyan) !important;
-    color: var(--color-bg-primary) !important;
-    box-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
-  }
-  
-  .bg-gray-600 {
-    background-color: var(--color-bg-tertiary) !important;
-    border: 1px solid var(--color-text-muted);
-  }
-  
-  .bg-gray-600:hover {
-    background-color: var(--color-text-muted) !important;
-  }
-  
-  /* Form elements */
-  input, select, textarea {
-    background-color: var(--color-bg-tertiary) !important;
-    border-color: var(--color-border) !important;
-    color: var(--color-text-primary) !important;
-  }
-  
-  input:focus, select:focus, textarea:focus {
-    border-color: var(--color-neon-cyan) !important;
-    box-shadow: 0 0 0 2px rgba(0, 240, 255, 0.25) !important;
-  }
-  
-  /* Footer */
-  footer {
-    background-color: var(--color-bg-secondary) !important;
-    border-top: 1px solid var(--color-border);
-  }
-  
-  /* Graph visualization */
-  #graph-container {
-    background-color: var(--color-bg-primary) !important;
-    border: 1px solid var(--color-border) !important;
-  }
-  
-  .node-tooltip {
-    background-color: var(--color-bg-secondary) !important;
-    border: 1px solid var(--color-neon-cyan) !important;
-    color: var(--color-text-primary) !important;
-    box-shadow: 0 0 10px rgba(0, 240, 255, 0.3) !important;
-  }
-  
-  /* Entity details */
-  .entity-link {
-    font-family: var(--font-mono);
-    font-size: 0.95em;
-  }
-  
-  /* Section headers */
-  .section-header {
-    background-color: var(--color-bg-tertiary) !important;
-    border-bottom: 1px solid var(--color-border);
-  }
-  
-  .section-header:hover {
-    background-color: rgba(0, 240, 255, 0.1) !important;
-  }
-  
-  /* Code and monospace text */
-  code, .font-mono {
-    font-family: var(--font-mono);
-    color: var(--color-neon-green);
-  }
-  
-  /* Type badges */
-  .bg-gray-200 {
-    background-color: var(--color-bg-tertiary) !important;
-    color: var(--color-neon-yellow) !important;
-    border: 1px solid rgba(255, 252, 0, 0.3);
-  }
-  
-  /* Borders */
-  .border {
-    border-color: var(--color-border) !important;
-  }
-  
-  /* Scrollbar styling */
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-  
-  ::-webkit-scrollbar-track {
-    background: var(--color-bg-primary);
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    background: var(--color-bg-tertiary);
-    border-radius: 4px;
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-neon-cyan);
-  }
-  
-  /* Custom glow effects */
-  .neon-glow {
-    text-shadow: 0 0 5px var(--color-neon-cyan), 0 0 10px var(--color-neon-cyan);
-  }
-  
-  .neon-box {
-    box-shadow: 0 0 5px var(--color-neon-cyan), 0 0 10px var(--color-neon-cyan);
-  }
-  
-  /* Responsive adjustments */
-  @media (max-width: 640px) {
-    h1 {
-      font-size: 1.5rem;
-    }
-    
-    .container {
-      padding-left: 1rem;
-      padding-right: 1rem;
-    }
-  }
-  
+  /* Font families (unchanged) */
+  --font-sans: 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Roboto Mono', monospace;
+}
+
+/* Base styles */
+body {
+background-color: var(--color-bg-primary);
+color: var(--color-text-primary);
+font-family: var(--font-sans);
+}
+
+/* Navigation */
+nav {
+background-color: var(--color-bg-secondary) !important;
+border-bottom: 1px solid var(--color-border);
+}
+
+/* --- CHANGED: Nav title uses standard text color --- */
+nav .text-xl {
+color: var(--color-text-primary); /* Standard text */
+font-family: var(--font-mono);
+letter-spacing: 0.5px;
+font-weight: 600; /* Added weight for emphasis */
+}
+
+/* Cards and containers */
+.bg-white { /* Class name is now misleading, but kept for compatibility */
+background-color: var(--color-bg-secondary) !important;
+border: 1px solid var(--color-border);
+border-radius: 4px; /* Added subtle rounding */
+}
+
+/* --- CHANGED: Removed intense shadow, uses subtle border --- */
+.shadow-md {
+/* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05) !important; REMOVED */
+box-shadow: none !important; /* Remove shadows */
+border: 1px solid var(--color-border); /* Rely on border */
+}
+
+/* Headings - Use standard text colors, hierarchy via size/weight */
+h1, h2, h3, h4, h5, h6 {
+color: var(--color-text-primary);
+font-family: var(--font-sans); /* Use sans-serif for readability */
+margin-bottom: 0.5em;
+font-weight: 600;
+}
+h1 {
+  font-size: 1.8rem; /* Example size */
+  font-family: var(--font-mono); /* Keep mono for H1 if desired */
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 0.2em;
+}
+h2 {
+  font-size: 1.4rem; /* Example size */
+  color: var(--color-text-secondary); /* Use secondary for H2 */
+  border-bottom: none;
+}
+/* Add styles for h3-h6 as needed */
+
+/* --- CHANGED: Links use secondary color, hover to primary + underline --- */
+a {
+color: var(--color-text-secondary) !important; /* Use secondary text color */
+text-decoration: none !important; /* No underline by default */
+transition: color 0.2s ease, border-color 0.2s ease;
+}
+a:hover {
+color: var(--color-text-primary) !important; /* Hover to primary text */
+text-decoration: underline !important; /* Underline on hover */
+text-shadow: none !important; /* Ensure no residual glow */
+}
+
+/* --- CHANGED: Buttons drastically simplified --- */
+.bg-blue-600 { /* Class name misleading, represents primary action */
+background-color: var(--color-bg-tertiary) !important;
+border: 1px solid var(--color-border);
+color: var(--color-text-primary) !important; /* Primary text color */
+padding: 0.5em 1em;
+border-radius: 3px;
+transition: background-color 0.2s ease, border-color 0.2s ease;
+box-shadow: none !important; /* Remove shadow */
+}
+.bg-blue-600:hover {
+background-color: var(--color-border) !important; /* Hover to border color bg */
+border-color: var(--color-text-secondary); /* Change border color */
+color: var(--color-text-primary) !important; /* Keep text color */
+box-shadow: none !important; /* Ensure no shadow */
+}
+
+/* Secondary/Gray Button */
+.bg-gray-600 {
+background-color: transparent !important; /* Transparent background */
+border: 1px solid var(--color-text-muted);
+color: var(--color-text-secondary) !important;
+padding: 0.5em 1em;
+border-radius: 3px;
+transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.bg-gray-600:hover {
+background-color: var(--color-bg-tertiary) !important;
+border-color: var(--color-text-secondary);
+color: var(--color-text-primary) !important;
+}
+
+/* --- CHANGED: Form elements simplified, focus uses subtle accent --- */
+input, select, textarea {
+background-color: var(--color-bg-primary) !important; /* Darker background */
+border: 1px solid var(--color-border) !important;
+color: var(--color-text-primary) !important;
+padding: 0.5em;
+border-radius: 3px;
+transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+input:focus, select:focus, textarea:focus {
+border-color: var(--color-accent-cyan) !important; /* Use accent for focus border */
+box-shadow: none !important; /* Remove glow/shadow */
+outline: none; /* Remove default browser outline */
+}
+
+/* Footer */
+footer {
+background-color: var(--color-bg-secondary) !important;
+border-top: 1px solid var(--color-border);
+color: var(--color-text-secondary);
+padding: 1em 0;
+}
+
+/* Graph visualization */
+#graph-container {
+background-color: var(--color-bg-primary) !important;
+border: 1px solid var(--color-border) !important;
+}
+
+/* --- CHANGED: Tooltip simplified, subtle border --- */
+.node-tooltip {
+background-color: var(--color-bg-secondary) !important;
+border: 1px solid var(--color-border) !important;
+color: var(--color-text-primary) !important;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important; /* Subtle shadow for layering */
+padding: 0.5em;
+border-radius: 3px;
+}
+
+/* Entity details (use standard link styling) */
+.entity-link {
+font-family: var(--font-mono);
+font-size: 0.9em; /* Slightly smaller */
+color: var(--color-text-secondary) !important; /* Match standard links */
+}
+.entity-link:hover {
+  color: var(--color-text-primary) !important;
+  text-decoration: underline !important;
+}
+
+/* Section headers */
+.section-header {
+background-color: var(--color-bg-tertiary) !important;
+border-bottom: 1px solid var(--color-border);
+padding: 0.5em 1em;
+margin-bottom: 1em;
+color: var(--color-text-secondary);
+font-weight: 600;
+transition: background-color 0.2s ease;
+}
+.section-header:hover {
+background-color: var(--color-border) !important; /* Subtle background change */
+}
+
+/* --- CHANGED: Code uses standard mono font color, subtle background --- */
+code, .font-mono {
+font-family: var(--font-mono);
+color: var(--color-text-primary); /* Standard text color */
+background-color: var(--color-bg-tertiary); /* Subtle background */
+padding: 0.2em 0.4em;
+border-radius: 3px;
+font-size: 0.9em;
+border: 1px solid var(--color-border); /* Add border */
+}
+pre {
+  background-color: var(--color-bg-secondary);
+  padding: 1em;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  overflow-x: auto;
+}
+pre code {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  font-size: inherit; /* Inherit size from pre */
+}
+
+/* --- CHANGED: Type badges are very muted --- */
+.bg-gray-200 { /* Class name misleading */
+background-color: var(--color-bg-tertiary) !important;
+color: var(--color-text-muted) !important; /* Muted text */
+border: 1px solid var(--color-border); 
+padding: 0.2em 0.5em;
+font-size: 0.8em;
+border-radius: 4px;
+font-family: var(--font-mono);
+text-transform: uppercase; /* Optional: style adjustment */
+letter-spacing: 0.5px;
+}
+
+/* Borders */
+.border {
+border: 1px solid var(--color-border) !important; /* Ensure consistency */
+}
+
+/* --- CHANGED: Scrollbar uses muted colors --- */
+::-webkit-scrollbar {
+width: 10px; /* Slightly wider */
+height: 10px;
+}
+::-webkit-scrollbar-track {
+background: var(--color-bg-primary);
+}
+::-webkit-scrollbar-thumb {
+background: var(--color-text-muted); /* Use muted color */
+border-radius: 5px;
+border: 2px solid var(--color-bg-primary); /* Track color border */
+}
+::-webkit-scrollbar-thumb:hover {
+background: var(--color-text-secondary); /* Hover to lighter gray */
+}
+
+/* --- REMOVED: Neon glow effects completely removed --- */
+.neon-glow { text-shadow: none; }
+.neon-box { box-shadow: none; border: 1px solid var(--color-border); /* Example replacement */}
+
+/* Responsive adjustments (check font sizes) */
+@media (max-width: 640px) {
+h1 { font-size: 1.6rem; }
+h2 { font-size: 1.3rem; }
+.container { padding-left: 0.8rem; padding-right: 0.8rem; }
+}
