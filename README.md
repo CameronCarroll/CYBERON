@@ -36,8 +36,11 @@ This application includes a Model Context Protocol server that allows LLMs and o
 - Python 3.8 or higher
 - Flask and dependencies (see requirements.txt)
 - `sudo` access for systemd service installation
+- MCP client requires Crystal lang and shards.
 
 ## Installation
+
+*Wait we're not using named pipes anymore, it's STDIN, also the MCP client boots the MCP server which loads up the CYBERON data access module. So there's also no systemd configuration because the server is not persistent. This is a note to myself to go undo that configuration and update the instructions... later.*
 
 1. Clone the repository:
    ```bash
@@ -117,17 +120,7 @@ This application includes a Model Context Protocol server that allows LLMs and o
 
 ## Using the MCP Client
 
-The MCP client communicates with the server through the named pipes:
-
-```bash
-python app/mcp/client.py
-```
-
-For testing or debugging pipe communication, you can use the simple debug client:
-
-```bash
-python app/mcp/simple_client.py
-```
+(Needs update to reflect the Crystal clients)
 
 ## Troubleshooting
 
@@ -147,53 +140,40 @@ journalctl -u cyberon-mcp.service -f
 - If you change the location of the named pipes, update both the systemd service file and any client configurations
 - For persistent named pipes across reboots, consider adding their creation to a system startup script
 
-## Creating Your Own Ontology
+## Input Formatting
 
 ### Markdown Format
 
-The system processes markdown-formatted ontology files adhering to the following structure. Each file should represent a distinct knowledge domain.
+The system processes markdown-formatted ontology files adhering to the following structure.
+
+Notes:
+* Section Name defines a top-level category within the ontology.
+* All entities belong to the most recently defined section.
+* Lines starting with '##' are currently ignored by the parser.
 
 ```Markdown
 # Section Name
 
-# Section Name defines a top-level category within the ontology.
-# All entities belong to the most recently defined section.
-# Lines starting with '##' are currently ignored by the parser.
-
-- Entity: EntityName1
-  # Defines a new entity within the current section. Must start with '- Entity:'.
-  Description: A brief description of this entity.
-  # Optional: Provides a human-readable description.
-  Type: EntityType
-  # Optional: Specifies the classification of the entity (e.g., Species, Organ, Concept, Person).
-  Attributes:
-    # Optional: Marks the beginning of the attribute list for this entity.
-    - Attribute: AttributeName1
-      # Defines an attribute. Must start with '- Attribute:'.
-      Value: Some Value
-      # Provides the value for the *immediately preceding* '- Attribute:'. Required if attribute defined.
-    - Attribute: AttributeName2 [url:/path/to/resource]
-      # Defines an attribute with an associated external URL.
-      Value: Another Value
-      # Provides the value for AttributeName2.
-  Relationships:
-    # Optional: Marks the beginning of the relationship list for this entity.
-    - Relationship: relationship_type_1
-      # Defines a relationship type originating from EntityName1. Must start with '- Relationship:'.
-      Target: TargetEntityName1
-      # Specifies the target entity for the *immediately preceding* '- Relationship:'. Required if relationship defined.
-      # Inline comments after the target name (e.g., Target: TargetEntityName1 # comment) are ignored.
+- Entity: EntityName1 # Defines a new entity within the current section. Must start with '- Entity:'.
+  Description: A brief description of this entity. # Optional: Provides a human-readable description.
+  Type: EntityType # Optional: Specifies the classification of the entity (e.g., Species, Organ, Concept, Person).
+  Attributes: # Optional: Marks the beginning of the attribute list for this entity.
+    - Attribute: AttributeName1 # Defines an attribute. Must start with '- Attribute:'.
+      Value: Some Value # Provides the value for the *immediately preceding* '- Attribute:'. Required if attribute defined.
+    - Attribute: AttributeName2 [url:/path/to/resource] # Defines an attribute with an associated external URL.
+      Value: Another Value # Provides the value for AttributeName2.
+  Relationships: # Optional: Marks the beginning of the relationship list for this entity.
+    - Relationship: relationship_type_1 # Defines a relationship type originating from EntityName1. Must start with '- Relationship:'.
+      Target: TargetEntityName1 # Specifies the target entity for the *immediately preceding* '- Relationship:'. Required if relationship defined.
     - Relationship: relationship_type_2
-      Target: TargetEntityName2
+      Target: TargetEntityName2 # Inline comments after the target name (e.g., Target: TargetEntityName1 # comment) are ignored. 
 
-- Entity: EntityName2
+- Entity: EntityName2 # This entity has no explicitly defined attributes or relationships.
   Description: Another entity.
   Type: AnotherType
-  # This entity has no explicitly defined attributes or relationships in this example.
+  
 
 # Another Section Name
-
-# Entities defined below will belong to "Another Section Name".
 
 - Entity: TargetEntityName1
   Description: The target of the first relationship from EntityName1.
