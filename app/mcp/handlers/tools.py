@@ -215,18 +215,20 @@ def analyze_entity_tool(params: Dict[str, Any], transport_id: str) -> Dict[str, 
         num_incoming = len(entity.get("incoming", []))
         num_outgoing = len(entity.get("outgoing", []))
         
-        # Group connections by relationship type
+        # Group connections by entity type
         relationship_types = {}
-        for conn in connections:
-            rel_type = conn.get("relationship", {}).get("type")
+        # connections is a dict with keys as distances and values as lists of nodes
+        # We're only interested in direct connections (distance=1)
+        for node_info in connections.get(1, []):
+            rel_type = node_info.get("type", "unknown")
             if rel_type not in relationship_types:
                 relationship_types[rel_type] = 0
             relationship_types[rel_type] += 1
         
         # Get top connected entities
         related_entities = {}
-        for conn in connections:
-            other_id = conn.get("entity", {}).get("id")
+        for node_info in connections.get(1, []):
+            other_id = node_info.get("id")
             if other_id not in related_entities:
                 related_entities[other_id] = 0
             related_entities[other_id] += 1

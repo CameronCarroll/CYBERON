@@ -58,10 +58,12 @@ class TestToolHandlers:
         self.mock_query_engine.query_entity.return_value = mock_entity
         
         # Configure mock for connections
-        mock_connections = [
-            {"entity": {"id": "entity2"}, "relationship": {"type": "related_to"}},
-            {"entity": {"id": "entity3"}, "relationship": {"type": "part_of"}}
-        ]
+        mock_connections = {
+            1: [
+                {"id": "entity2", "label": "Entity 2", "type": "concept"},
+                {"id": "entity3", "label": "Entity 3", "type": "system"}
+            ]
+        }
         self.mock_query_engine.find_connections.return_value = mock_connections
         
         # Configure mock for paths
