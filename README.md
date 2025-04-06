@@ -144,173 +144,161 @@ journalctl -u cyberon-mcp.service -f
 
 ### Markdown Format
 
-The system processes markdown-formatted ontology files adhering to the following structure.
-
-Notes:
-* Section Name defines a top-level category within the ontology.
-* All entities belong to the most recently defined section.
-* Lines starting with '##' are currently ignored by the parser.
+The system processes markdown-formatted ontology files adhering to the following structure, allowing for hierarchical categorization using heading levels H1-H6.
 
 ```Markdown
-# Section Name
+# H1 Category Name
 
-- Entity: EntityName1 # Defines a new entity within the current section. Must start with '- Entity:'.
-  Description: A brief description of this entity. # Optional: Provides a human-readable description.
-  Type: EntityType # Optional: Specifies the classification of the entity (e.g., Species, Organ, Concept, Person).
-  Attributes: # Optional: Marks the beginning of the attribute list for this entity.
-    - Attribute: AttributeName1 # Defines an attribute. Must start with '- Attribute:'.
-      Value: Some Value # Provides the value for the *immediately preceding* '- Attribute:'. Required if attribute defined.
-    - Attribute: AttributeName2 [url:/path/to/resource] # Defines an attribute with an associated external URL.
-      Value: Another Value # Provides the value for AttributeName2.
-  Relationships: # Optional: Marks the beginning of the relationship list for this entity.
-    - Relationship: relationship_type_1 # Defines a relationship type originating from EntityName1. Must start with '- Relationship:'.
-      Target: TargetEntityName1 # Specifies the target entity for the *immediately preceding* '- Relationship:'. Required if relationship defined.
-    - Relationship: relationship_type_2
-      Target: TargetEntityName2 # Inline comments after the target name (e.g., Target: TargetEntityName1 # comment) are ignored. 
+## H2 Sub-Category Name
 
-- Entity: EntityName2 # This entity has no explicitly defined attributes or relationships.
-  Description: Another entity.
-  Type: AnotherType
-  
+### H3 Sub-Sub-Category Name
 
-# Another Section Name
+Headings (H1-H6) define categories and sub-categories.  
+Entities belong to the most specific (deepest) category defined before them.
 
-- Entity: TargetEntityName1
-  Description: The target of the first relationship from EntityName1.
+- Entity: EntityName1  
+  Description: A brief description of this entity.  
+  Type: EntityType  
+  Attributes:  
+    - Attribute: AttributeName1  
+      Value: Some Value  
+    - Attribute: AttributeName2 [url:/path/to/resource]  
+      Value: Another Value  
+  Relationships:  
+    - Relationship: relationship_type_1  
+      Target: TargetEntityName1  
+    - Relationship: relationship_type_2  
+      Target: TargetEntityName2
+
+  > This defines a new entity.  
+  > Description is optional and provides a human-readable explanation.  
+  > Type is optional and can classify the entity (e.g., Species, Organ, Concept, Person, Category).  
+  > Attributes are optional and define specific properties of the entity.  
+  > Relationships are optional and specify links to other entities.
+
+- Entity: EntityName2  
+  Description: Another entity.  
+  Type: AnotherType  
+
+  > This entity has no explicit attributes or relationships.
+
+# Another H1 Category
+
+## Another H2 Sub-Category
+
+- Entity: TargetEntityName1  
+  Description: An entity in the second H2 category.  
   Type: TargetType
 
-- Entity: TargetEntityName2
-  Description: The target of the second relationship from EntityName1.
-  Type: TargetType
 ```
 
 ### Key Syntax Points
 
-#### Sections:
+#### Categories (Headings):
 
-- Use H1 (# Section Name) to define top-level categories.
-- Entities belong to the last defined section.
-- ## headings are ignored.
+-   Use H1 (`#`) through H6 (`######`) to define categories and sub-categories.
+-   The heading level determines the depth in the hierarchy.
+-   Entities belong to the category defined by the most recent heading of any level.
 
 #### Entities:
 
-- Define entities using a bullet point followed by `Entity:` and the entity name (e.g., `- Entity: EntityName`).
+-   Define entities using `- Entity: EntityName`.
 
 ##### Entity Properties:
 
-- Define properties directly under the `- Entity:` line (indentation helps readability but is not strictly enforced beyond line order):
-  - `Description:` Text (Optional description)
-  - `Type:` Text (Optional type classification)
+-   Define properties directly under `- Entity:`:
+    -   `Description:` Text (Optional description)
+    -   `Type:` Text (Optional type classification)
 
 #### Attributes Block:
 
-- Start with `Attributes:`.
-- List attributes using `- Attribute: AttributeName`.
-  - Optionally include `[url:/path/...]` at the end of the `- Attribute:` line (before any potential newline) to associate a URL.
-- Provide the attribute's value on the next line using `Value:` AttributeValue.
-
-  **Important:** Each `- Attribute:` must be immediately followed by a `Value:`.
+-   Start with `Attributes:`.
+-   List attributes using `- Attribute: AttributeName`.
+    -   Optionally include `[url:/path/...]` at the end of the `- Attribute:` line for a URL.
+-   Provide the value on the next line using `Value: AttributeValue`.
+-   **Important:** Each `- Attribute:` must be immediately followed by `Value:`.
 
 #### Relationships Block:
 
-- Start with `Relationships:`.
-- Define relationships using `- Relationship: relationship_type`.
-- Specify the target entity on the next line using `Target:` TargetEntityName.
-  - Inline comments (`# ...`) after the target name are stripped.
-
-  **Important:** Each `- Relationship:` must be immediately followed by a `Target:`.
+-   Start with `Relationships:`.
+-   Define relationships using `- Relationship: relationship_type`.
+-   Specify the target on the next line using `Target: TargetEntityName`. Inline comments (`# ...`) after the target name are stripped.
+-   **Important:** Each `- Relationship:` must be immediately followed by `Target:`.
 
 #### Order Matters:
 
-- `Value:` must immediately follow the `- Attribute:` it belongs to.
-- `Target:` must immediately follow the `- Relationship:` it belongs to.
-- Attributes must be under an `Attributes:` heading.
-- Relationships must be under a `Relationships:` heading.
-
-### System Behavior (Based on Parser Logic)
-
-#### Structure:
-
-- The final output organizes entities under the section (#) they were defined in.
-
-#### Entity Typing:
-
-- An entity's type (e.g., "Person", "Concept", "Species") is determined only by the value provided in its `Type:` field. There is no automatic inference based on section names.
-
-#### Relationships:
-
-- Relationships between entities are created only if explicitly defined using the `Relationships:` block, `- Relationship:` type, and `Target:` name syntax. There are no automatic relationships created based on co-location within the file.
-
-#### IDs:
-
-- Unique IDs for nodes and attributes in the knowledge graph are generated automatically by lowercasing names and replacing non-alphanumeric characters with underscores (e.g., "Average Height" becomes `average_height`).
+-   `Value:` must follow `- Attribute:`.
+-   `Target:` must follow `- Relationship:`.
+-   Attributes must be under `Attributes:`.
+-   Relationships must be under `Relationships:`.
+-   An entity's category is determined by the last heading encountered before it.
 
 ---
 
 ## Data Output: Knowledge Graph
 
-The system processes the markdown ontology into a standard knowledge graph format represented in JSON. This JSON contains two main keys: `nodes` and `edges`.
+The system processes the markdown into a knowledge graph JSON format with `nodes` and `edges`.
+
+### Node Structure
+
+All nodes (representing entities *and* categories) share a standard structure:
 
 ```json
 {
-  "nodes": [
-    {
-      "id": "entityname1",
-      "label": "EntityName1",
-      "type": "EntityType",
-      "description": "A brief description of this entity.",
-      "attributename1": "Some Value",
-      "attributename2": "Another Value",
-      "attributename2_url": "/path/to/resource"
-    },
-    {
-      "id": "entityname2",
-      "label": "EntityName2",
-      "type": "AnotherType",
-      "description": "Another entity."
-    },
-    {
-      "id": "targetentityname1",
-      "label": "TargetEntityName1",
-      "type": "TargetType",
-      "description": "The target of the first relationship from EntityName1."
-    },
-    {
-       "id": "targetentityname2",
-       "label": "TargetEntityName2",
-       "type": "TargetType",
-       "description": "The target of the second relationship from EntityName1."
-    }
-  ],
-  "edges": [
-    {
-      "source": "entityname1",
-      "target": "targetentityname1",
-      "label": "relationship_type_1"
-    },
-    {
-      "source": "entityname1",
-      "target": "targetentityname2",
-      "label": "relationship_type_2"
-    }
-  ]
+  "id": "unique_node_id", // Lowercase, underscore-separated ID from name/heading
+  "label": "Original Name or Heading", // The original text
+  "type": "EntityType or Category", // Type defined in Markdown, or "Category" for headings
+  "description": "Optional description text.", // From Description: field, if present
+  "attributes": { // Node-specific attributes nested in a dictionary
+    "attribute_id_1": {
+        "value": "Some Value",
+        "url": null // or "/path/to/resource" if provided
+     },
+    "attribute_id_2": {
+        "value": "Another Value",
+        "url": "/path/to/resource"
+     }
+     // ... other attributes
+  }
 }
 ```
 
-**Explanation:**
+-   `id`: Generated ID (e.g., `entity_name_1`, `h1_category_name`, `h2_sub_category_name`).
+-   `label`: Original name from `- Entity:` or heading text.
+-   `type`: From `Type:` field, or automatically set to `Category`.
+-   `description`: From `Description:` field.
+-   `attributes`: A dictionary containing key-value pairs for attributes defined in the `Attributes:` block.
+    -   The key is the generated ID of the attribute name (e.g., `attribute_name_1`).
+    -   The value is an object containing `value` and optional `url`.
 
-* **`nodes`**: An array of objects, where each object represents an entity from the markdown file.
-    * `id`: A lower-case, underscore-separated unique identifier generated from the entity name.
-    * `label`: The original entity name as defined in the markdown (`- Entity: EntityName`).
-    * `type`: The entity type specified using the `Type:` field in the markdown.
-    * `description`: The description provided using the `Description:` field.
-    * *Attributes*: Attributes defined under the `Attributes:` block become direct key-value pairs on the node object. The key is the generated ID for the attribute name (e.g., `attributename1`).
-    * *Attribute URLs*: If an attribute in the markdown had a `[url:/...]` associated with it, an additional field is added to the node with `_url` appended to the attribute ID key (e.g., `attributename2_url`).
-* **`edges`**: An array of objects representing the relationships defined in the markdown.
-    * `source`: The `id` of the entity where the relationship originates.
-    * `target`: The `id` of the entity the relationship points to.
-    * `label`: The relationship type defined using `- Relationship: relationship_type`.
+### Edge Structure
 
+Edges represent relationships between nodes:
+
+1.  **Entity-to-Entity:** Defined in the `Relationships:` block.
+    ```json
+    {
+      "source": "entity_id_1",
+      "target": "entity_id_2",
+      "label": "relationship_type"
+    }
+    ```
+2.  **Category-to-Category (Hierarchy):** Automatically generated based on heading levels.
+    ```json
+    {
+      "source": "parent_category_id", // e.g., ID from H1 heading
+      "target": "child_category_id", // e.g., ID from H2 heading under the H1
+      "label": "has_subcategory" // Standard label for hierarchy
+    }
+    ```
+3.  **Entity-to-Category (Membership):** Automatically generated link from an entity to its most specific category.
+    ```json
+    {
+      "source": "entity_id",
+      "target": "most_specific_category_id", // ID of the H1/H2/H3... node it belongs to
+      "label": "belongs_to_category" // Standard label for membership
+    }
+    ```
 
 ## Testing
 

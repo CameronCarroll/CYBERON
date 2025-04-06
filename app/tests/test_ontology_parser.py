@@ -1,372 +1,416 @@
-import re
-import json
-from typing import Dict, List, Set, Tuple, Any, Optional
 import unittest
 import tempfile
 import os
+import json
+from typing import Dict, List, Set, Tuple, Any, Optional
 
-# Import the real implementation from the ontology parser
-from app.utils.ontology_parser import make_id, parse_markdown_ontology, convert_to_knowledge_graph, extract_markdown_to_json
+# Assume the refactored code is in 'app.utils.ontology_parser'
+# Adjust the import path if your file structure is different
+try:
+    from app.utils.ontology_parser import (
+        make_id,
+        parse_markdown_ontology,
+        convert_to_knowledge_graph,
+        extract_markdown_to_json,
+        # Import analysis functions if they exist and are tested separately or implicitly
+        # analyze_ontology_structure,
+        # extract_entities
+    )
+except ImportError:
+    # Fallback if the exact path doesn't exist, useful for local testing
+    # Make sure the refactored ontology_parser.py is in the same directory or accessible
+    print("Warning: Could not import from 'app.utils.ontology_parser'. Trying local import.")
+    # Make sure the refactored 'ontology_parser.py' is in the same directory or Python path
+    from ontology_parser import (
+        make_id,
+        parse_markdown_ontology,
+        convert_to_knowledge_graph,
+        extract_markdown_to_json
+    )
 
-# --- This is a helper function for the tests ---
-def extract_entities_and_relationships(parsed_ontology):
-     entities = {}
-     relationships = []
-     for section_id, section_data in parsed_ontology.items():
-         for entity in section_data.get("entities", []):
-             entity_name = entity.get("name")
-             entities[entity_name] = {"type": entity.get("type"), "description": entity.get("description")}
-             for rel in entity.get("relationships", []):
-                 if rel.get("target") and rel.get("type"):
-                      relationships.append({"source": entity_name, "target": rel["target"], "type": rel["type"]})
-     return entities, relationships
 
+# --- Helper function to find nodes/edges easily in tests ---
+def find_node_by_id(nodes: List[Dict], node_id: str) -> Optional[Dict]:
+    """Finds a node in a list of nodes by its ID."""
+    return next((node for node in nodes if node.get("id") == node_id), None)
 
-# --- Test Class ---
-class TestNewMarkdownOntologyParser(unittest.TestCase):
-    # --- setUp with sample data ---
+def get_edges_as_set(edges: List[Dict]) -> Set[Tuple[str, str, str]]:
+    """Converts a list of edge dictionaries to a set of (source, target, label) tuples."""
+    # Use empty string defaults for robustness against missing keys
+    return {(edge.get("source", ""), edge.get("target", ""), edge.get("label", "")) for edge in edges}
+
+# --- Test Class Updated for Phase 2 ---
+class TestHierarchicalMarkdownOntologyParser(unittest.TestCase):
+
     def setUp(self):
-        """Set up test fixtures with the NEW format."""
-        # Important: 
-        # 1. Parser ignores H2 headings (##), so entities must be directly under H1 headings (#)
-        # 2. Entity lines must use exactly '- Entity:' (not '-  Entity:' with extra spaces)
-        self.sample_markdown = """
-# Biology
+        """Set up test fixtures with hierarchical markdown."""
+        self.sample_hierarchical_markdown = """
+# Science
 
-- Entity: Human
-  Description: A bipedal primate capable of complex thought.
+Top-level category for scientific domains.
+
+## Biology
+
+The study of life and living organisms.
+
+### Zoology
+
+The branch of biology that studies the animal kingdom.
+
+- Entity: Lion
+  Description: A large cat species native to Africa and India.
   Type: Species
   Attributes:
-    - Attribute: Average Height
-      Value: 1.7 meters
-    - Attribute: Lifespan
-      Value: 80 years
-    - Attribute: Cognitive Ability [url:/docs/cognition]
-      Value: High
+    - Attribute: Conservation Status [url:https://www.iucnredlist.org/species/15951/50659042]
+      Value: Vulnerable
+    - Attribute: Average Weight (kg)
+      Value: 190
   Relationships:
-    - Relationship: has_part
-      Target: Brain
-    - Relationship: member_of
-      Target: Mammal
-    - Relationship: eats
-      Target: Apple
-    - Relationship: eats
-      Target: Food # Generic Food relationship
+    - Relationship: prey
+      Target: Zebra
+    - Relationship: classification
+      Target: Mammal # Defined later under Zoology
 
-- Entity: Brain
-  Description: The central organ of the nervous system.
-  Type: Organ
-  Relationships:
-    - Relationship: part_of
-      Target: Human
+- Entity: Zebra
+  Description: An African equine known for stripes.
+  Type: Species
 
 - Entity: Mammal
   Description: A class of warm-blooded vertebrates.
-  Type: Class
+  Type: Class # This entity belongs to Zoology
 
-# Food
+### Botany
 
-- Entity: Apple
-  Description: A type of fruit, typically red or green.
-  Type: Food
+The scientific study of plants.
+
+- Entity: Oak Tree
+  Description: A tree or shrub in the genus Quercus.
+  Type: Plant
   Attributes:
-    - Attribute: Color
-      Value: Red/Green
-    - Attribute: Nutritional Info [url:/nutrition/apple]
-      Value: Rich in vitamins
+    - Attribute: Leaf Type
+      Value: Broadleaf
+
+## Chemistry
+
+Study of substances and their properties.
+
+- Entity: Water
+  Type: Molecule
+  Attributes:
+    - Attribute: Formula
+      Value: H2O
   Relationships:
-    - Relationship: eaten_by
-      Target: Human
+    - Relationship: example_of
+      Target: Molecule # Target defined later
 
-- Entity: Food
-  Description: Any substance consumed to provide nutritional support.
-  Type: Concept
+# Concepts
+
+General concepts used across domains.
+
+- Entity: Molecule
+  Description: An electrically neutral group of two or more atoms held together by chemical bonds.
+  Type: AbstractConcept
+
 """
-        self.expected_node_ids = {"human", "brain", "mammal", "apple", "food", "biology"}
-        self.expected_human_attr_keys = {"average_height", "lifespan", "cognitive_ability", "cognitive_ability_url"}
-        self.expected_apple_attr_keys = {"color", "nutritional_info", "nutritional_info_url"}
+        # --- Expected structure after parsing ---
+        # (Removed verbose expected_parsed_structure for brevity, tests verify key aspects)
 
-    def test_parse_markdown_ontology(self):
-        """Test parsing NEW markdown format into structured ontology."""
-        result = parse_markdown_ontology(self.sample_markdown)
-        self.maxDiff = None
-        
-        # Verify the basic structure
-        self.assertIn("biology", result)
-        self.assertEqual("Biology", result["biology"]["title"])
-        self.assertIn("entities", result["biology"])
-        
-        self.assertIn("food", result)
-        self.assertEqual("Food", result["food"]["title"])
-        self.assertIn("entities", result["food"])
-        
-        # Check the entities list
-        biology_entities = result["biology"]["entities"]
-        food_entities = result["food"]["entities"]
-        
-        self.assertEqual(3, len(biology_entities), "Biology section should have 3 entities")
-        self.assertEqual(2, len(food_entities), "Food section should have 2 entities")
-        
-        # Find specific entities
-        human = next((e for e in biology_entities if e["name"] == "Human"), None)
-        brain = next((e for e in biology_entities if e["name"] == "Brain"), None)
-        mammal = next((e for e in biology_entities if e["name"] == "Mammal"), None)
-        apple = next((e for e in food_entities if e["name"] == "Apple"), None)
-        food = next((e for e in food_entities if e["name"] == "Food"), None)
-        
-        # Verify all entities were found
-        self.assertIsNotNone(human, "Human entity should exist")
-        self.assertIsNotNone(brain, "Brain entity should exist")
-        self.assertIsNotNone(mammal, "Mammal entity should exist")
-        self.assertIsNotNone(apple, "Apple entity should exist")
-        self.assertIsNotNone(food, "Food entity should exist")
-        
-        # Check Human entity details
-        self.assertEqual("A bipedal primate capable of complex thought.", human["description"])
-        self.assertEqual("Species", human["type"])
-        
-        # Check Human attributes
-        self.assertEqual(3, len(human["attributes"]))
-        height_attr = next((a for a in human["attributes"] if a["name"] == "Average Height"), None)
-        self.assertIsNotNone(height_attr)
-        self.assertEqual("1.7 meters", height_attr["value"])
-        self.assertIsNone(height_attr["url"])
-        
-        cognitive_attr = next((a for a in human["attributes"] if a["name"] == "Cognitive Ability"), None)
-        self.assertIsNotNone(cognitive_attr)
-        self.assertEqual("High", cognitive_attr["value"])
-        self.assertEqual("/docs/cognition", cognitive_attr["url"])
-        
-        # Check Human relationships
-        self.assertEqual(4, len(human["relationships"]))
-        has_part_rel = next((r for r in human["relationships"] if r["type"] == "has_part"), None)
-        self.assertIsNotNone(has_part_rel)
-        self.assertEqual("Brain", has_part_rel["target"])
-        
-        # Check Brain entity
-        self.assertEqual("The central organ of the nervous system.", brain["description"])
-        self.assertEqual("Organ", brain["type"])
-        self.assertEqual(0, len(brain["attributes"]))
-        self.assertEqual(1, len(brain["relationships"]))
-        
-        # Check Apple entity
-        self.assertEqual("A type of fruit, typically red or green.", apple["description"])
-        self.assertEqual("Food", apple["type"])
-        self.assertEqual(2, len(apple["attributes"]))
-        
-        nutritional_attr = next((a for a in apple["attributes"] if a["name"] == "Nutritional Info"), None)
-        self.assertIsNotNone(nutritional_attr)
-        self.assertEqual("Rich in vitamins", nutritional_attr["value"])
-        self.assertEqual("/nutrition/apple", nutritional_attr["url"])
+        # --- Expected structure after conversion to Knowledge Graph ---
+        self.expected_kg_node_ids = {
+            # Categories
+            "science", "biology", "zoology", "botany", "chemistry", "concepts",
+            # Entities
+            "lion", "zebra", "mammal", "oak_tree", "water", "molecule"
+        }
+        # Example: Expected Lion node structure in KG
+        self.expected_kg_lion_node = {
+            "id": "lion",
+            "label": "Lion",
+            "type": "Species",
+            "description": "A large cat species native to Africa and India.",
+            "attributes": {
+                "conservation_status": {
+                    "value": "Vulnerable",
+                    "url": "https://www.iucnredlist.org/species/15951/50659042"
+                },
+                "average_weight_kg": { # Note: ID generation includes units if in name
+                    "value": "190",
+                    "url": None
+                }
+            }
+        }
+        # Expected Edges (source_id, target_id, label)
+        self.expected_kg_edges = {
+            # Hierarchy Edges
+            ("science", "biology", "has_subcategory"),
+            ("science", "chemistry", "has_subcategory"),
+            ("biology", "zoology", "has_subcategory"),
+            ("biology", "botany", "has_subcategory"),
+            # Membership Edges
+            ("lion", "zoology", "belongs_to_category"),
+            ("zebra", "zoology", "belongs_to_category"),
+            ("mammal", "zoology", "belongs_to_category"),
+            ("oak_tree", "botany", "belongs_to_category"),
+            ("water", "chemistry", "belongs_to_category"),
+            ("molecule", "concepts", "belongs_to_category"),
+            # Entity-to-Entity Edges
+            ("lion", "zebra", "prey"),
+            ("lion", "mammal", "classification"),
+            ("water", "molecule", "example_of"),
+        }
 
-    def test_extract_entities_and_relationships(self):
-        """Test extracting entities and relationships from the parsed structure."""
-        parsed = parse_markdown_ontology(self.sample_markdown)
-        entities, relationships = extract_entities_and_relationships(parsed)
-        expected_entity_names = {"Human", "Brain", "Mammal", "Apple", "Food"}
-        self.assertEqual(set(entities.keys()), expected_entity_names)
-        
-        expected_relationships = [
-            {"source": "Human", "target": "Brain", "type": "has_part"}, 
-            {"source": "Human", "target": "Mammal", "type": "member_of"}, 
-            {"source": "Human", "target": "Apple", "type": "eats"}, 
-            {"source": "Human", "target": "Food", "type": "eats"}, 
-            {"source": "Brain", "target": "Human", "type": "part_of"}, 
-            {"source": "Apple", "target": "Human", "type": "eaten_by"}
-        ]
-        
-        self.assertCountEqual(relationships, expected_relationships)
+    def test_make_id(self):
+        """Test the make_id utility function."""
+        self.assertEqual("test_name", make_id("Test Name"))
+        self.assertEqual("test_name", make_id("Test-Name"))
+        self.assertEqual("h2o", make_id("H2O"))
+        # FIX: Corrected expectation based on function logic (multiple non-alpha -> single underscore)
+        self.assertEqual("a_b", make_id("A & B"))
+        self.assertEqual("test_kg", make_id("Test (kg)"))
+        self.assertEqual("leading_trailing", make_id("_Leading Trailing_"))
 
-    def test_convert_to_knowledge_graph(self):
-        """Test converting structured ontology to knowledge graph."""
-        parsed = parse_markdown_ontology(self.sample_markdown)
-        knowledge_graph = convert_to_knowledge_graph(parsed)
-        
+    def test_parse_markdown_ontology_hierarchical(self):
+        """Test parsing hierarchical markdown into the nested tree structure."""
+        parsed_tree = parse_markdown_ontology(self.sample_hierarchical_markdown)
+
+        # Check root structure
+        self.assertIsInstance(parsed_tree, list)
+        self.assertEqual(len(parsed_tree), 2, "Should have 2 root categories (Science, Concepts)")
+
+        # Find Science root node
+        science_node = next((n for n in parsed_tree if n.get("id") == "science"), None)
+        self.assertIsNotNone(science_node)
+        self.assertEqual(science_node.get("label"), "Science")
+        self.assertEqual(science_node.get("level"), 1)
+        self.assertEqual(len(science_node.get("children", [])), 2, "Science should have 2 children (Biology, Chemistry)")
+        self.assertEqual(len(science_node.get("entities", [])), 0)
+
+        # Find Biology node
+        biology_node = next((n for n in science_node["children"] if n.get("id") == "biology"), None)
+        self.assertIsNotNone(biology_node)
+        self.assertEqual(biology_node.get("level"), 2)
+        self.assertEqual(len(biology_node.get("children", [])), 2, "Biology should have 2 children (Zoology, Botany)")
+        self.assertEqual(len(biology_node.get("entities", [])), 0)
+
+        # Find Zoology node
+        zoology_node = next((n for n in biology_node["children"] if n.get("id") == "zoology"), None)
+        self.assertIsNotNone(zoology_node)
+        self.assertEqual(zoology_node.get("level"), 3)
+        self.assertEqual(len(zoology_node.get("children", [])), 0)
+        self.assertEqual(len(zoology_node.get("entities", [])), 3, "Zoology should have 3 entities")
+
+        # Find Lion entity data within Zoology
+        lion_entity_data = next((e for e in zoology_node["entities"] if e.get("name") == "Lion"), None)
+        self.assertIsNotNone(lion_entity_data)
+        self.assertEqual(lion_entity_data.get("type"), "Species")
+        self.assertEqual(len(lion_entity_data.get("attributes", [])), 2)
+        # Check a specific attribute
+        conservation_attr = lion_entity_data["attributes"][0]
+        self.assertEqual(conservation_attr.get("name"), "Conservation Status")
+        self.assertEqual(conservation_attr.get("value"), "Vulnerable")
+        self.assertTrue(conservation_attr.get("url", "").startswith("https://"))
+        self.assertEqual(len(lion_entity_data.get("relationships", [])), 2)
+        # Check a specific relationship
+        prey_rel = lion_entity_data["relationships"][0]
+        self.assertEqual(prey_rel.get("type"), "prey")
+        self.assertEqual(prey_rel.get("target"), "Zebra")
+
+        # Check Concepts root node
+        concepts_node = next((n for n in parsed_tree if n.get("id") == "concepts"), None)
+        self.assertIsNotNone(concepts_node)
+        self.assertEqual(concepts_node.get("level"), 1)
+        self.assertEqual(len(concepts_node.get("children", [])), 0)
+        self.assertEqual(len(concepts_node.get("entities", [])), 1, "Concepts should have 1 entity (Molecule)")
+        molecule_entity_data = concepts_node["entities"][0]
+        self.assertEqual(molecule_entity_data.get("name"), "Molecule")
+
+    def test_convert_to_knowledge_graph_hierarchical(self):
+        """Test converting the hierarchical tree to the KG format."""
+        parsed_tree = parse_markdown_ontology(self.sample_hierarchical_markdown)
+        knowledge_graph = convert_to_knowledge_graph(parsed_tree)
+
         self.assertIn("nodes", knowledge_graph)
         self.assertIn("edges", knowledge_graph)
-        
-        # There should be 6 nodes (5 entities + 1 section node, as 'food' is both a section and entity)
-        self.assertEqual(6, len(knowledge_graph["nodes"]), "Should have 6 nodes including section nodes")
-        
-        # Check node IDs
-        node_ids = {node["id"] for node in knowledge_graph["nodes"]}
-        
-        # The 'food' ID is shared between the section and entity 
-        expected_ids = {"human", "brain", "mammal", "apple", "food", "biology"}
-        self.assertEqual(expected_ids, node_ids)
-        
-        human_node = next((node for node in knowledge_graph["nodes"] if node["id"] == "human"), None)
-        apple_node = next((node for node in knowledge_graph["nodes"] if node["id"] == "apple"), None)
-        
-        self.assertIsNotNone(human_node)
-        self.assertIsNotNone(apple_node)
-        
-        # Check attribute values match
-        self.assertEqual("1.7 meters", human_node.get("average_height"))
-        self.assertEqual("/docs/cognition", human_node.get("cognitive_ability_url"))
-        self.assertEqual("Rich in vitamins", apple_node.get("nutritional_info"))
-        self.assertEqual("/nutrition/apple", apple_node.get("nutritional_info_url"))
-        
-        # There should be 6 edges
-        self.assertEqual(6, len(knowledge_graph["edges"]))
-        
-        expected_edges = [
-            {"source": "human", "target": "brain", "label": "has_part"}, 
-            {"source": "human", "target": "mammal", "label": "member_of"}, 
-            {"source": "human", "target": "apple", "label": "eats"}, 
-            {"source": "human", "target": "food", "label": "eats"}, 
-            {"source": "brain", "target": "human", "label": "part_of"}, 
-            {"source": "apple", "target": "human", "label": "eaten_by"}
-        ]
-        
-        # Convert to a comparable format for set comparison
-        actual_edge_set = {(e["source"], e["target"], e["label"]) for e in knowledge_graph["edges"]}
-        expected_edge_set = {(e["source"], e["target"], e["label"]) for e in expected_edges}
-        
-        self.assertEqual(expected_edge_set, actual_edge_set)
 
-    def test_extract_markdown_to_json(self):
-        """Test end-to-end conversion from NEW markdown format to JSON."""
-        with tempfile.NamedTemporaryFile(mode='w+', delete=False, suffix=".md") as temp_input:
-            temp_input.write(self.sample_markdown)
+        nodes = knowledge_graph["nodes"]
+        edges = knowledge_graph["edges"]
+
+        # Check Node Count and IDs
+        self.assertEqual(len(nodes), len(self.expected_kg_node_ids), "Unexpected number of nodes")
+        actual_node_ids = {node["id"] for node in nodes}
+        self.assertEqual(actual_node_ids, self.expected_kg_node_ids, "Node IDs do not match expected IDs")
+
+        # Check Category Node Structure (Example: Biology)
+        biology_kg_node = find_node_by_id(nodes, "biology")
+        self.assertIsNotNone(biology_kg_node)
+        self.assertEqual(biology_kg_node.get("label"), "Biology")
+        self.assertEqual(biology_kg_node.get("type"), "Category")
+        self.assertEqual(biology_kg_node.get("attributes"), {}, "Category nodes should have empty attributes dict")
+
+        # Check Entity Node Structure (Example: Lion)
+        lion_kg_node = find_node_by_id(nodes, "lion")
+        self.assertIsNotNone(lion_kg_node)
+        self.assertEqual(lion_kg_node.get("label"), self.expected_kg_lion_node["label"])
+        self.assertEqual(lion_kg_node.get("type"), self.expected_kg_lion_node["type"])
+        self.assertEqual(lion_kg_node.get("description"), self.expected_kg_lion_node["description"])
+        # Deep check of nested attributes dictionary
+        self.assertDictEqual(lion_kg_node.get("attributes", {}), self.expected_kg_lion_node["attributes"])
+
+        # Check another entity (Water)
+        water_kg_node = find_node_by_id(nodes, "water")
+        self.assertIsNotNone(water_kg_node)
+        self.assertEqual(water_kg_node.get("type"), "Molecule")
+        self.assertEqual(water_kg_node.get("attributes", {}).get("formula", {}).get("value"), "H2O")
+        self.assertIsNone(water_kg_node.get("attributes", {}).get("formula", {}).get("url"))
+
+        # Check Edges
+        self.assertEqual(len(edges), len(self.expected_kg_edges), "Unexpected number of edges")
+        actual_edge_set = get_edges_as_set(edges)
+        self.assertEqual(actual_edge_set, self.expected_kg_edges, "Edges do not match expected edges")
+
+    def test_extract_markdown_to_json_hierarchical(self):
+        """Test end-to-end conversion from hierarchical markdown to JSON."""
+        with tempfile.NamedTemporaryFile(mode='w+', delete=False, suffix=".md", encoding='utf-8') as temp_input:
+            temp_input.write(self.sample_hierarchical_markdown)
             temp_input_path = temp_input.name
-            
-        with tempfile.NamedTemporaryFile(mode='w+', delete=False, suffix=".json") as temp_output:
-            temp_output_path = temp_output.name
-            
+
+        # Create a temporary file path for output, ensure it doesn't exist yet
+        temp_output_fd, temp_output_path = tempfile.mkstemp(suffix=".json")
+        os.close(temp_output_fd) # Close the file descriptor, we just want the path
+
         try:
+            # Execute the main function
             extract_markdown_to_json(temp_input_path, temp_output_path)
-            
-            with open(temp_output_path, 'r') as f:
+
+            # Load and verify the output JSON
+            self.assertTrue(os.path.exists(temp_output_path), "Output JSON file was not created.")
+            with open(temp_output_path, 'r', encoding='utf-8') as f:
                 result = json.load(f)
-                
-            self.assertIn("structured_ontology", result)
+
+            # Check top-level keys
             self.assertIn("knowledge_graph", result)
-            
-            structured_ontology = result["structured_ontology"]
-            self.assertIn("biology", structured_ontology)
-            self.assertIn("food", structured_ontology)
-            
-            biology_entities = structured_ontology.get("biology", {}).get("entities", [])
-            food_entities = structured_ontology.get("food", {}).get("entities", [])
-            
-            human_entity = next((entity for entity in biology_entities if entity.get("name") == "Human"), None)
-            apple_entity = next((entity for entity in food_entities if entity.get("name") == "Apple"), None)
-            
-            self.assertIsNotNone(human_entity)
-            self.assertEqual("Species", human_entity.get("type"))
-            
-            human_attrs = human_entity.get("attributes", [])
-            cog_ability_attr = next((attr for attr in human_attrs if attr.get("name") == "Cognitive Ability"), None)
-            
-            self.assertIsNotNone(cog_ability_attr)
-            self.assertEqual("High", cog_ability_attr.get("value"))
-            self.assertEqual("/docs/cognition", cog_ability_attr.get("url"))
-            
+            self.assertIn("analysis", result)
+
             knowledge_graph = result["knowledge_graph"]
             self.assertIn("nodes", knowledge_graph)
             self.assertIn("edges", knowledge_graph)
-            
-            node_ids = {node.get("id") for node in knowledge_graph.get("nodes", [])}
-            self.assertIn("human", node_ids)
-            self.assertIn("apple", node_ids)
-            
-            human_node_from_json = next((node for node in knowledge_graph.get("nodes", []) if node.get("id") == "human"), None)
-            self.assertIsNotNone(human_node_from_json)
-            self.assertEqual("1.7 meters", human_node_from_json.get("average_height"))
-            self.assertEqual("/docs/cognition", human_node_from_json.get("cognitive_ability_url"))
-            
-        finally:
-            os.unlink(temp_input_path)
-            os.unlink(temp_output_path)
 
-    def test_malformed_markdown(self):
-        """Test handling of malformed markdown input."""
-        # The real parser is more lenient than the mock, so only test truly invalid cases
-        
+            # Verify KG structure within JSON
+            nodes = knowledge_graph["nodes"]
+            edges = knowledge_graph["edges"]
+            self.assertEqual(len(nodes), len(self.expected_kg_node_ids))
+            actual_node_ids = {node["id"] for node in nodes}
+            self.assertEqual(actual_node_ids, self.expected_kg_node_ids)
+
+            # Spot check a node
+            oak_node = find_node_by_id(nodes, "oak_tree")
+            self.assertIsNotNone(oak_node)
+            self.assertEqual(oak_node.get("label"), "Oak Tree")
+            self.assertEqual(oak_node.get("attributes", {}).get("leaf_type", {}).get("value"), "Broadleaf")
+
+            # Spot check edges
+            actual_edge_set = get_edges_as_set(edges)
+            self.assertIn(("lion", "zoology", "belongs_to_category"), actual_edge_set)
+            self.assertIn(("biology", "botany", "has_subcategory"), actual_edge_set)
+
+            # Verify analysis structure
+            analysis = result["analysis"]
+            self.assertGreaterEqual(analysis.get("total_categories", 0), 6) # Science, Bio, Zoo, Bot, Chem, Concepts
+            self.assertGreaterEqual(analysis.get("total_entities", 0), 6) # Lion, Zeb, Mam, Oak, Wat, Mol
+            self.assertEqual(analysis.get("max_depth", 0), 3)
+
+        finally:
+            # Clean up temporary files
+            if os.path.exists(temp_input_path):
+                 os.unlink(temp_input_path)
+            if os.path.exists(temp_output_path):
+                 os.unlink(temp_output_path)
+
+
+    def test_malformed_markdown_handling(self):
+        """Test handling of malformed or edge-case markdown input."""
         # Empty input
         empty_markdown = ""
-        result = parse_markdown_ontology(empty_markdown)
-        self.assertEqual({}, result)
-        
-        # Orphaned entity (no section header)
+        parsed_tree = parse_markdown_ontology(empty_markdown)
+        self.assertEqual(parsed_tree, [], "Parsing empty string should yield empty list")
+        kg = convert_to_knowledge_graph(parsed_tree)
+        self.assertEqual(kg, {"nodes": [], "edges": []}, "KG from empty parse should be empty")
+
+        # Orphaned entity (no section header) - should be skipped by parser
         orphaned_entity = "\n- Entity: Orphan\n  Description: Lost\n"
-        result = parse_markdown_ontology(orphaned_entity)
-        self.assertEqual({}, result)  # Should produce empty result
+        # Parser should log a warning (check console output if needed) and skip entity
+        parsed_tree = parse_markdown_ontology(orphaned_entity)
+        self.assertEqual(parsed_tree, [], "Parsing orphaned entity should yield empty list")
+        kg = convert_to_knowledge_graph(parsed_tree)
+        self.assertEqual(kg, {"nodes": [], "edges": []}, "KG from orphaned entity parse should be empty")
 
-    def test_empty_input(self):
-        """Test handling of empty input."""
-        empty_markdown = ""
-        result = parse_markdown_ontology(empty_markdown)
-        self.assertEqual({}, result)
+        # Malformed attribute/relationship pairs (should be skipped by parser)
+        # FIX: Modified comments to not start with '# ' to avoid misinterpretation as headings
+        malformed = """
+# Test Section
+- Entity: TestEnt
+  Attributes:
+  - Attribute: Attr1
+    ; Missing Value: line
+  - Attribute: Attr2
+    Value: Val2 # Correct pair
+  Relationships:
+  - Relationship: Rel1
+    ; Missing Target: line
+  - Relationship: Rel2
+    Target: SomeTarget # Correct pair
+"""
+        parsed = parse_markdown_ontology(malformed)
+        # Check that only the correctly formed pairs were parsed
+        # There should be one root category node
+        self.assertEqual(len(parsed), 1, "Malformed test should yield one root category node")
 
-    def test_id_generation(self):
-        """Test that IDs are properly generated from Entity names."""
-        # Test make_id directly
-        self.assertEqual("test_name", make_id("Test Name"))
-        self.assertEqual("test_name", make_id("Test-Name"))
-        self.assertEqual("test123", make_id("Test123"))
-        
-        # Test IDs in knowledge graph
-        parsed = parse_markdown_ontology(self.sample_markdown)
+        # Check the content of the parsed structure
+        self.assertEqual(parsed[0]['id'], 'test_section')
+        test_entities = parsed[0].get("entities", [])
+        self.assertEqual(len(test_entities), 1, "Should have parsed one entity in Test Section")
+        test_ent_data = test_entities[0]
+        self.assertEqual(test_ent_data['name'], 'TestEnt')
+
+        # Verify only the valid attribute was parsed
+        self.assertEqual(len(test_ent_data.get("attributes", [])), 1, "Should only parse valid attribute")
+        self.assertEqual(test_ent_data["attributes"][0]["name"], "Attr2")
+        self.assertEqual(test_ent_data["attributes"][0]["value"], "Val2")
+
+        # Verify only the valid relationship was parsed
+        self.assertEqual(len(test_ent_data.get("relationships", [])), 1, "Should only parse valid relationship")
+        self.assertEqual(test_ent_data["relationships"][0]["type"], "Rel2")
+        self.assertEqual(test_ent_data["relationships"][0]["target"], "SomeTarget")
+
+        # Convert and check KG - ensures conversion handles the correctly parsed subset
         kg = convert_to_knowledge_graph(parsed)
-        
-        node_ids = {node["id"] for node in kg["nodes"]}
-        edge_sources = {edge["source"] for edge in kg["edges"]}
-        edge_targets = {edge["target"] for edge in kg["edges"]}
-        
-        expected_ids = {"human", "brain", "mammal", "apple", "food", "biology"}
-        self.assertEqual(expected_ids, node_ids)
-        self.assertTrue(edge_sources.issubset(node_ids))
-        self.assertTrue(edge_targets.issubset(node_ids))
+        self.assertIn("nodes", kg)
+        self.assertIn("edges", kg)
 
-    def test_entity_type_extraction(self):
-        """Test proper extraction of entity types."""
-        parsed = parse_markdown_ontology(self.sample_markdown)
-        entities, _ = extract_entities_and_relationships(parsed)
-        
-        self.assertEqual("Species", entities["Human"]["type"])
-        self.assertEqual("Organ", entities["Brain"]["type"])
-        self.assertEqual("Class", entities["Mammal"]["type"])
-        self.assertEqual("Food", entities["Apple"]["type"])
-        self.assertEqual("Concept", entities["Food"]["type"])
+        # Check nodes: Test Section, TestEnt, SomeTarget (placeholder)
+        self.assertEqual(len(kg.get("nodes", [])), 3)
+        actual_node_ids = {n['id'] for n in kg['nodes']}
+        self.assertEqual(actual_node_ids, {'test_section', 'testent', 'sometarget'})
 
-    def test_attribute_with_url_parsing(self):
-        """Test specifically that attributes with URLs are parsed correctly."""
-        parsed = parse_markdown_ontology(self.sample_markdown)
-        human_entity = next((entity for entity in parsed.get("biology", {}).get("entities", []) if entity.get("name") == "Human"), None)
-        apple_entity = next((entity for entity in parsed.get("food", {}).get("entities", []) if entity.get("name") == "Apple"), None)
-        
-        self.assertIsNotNone(human_entity)
-        self.assertIsNotNone(apple_entity)
-        
-        cognitive_attr = next((attr for attr in human_entity.get("attributes", []) if attr.get("name") == "Cognitive Ability"), None)
-        nutritional_attr = next((attr for attr in apple_entity.get("attributes", []) if attr.get("name") == "Nutritional Info"), None)
-        
-        self.assertIsNotNone(cognitive_attr)
-        self.assertEqual("High", cognitive_attr.get("value"))
-        self.assertEqual("/docs/cognition", cognitive_attr.get("url"))
-        
-        self.assertIsNotNone(nutritional_attr)
-        self.assertEqual("Rich in vitamins", nutritional_attr.get("value"))
-        self.assertEqual("/nutrition/apple", nutritional_attr.get("url"))
+        test_ent_node = find_node_by_id(kg["nodes"], "testent")
+        self.assertIsNotNone(test_ent_node)
+        # Check nested attributes dict in KG node
+        self.assertEqual(len(test_ent_node.get("attributes", {})), 1)
+        self.assertIn("attr2", test_ent_node["attributes"])
+        self.assertEqual(test_ent_node["attributes"]["attr2"]["value"], "Val2")
+        self.assertIsNone(test_ent_node["attributes"]["attr2"]["url"])
 
-    def test_attribute_without_url_parsing(self):
-        """Test specifically that attributes without URLs are parsed correctly."""
-        parsed = parse_markdown_ontology(self.sample_markdown)
-        human_entity = next((entity for entity in parsed.get("biology", {}).get("entities", []) if entity.get("name") == "Human"), None)
-        apple_entity = next((entity for entity in parsed.get("food", {}).get("entities", []) if entity.get("name") == "Apple"), None)
-        
-        self.assertIsNotNone(human_entity)
-        self.assertIsNotNone(apple_entity)
-        
-        height_attr = next((attr for attr in human_entity.get("attributes", []) if attr.get("name") == "Average Height"), None)
-        color_attr = next((attr for attr in apple_entity.get("attributes", []) if attr.get("name") == "Color"), None)
-        
-        self.assertIsNotNone(height_attr)
-        self.assertEqual("1.7 meters", height_attr.get("value"))
-        self.assertIsNone(height_attr.get("url"))
-        
-        self.assertIsNotNone(color_attr)
-        self.assertEqual("Red/Green", color_attr.get("value"))
-        self.assertIsNone(color_attr.get("url"))
+        # Check edges: TestEnt -> TestSection, TestEnt -> SomeTarget
+        self.assertEqual(len(kg.get("edges", [])), 2)
+        actual_edges = get_edges_as_set(kg["edges"])
+        self.assertIn(("testent", "test_section", "belongs_to_category"), actual_edges)
+        self.assertIn(("testent", "sometarget", "Rel2"), actual_edges)
+
+
+if __name__ == '__main__':
+    # Ensure the script can find the ontology_parser module if run directly
+    # You might need to adjust sys.path depending on your project structure
+    # import sys
+    # sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'app', 'utils'))) # Example adjustment
+
+    unittest.main(argv=['first-arg-is-ignored'], exit=False)
