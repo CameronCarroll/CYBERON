@@ -5,26 +5,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cybernetics Ontology Visualization</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/cyberon.css') }}" rel="stylesheet">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://unpkg.com/force-graph"></script>
     <style>
         #graph-container {
             width: 100%;
             height: 70vh;
+            position: relative;
         }
         .node-tooltip {
             position: absolute;
-            background: white;
-            border: 1px solid #ddd;
+            background: var(--color-bg-secondary);
+            border: 1px solid var(--color-neon-cyan);
             border-radius: 4px;
             padding: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
             pointer-events: none;
             font-size: 14px;
             max-width: 250px;
             z-index: 10;
             opacity: 0;
             transition: opacity 0.2s;
+            color: var(--color-text-primary);
+        }
+        
+        /* Graph controls overlay */
+        .graph-controls {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            z-index: 5;
+            display: flex;
+            gap: 5px;
+        }
+        
+        .graph-control-btn {
+            background: var(--color-bg-tertiary);
+            border: 1px solid var(--color-border);
+            color: var(--color-text-primary);
+            width: 36px;
+            height: 36px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .graph-control-btn:hover {
+            background: var(--color-bg-secondary);
+            border-color: var(--color-neon-cyan);
+            box-shadow: 0 0 5px rgba(0, 240, 255, 0.5);
+        }
+        
+        /* Node glow effect */
+        .node-glow {
+            filter: drop-shadow(0 0 3px var(--color-neon-cyan));
         }
     </style>
 </head>
@@ -143,6 +182,26 @@
                             </div>
                         </div>
                         
+                        <div>
+                            <label class="block font-bold mb-1">Display Options:</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="toggle-node-labels" checked>
+                                    <span class="ml-2">Show Node Labels</span>
+                                </label>
+                                
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="toggle-link-labels">
+                                    <span class="ml-2">Show Link Labels</span>
+                                </label>
+                                
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="toggle-node-glow" checked>
+                                    <span class="ml-2">Enable Node Glow</span>
+                                </label>
+                            </div>
+                        </div>
+                        
                         <button id="reset-view" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
                             Reset View
                         </button>
@@ -152,7 +211,31 @@
                 <!-- Main graph area -->
                 <div class="lg:col-span-3">
                     <div class="bg-white rounded-lg shadow-md p-2">
-                        <div id="graph-container" class="border rounded"></div>
+                        <div id="graph-container" class="border rounded">
+                            <!-- Graph controls overlay -->
+                            <div class="graph-controls">
+                                <button class="graph-control-btn" id="zoom-in" title="Zoom In">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="11" cy="11" r="8"></circle>
+                                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                        <line x1="11" y1="8" x2="11" y2="14"></line>
+                                        <line x1="8" y1="11" x2="14" y2="11"></line>
+                                    </svg>
+                                </button>
+                                <button class="graph-control-btn" id="zoom-out" title="Zoom Out">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="11" cy="11" r="8"></circle>
+                                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                        <line x1="8" y1="11" x2="14" y2="11"></line>
+                                    </svg>
+                                </button>
+                                <button class="graph-control-btn" id="fit-graph" title="Fit Graph">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- Node details panel -->
@@ -178,26 +261,17 @@
             let graph;
             let graphData = { nodes: [], links: [] };
             let selectedNode = null;
+            let hoveredNode = null;
+            let highlightNodes = new Set();
+            let highlightLinks = new Set();
             
             // Create tooltip element
             const tooltip = document.getElementById('node-tooltip');
             
             // Fetch graph data
-            console.log('Fetching graph data...');
-            // Debugging - log URL before fetch
-            const apiUrl = window.location.origin + '/api/graph-data';
-            console.log('API URL:', apiUrl);
-            // Using full URL with correct API endpoint
-            fetch(apiUrl)
-                .then(response => {
-                    console.log('Response status:', response.status);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    return response.json();
-                })
+            fetch('/api/graph-data')
+                .then(response => response.json())
                 .then(data => {
-                    console.log('Received data:', data);
                     // Store initial data
                     graphData = {
                         nodes: data.nodes.map(node => ({
@@ -214,88 +288,145 @@
                     };
                     
                     initGraph(graphData);
-                    setupEventListeners();
+                    // Wait for next tick to ensure DOM is fully rendered
+                    setTimeout(setupEventListeners, 0);
                 })
                 .catch(error => {
                     console.error('Error loading graph data:', error);
                     document.getElementById('graph-container').innerHTML = 
-                        '<div class="flex h-full items-center justify-center"><p class="text-red-500">Error loading graph data: ' + error.message + '</p></div>';
-                    // Debug message - display URL that was used
-                    console.log('Attempted to fetch from:', window.location.origin + '/api/graph-data');
+                        '<div class="flex h-full items-center justify-center"><p class="text-red-500">Error loading graph data</p></div>';
                 });
             
             // Initialize the graph
             function initGraph(data) {
-                // Node colors by type
+                // Node colors by type with neon theme
                 const nodeColors = {
-                    person: '#ff6347',    // tomato
-                    concept: '#4682b4',   // steelblue
-                    domain: '#2e8b57',    // seagreen
-                    category: '#9932cc',  // darkorchid
-                    default: '#999999'    // gray
+                    person: 'var(--color-neon-magenta)',    // neon magenta
+                    concept: 'var(--color-neon-cyan)',      // neon cyan
+                    domain: 'var(--color-neon-green)',      // neon green
+                    category: 'var(--color-neon-yellow)',   // neon yellow
+                    default: '#999999'                      // gray
                 };
                 
                 // Create the graph
                 graph = ForceGraph()
                     .graphData(data)
                     .nodeId('id')
-                    .nodeVal('val')
+                    .nodeVal(node => node === selectedNode ? 1.5 : 1) // Larger for selected node
                     .nodeLabel('name')
-                    .nodeColor(node => nodeColors[node.type] || nodeColors.default)
+                    .nodeColor(node => {
+                        // If node is highlighted or selected, use brighter color
+                        if (node === selectedNode) return '#ffffff';
+                        if (highlightNodes.has(node)) return '#ffffff';
+                        return nodeColors[node.type] || nodeColors.default;
+                    })
                     .linkLabel('label')
                     .linkDirectionalArrowLength(3.5)
                     .linkDirectionalArrowRelPos(1)
                     .linkCurvature(0.25)
                     .onNodeClick(handleNodeClick)
-                    .onNodeHover((node, prevNode) => {
-                        // Call our handler with the current event
-                        handleNodeHover(node, window.event || event);
-                    })
-                    .linkWidth(link => link === highlightedLink ? 2 : 1)
-                    .linkColor(link => link === highlightedLink ? '#ff9900' : '#cccccc')
-                    .nodeCanvasObject((node, ctx, globalScale) => {
-                        // Node drawing logic
-                        const label = node.name || node.id;
-                        const fontSize = 12/globalScale;
-                        ctx.font = `${fontSize}px Sans-Serif`;
-                        
-                        // Node circle
-                        ctx.beginPath();
-                        const size = node === selectedNode ? 8 : 5;
-                        ctx.arc(node.x, node.y, size, 0, 2 * Math.PI);
-                        ctx.fillStyle = nodeColors[node.type] || nodeColors.default;
-                        ctx.fill();
-                        
-                        // Draw border for selected node
-                        if (node === selectedNode) {
-                            ctx.strokeStyle = '#000000';
-                            ctx.lineWidth = 2/globalScale;
-                            ctx.stroke();
+                    .onNodeHover(handleNodeHover)
+                    .onLinkHover(handleLinkHover)
+                    .linkWidth(link => highlightLinks.has(link) ? 2 : 1)
+                    .linkColor(link => {
+                        if (highlightLinks.has(link)) {
+                            // Use neon color based on relationship type
+                            if (link.label.includes('evolves')) return 'var(--color-neon-green)';
+                            if (link.label.includes('related')) return 'var(--color-neon-cyan)';
+                            if (link.label.includes('influences')) return 'var(--color-neon-magenta)';
+                            return 'var(--color-neon-yellow)';
                         }
-                        
-                        // Text label (only if zoomed in enough)
-                        if (globalScale > 0.7 || node === selectedNode) {
-                            // Text background for readability
-                            const textWidth = ctx.measureText(label).width;
-                            const bckgDimensions = [textWidth, fontSize].map(n => n + fontSize * 0.5);
+                        return 'rgba(150, 150, 150, 0.2)'; // Subtle default color
+                    })
+                    .linkDirectionalParticles(link => highlightLinks.has(link) ? 4 : 0)
+                    .linkDirectionalParticleWidth(2)
+                    .linkDirectionalParticleSpeed(0.005)
+                    .nodeCanvasObject((node, ctx, globalScale) => {
+                        try {
+                            // Node drawing logic
+                            const label = node.name || node.id;
+                            const fontSize = 12/globalScale;
+                            ctx.font = `${fontSize}px var(--font-mono), monospace`;
                             
-                            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-                            ctx.fillRect(
-                                node.x - bckgDimensions[0] / 2,
-                                node.y + size + 2,
-                                bckgDimensions[0],
-                                bckgDimensions[1]
-                            );
+                            // Determine if node should be highlighted
+                            const isHighlighted = highlightNodes.has(node) || node === hoveredNode;
+                            const isSelected = node === selectedNode;
                             
-                            // Text label
-                            ctx.textAlign = 'center';
-                            ctx.textBaseline = 'middle';
-                            ctx.fillStyle = '#000';
-                            ctx.fillText(
-                                label,
-                                node.x,
-                                node.y + size + 2 + bckgDimensions[1]/2
-                            );
+                            // Node circle
+                            ctx.beginPath();
+                            const size = isSelected ? 8 : (isHighlighted ? 6 : 4);
+                            ctx.arc(node.x, node.y, size, 0, 2 * Math.PI);
+                            
+                            // Fill with appropriate color
+                            if (isSelected) {
+                                ctx.fillStyle = '#ffffff';
+                            } else if (isHighlighted) {
+                                ctx.fillStyle = '#ffffff';
+                            } else {
+                                ctx.fillStyle = nodeColors[node.type] || nodeColors.default;
+                            }
+                            ctx.fill();
+                            
+                            // Draw glow effect for highlighted nodes
+                            const toggleNodeGlow = document.getElementById('toggle-node-glow');
+                            const shouldGlow = (isHighlighted || isSelected) && 
+                                              (!toggleNodeGlow || toggleNodeGlow.checked);
+                            
+                            if (shouldGlow) {
+                                ctx.save();
+                                ctx.shadowColor = nodeColors[node.type] || 'var(--color-neon-cyan)';
+                                ctx.shadowBlur = 10;
+                                ctx.beginPath();
+                                ctx.arc(node.x, node.y, size, 0, 2 * Math.PI);
+                                ctx.fill();
+                                ctx.restore();
+                            }
+                            
+                            // Draw border for selected or highlighted node
+                            if (isSelected || isHighlighted) {
+                                ctx.strokeStyle = nodeColors[node.type] || 'var(--color-neon-cyan)';
+                                ctx.lineWidth = 2/globalScale;
+                                ctx.stroke();
+                            }
+                            
+                            // Text label (only if zoomed in enough or node is highlighted)
+                            const toggleNodeLabels = document.getElementById('toggle-node-labels');
+                            // Default to showing labels if the control is not found
+                            const showLabels = !toggleNodeLabels || toggleNodeLabels.checked;
+                            
+                            if (showLabels && (globalScale > 0.7 || isHighlighted || isSelected)) {
+                                // Text background for readability
+                                const textWidth = ctx.measureText(label).width;
+                                const bckgDimensions = [textWidth, fontSize].map(n => n + fontSize * 0.5);
+                                
+                                ctx.fillStyle = 'rgba(30, 30, 30, 0.8)';
+                                ctx.fillRect(
+                                    node.x - bckgDimensions[0] / 2,
+                                    node.y + size + 2,
+                                    bckgDimensions[0],
+                                    bckgDimensions[1]
+                                );
+                                
+                                // Text label
+                                ctx.textAlign = 'center';
+                                ctx.textBaseline = 'middle';
+                                
+                                // Always use white text for better contrast, especially over the dark background
+                                ctx.fillStyle = '#ffffff';
+                                
+                                ctx.fillText(
+                                    label,
+                                    node.x,
+                                    node.y + size + 2 + bckgDimensions[1]/2
+                                );
+                            }
+                        } catch (error) {
+                            console.error('Error rendering node:', error);
+                            // Fallback rendering - just draw a simple circle
+                            ctx.beginPath();
+                            ctx.arc(node.x, node.y, 5, 0, 2 * Math.PI);
+                            ctx.fillStyle = '#777777';
+                            ctx.fill();
                         }
                     })
                     (document.getElementById('graph-container'));
@@ -303,36 +434,135 @@
                 // Set initial physics
                 graph.d3Force('link').distance(100);
                 graph.d3Force('charge').strength(-100);
+                
+                // Enable smooth zoom/pan
+                graph.d3AlphaDecay(0.01);
+                graph.cooldownTime(3000);
+                
+                // Set background color
+                graph.backgroundColor('var(--color-bg-primary)');
+                
+                // Initial fit view
+                setTimeout(() => {
+                    graph.zoomToFit(1000, 50);
+                }, 200);
             }
             
-            // Track highlighted link
-            let highlightedLink = null;
+            // Update highlight sets when hovering nodes
+            function updateHighlight() {
+                // Clear previous highlights
+                highlightNodes.clear();
+                highlightLinks.clear();
+                
+                if (hoveredNode) {
+                    // Add hovered node
+                    highlightNodes.add(hoveredNode);
+                    
+                    // Add connected nodes and links
+                    graphData.links.forEach(link => {
+                        if (link.source === hoveredNode || link.target === hoveredNode) {
+                            highlightLinks.add(link);
+                            highlightNodes.add(link.source);
+                            highlightNodes.add(link.target);
+                        }
+                    });
+                }
+                
+                // Always keep selected node highlighted
+                if (selectedNode) {
+                    highlightNodes.add(selectedNode);
+                    
+                    // Add connected links to selected node
+                    graphData.links.forEach(link => {
+                        if (link.source === selectedNode || link.target === selectedNode) {
+                            highlightLinks.add(link);
+                        }
+                    });
+                }
+            }
+            
+            // Handle link hover
+            function handleLinkHover(link, mouseEvent) {
+                if (link) {
+                    highlightLinks.clear();
+                    highlightLinks.add(link);
+                    highlightNodes.add(link.source);
+                    highlightNodes.add(link.target);
+                    
+                    // Show link tooltip
+                    if (document.getElementById('toggle-link-labels') && 
+                        document.getElementById('toggle-link-labels').checked) {
+                        tooltip.innerHTML = `
+                            <div><strong>${link.label || 'relationship'}</strong></div>
+                            <div class="text-sm">
+                                ${link.source.name || link.source.id} → ${link.target.name || link.target.id}
+                            </div>
+                        `;
+                        
+                        // Position the tooltip near the mouse
+                        if (mouseEvent) {
+                            tooltip.style.left = (mouseEvent.clientX + 10) + 'px';
+                            tooltip.style.top = (mouseEvent.clientY + 10) + 'px';
+                        } else {
+                            // Fall back to center of graph if mouse coords unavailable
+                            const graphRect = document.getElementById('graph-container').getBoundingClientRect();
+                            tooltip.style.left = (graphRect.left + graphRect.width / 2) + 'px';
+                            tooltip.style.top = (graphRect.top + graphRect.height / 2) + 'px';
+                        }
+                        tooltip.style.opacity = 0.9;
+                    }
+                } else if (!hoveredNode) {
+                    // Only clear if we're not hovering over a node
+                    highlightLinks.clear();
+                    updateHighlight();
+                    tooltip.style.opacity = 0;
+                }
+                
+                // Update the graph
+                graph
+                    .linkWidth(graph.linkWidth())
+                    .linkColor(graph.linkColor())
+                    .linkDirectionalParticles(graph.linkDirectionalParticles())
+                    .nodeColor(graph.nodeColor());
+            }
             
             // Handle node hover for tooltip
-            function handleNodeHover(node, event) {
+            function handleNodeHover(node, mouseEvent) {
+                // Update hovered node
+                hoveredNode = node || null;
+                updateHighlight();
+                
                 if (node) {
                     const label = node.name || node.id;
                     const type = node.type || 'unknown';
                     
                     tooltip.innerHTML = `
                         <div><strong>${label}</strong></div>
-                        <div class="text-sm text-gray-600">${type}</div>
+                        <div class="text-sm">${type}</div>
                     `;
                     
-                    // Position the tooltip near the mouse - handle case where event might be missing
-                    if (event) {
-                        const mousePos = d3.pointer(event, document.body);
-                        tooltip.style.left = (mousePos[0] + 10) + 'px';
-                        tooltip.style.top = (mousePos[1] + 10) + 'px';
-                    } else {
-                        // Fallback position near the node if event not available
-                        tooltip.style.left = (node.x + 10) + 'px';
-                        tooltip.style.top = (node.y + 10) + 'px';
+                    // Position the tooltip near the mouse - use clientX/Y if available,
+                    // otherwise try to position it near the node
+                    if (mouseEvent) {
+                        tooltip.style.left = (mouseEvent.clientX + 10) + 'px';
+                        tooltip.style.top = (mouseEvent.clientY + 10) + 'px';
+                    } else if (node.x && node.y) {
+                        // Fall back to node position if mouse coords unavailable
+                        const graphRect = document.getElementById('graph-container').getBoundingClientRect();
+                        tooltip.style.left = (graphRect.left + node.x + 10) + 'px';
+                        tooltip.style.top = (graphRect.top + node.y + 10) + 'px';
                     }
                     tooltip.style.opacity = 0.9;
                 } else {
                     tooltip.style.opacity = 0;
                 }
+                
+                // Update the graph
+                graph
+                    .nodeColor(graph.nodeColor())
+                    .linkWidth(graph.linkWidth())
+                    .linkColor(graph.linkColor())
+                    .linkDirectionalParticles(graph.linkDirectionalParticles());
             }
             
             // Handle node click
@@ -340,31 +570,32 @@
                 if (selectedNode === node) {
                     // Clicking the same node again deselects it
                     selectedNode = null;
-                    highlightedLink = null;
                     document.getElementById('node-details').classList.add('hidden');
                 } else {
                     selectedNode = node;
                     showNodeDetails(node);
                     
-                    // Center view on clicked node
+                    // Center view on clicked node with smooth animation
                     graph.centerAt(node.x, node.y, 1000);
                     graph.zoom(1.5, 1000);
                 }
                 
+                // Update highlights
+                updateHighlight();
+                
                 // Force a re-render to show selection state
-                graph.nodeCanvasObject(graph.nodeCanvasObject());
+                graph
+                    .nodeColor(graph.nodeColor())
+                    .nodeVal(graph.nodeVal())
+                    .linkWidth(graph.linkWidth())
+                    .linkColor(graph.linkColor())
+                    .linkDirectionalParticles(graph.linkDirectionalParticles());
             }
             
             // Show node details in panel
             function showNodeDetails(node) {
-                fetch(`${window.location.origin}/api/entity/${node.id}`)
-                    .then(response => {
-                        console.log(`Entity details response for ${node.id}:`, response.status);
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! Status: ${response.status}`);
-                        }
-                        return response.json();
-                    })
+                fetch(`/api/entity/${node.id}`)
+                    .then(response => response.json())
                     .then(data => {
                         const detailsPanel = document.getElementById('node-details');
                         const detailsTitle = document.getElementById('node-details-title');
@@ -382,10 +613,20 @@
                         let html = `
                             <div class="mb-4">
                                 <span class="inline-block px-2 py-1 bg-gray-200 rounded text-sm">
-                                    ${data.attributes.type || 'unknown'}
+                                    ${data.type || 'unknown'}
                                 </span>
                             </div>
                         `;
+                        
+                        // Add description if available
+                        if (data.description) {
+                            html += `
+                            <div class="my-3">
+                                <h4 class="font-bold mb-1">Description</h4>
+                                <p>${data.description}</p>
+                            </div>
+                            `;
+                        }
                         
                         // Incoming connections
                         if (data.incoming && data.incoming.length > 0) {
@@ -445,125 +686,214 @@
                 }
             }
             
-            // Set up event listeners for controls
+            // Set up event listeners
             function setupEventListeners() {
-                // Node search
-                const searchInput = document.getElementById('search-node');
-                searchInput.addEventListener('input', debounce(e => {
-                    const searchTerm = e.target.value.toLowerCase();
-                    if (searchTerm.length > 0) {
-                        const matchedNode = graphData.nodes.find(node => 
-                            (node.name && node.name.toLowerCase().includes(searchTerm)) || 
-                            node.id.toLowerCase().includes(searchTerm)
-                        );
-                        
-                        if (matchedNode) {
-                            selectNodeById(matchedNode.id);
-                        }
+                try {
+                    // Search functionality
+                    const searchInput = document.getElementById('search-node');
+                    if (searchInput) {
+                        searchInput.addEventListener('input', () => {
+                            const searchTerm = searchInput.value.toLowerCase();
+                            
+                            if (searchTerm === '') {
+                                // Reset highlight
+                                highlightNodes.clear();
+                                highlightLinks.clear();
+                                updateHighlight();
+                                
+                                graph
+                                    .nodeColor(graph.nodeColor())
+                                    .linkWidth(graph.linkWidth())
+                                    .linkColor(graph.linkColor())
+                                    .linkDirectionalParticles(graph.linkDirectionalParticles());
+                                return;
+                            }
+                            
+                            // Highlight matching nodes
+                            highlightNodes.clear();
+                            highlightLinks.clear();
+                            
+                            graphData.nodes.forEach(node => {
+                                const label = (node.name || node.id).toLowerCase();
+                                if (label.includes(searchTerm)) {
+                                    highlightNodes.add(node);
+                                }
+                            });
+                            
+                            // Update the graph
+                            graph
+                                .nodeColor(graph.nodeColor())
+                                .linkWidth(graph.linkWidth())
+                                .linkColor(graph.linkColor())
+                                .linkDirectionalParticles(graph.linkDirectionalParticles());
+                        });
                     }
-                }, 300));
-                
-                // Node type filters
-                document.querySelectorAll('.node-type-filter').forEach(checkbox => {
-                    checkbox.addEventListener('change', updateFilters);
-                });
-                
-                // Link type filter
-                document.getElementById('link-type-filter').addEventListener('change', updateFilters);
-                
-                // Physics controls
-                document.getElementById('toggle-physics').addEventListener('change', e => {
-                    if (e.target.checked) {
-                        graph.d3AlphaTarget(0.1).d3ReheatSimulation();
-                        setTimeout(() => graph.d3AlphaTarget(0), 2000);
-                    } else {
-                        graph.d3AlphaTarget(0);
-                    }
-                });
-                
-                document.getElementById('link-distance').addEventListener('input', e => {
-                    const distance = parseInt(e.target.value);
-                    graph.d3Force('link').distance(distance);
-                    graph.d3ReheatSimulation();
-                });
-                
-                document.getElementById('charge-strength').addEventListener('input', e => {
-                    const strength = parseInt(e.target.value);
-                    graph.d3Force('charge').strength(strength);
-                    graph.d3ReheatSimulation();
-                });
-                
-                // Reset view button
-                document.getElementById('reset-view').addEventListener('click', () => {
-                    graph.zoomToFit(400);
-                    selectedNode = null;
-                    highlightedLink = null;
-                    document.getElementById('node-details').classList.add('hidden');
-                    graph.nodeCanvasObject(graph.nodeCanvasObject());
-                });
-                
-                // Entity links in the sidebar
-                document.querySelectorAll('.entity-link').forEach(link => {
-                    link.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const entityId = e.target.dataset.id;
-                        selectNodeById(entityId);
+                    
+                    // Node type filters
+                    document.querySelectorAll('.node-type-filter').forEach(checkbox => {
+                        checkbox.addEventListener('change', updateFilters);
                     });
-                });
+                    
+                    // Link type filter
+                    const linkTypeFilter = document.getElementById('link-type-filter');
+                    if (linkTypeFilter) {
+                        linkTypeFilter.addEventListener('change', updateFilters);
+                    }
+                    
+                    // Physics controls
+                    const togglePhysics = document.getElementById('toggle-physics');
+                    if (togglePhysics) {
+                        togglePhysics.addEventListener('change', e => {
+                            const enabled = e.target.checked;
+                            if (enabled) {
+                                graph.d3AlphaTarget(0);
+                            } else {
+                                graph.d3AlphaTarget(0.3);
+                            }
+                        });
+                    }
+                    
+                    const linkDistance = document.getElementById('link-distance');
+                    if (linkDistance) {
+                        linkDistance.addEventListener('input', e => {
+                            const distance = parseInt(e.target.value);
+                            graph.d3Force('link').distance(distance);
+                            graph.d3ReheatSimulation();
+                        });
+                    }
+                    
+                    const chargeStrength = document.getElementById('charge-strength');
+                    if (chargeStrength) {
+                        chargeStrength.addEventListener('input', e => {
+                            const strength = parseInt(e.target.value);
+                            graph.d3Force('charge').strength(strength);
+                            graph.d3ReheatSimulation();
+                        });
+                    }
+                    
+                    // Display options
+                    const toggleNodeLabels = document.getElementById('toggle-node-labels');
+                    if (toggleNodeLabels) {
+                        toggleNodeLabels.addEventListener('change', () => {
+                            // Force re-render
+                            graph.nodeCanvasObject(graph.nodeCanvasObject());
+                        });
+                    }
+                    
+                    const toggleLinkLabels = document.getElementById('toggle-link-labels');
+                    if (toggleLinkLabels) {
+                        toggleLinkLabels.addEventListener('change', () => {
+                            // No need to do anything, the handler checks this value
+                        });
+                    }
+                    
+                    const toggleNodeGlow = document.getElementById('toggle-node-glow');
+                    if (toggleNodeGlow) {
+                        toggleNodeGlow.addEventListener('change', () => {
+                            // Force re-render
+                            graph.nodeCanvasObject(graph.nodeCanvasObject());
+                        });
+                    }
+                    
+                    // Reset view button
+                    const resetView = document.getElementById('reset-view');
+                    if (resetView) {
+                        resetView.addEventListener('click', () => {
+                            graph.zoomToFit(1000, 50);
+                        });
+                    }
+                    
+                    // Graph control buttons
+                    const zoomIn = document.getElementById('zoom-in');
+                    if (zoomIn) {
+                        zoomIn.addEventListener('click', () => {
+                            const currentZoom = graph.zoom();
+                            graph.zoom(currentZoom * 1.5, 400);
+                        });
+                    }
+                    
+                    const zoomOut = document.getElementById('zoom-out');
+                    if (zoomOut) {
+                        zoomOut.addEventListener('click', () => {
+                            const currentZoom = graph.zoom();
+                            graph.zoom(currentZoom / 1.5, 400);
+                        });
+                    }
+                    
+                    const fitGraph = document.getElementById('fit-graph');
+                    if (fitGraph) {
+                        fitGraph.addEventListener('click', () => {
+                            graph.zoomToFit(1000, 50);
+                        });
+                    }
+                    
+                    // Entity links in the sidebar
+                    document.querySelectorAll('.entity-link').forEach(link => {
+                        link.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            const entityId = e.target.dataset.id;
+                            selectNodeById(entityId);
+                        });
+                    });
+                } catch (error) {
+                    console.error('Error setting up event listeners:', error);
+                }
             }
             
-            // Update filters based on current settings
+            // Update filters based on selected options
             function updateFilters() {
                 // Get selected node types
-                const selectedTypes = Array.from(document.querySelectorAll('.node-type-filter:checked'))
-                    .map(checkbox => checkbox.value);
+                const selectedNodeTypes = Array.from(document.querySelectorAll('.node-type-filter:checked'))
+                    .map(cb => cb.value);
                 
                 // Get selected link type
                 const selectedLinkType = document.getElementById('link-type-filter').value;
                 
-                // Filter nodes and links
-                const filteredNodes = graphData.nodes.filter(node => 
-                    selectedTypes.includes(node.type || 'unknown')
-                );
-                
-                const filteredLinks = graphData.links.filter(link => {
-                    // Check if both source and target nodes are visible
-                    const sourceNode = typeof link.source === 'object' ? link.source : 
-                        filteredNodes.find(n => n.id === link.source);
-                    const targetNode = typeof link.target === 'object' ? link.target : 
-                        filteredNodes.find(n => n.id === link.target);
-                    
-                    if (!sourceNode || !targetNode) return false;
-                    
-                    // Check link type if specific type is selected
-                    if (selectedLinkType !== 'all') {
-                        return link.label === selectedLinkType;
-                    }
-                    
-                    return true;
-                });
-                
-                // Update graph data
-                graph.graphData({
-                    nodes: filteredNodes,
-                    links: filteredLinks
-                });
-                
-                // Reset selection
-                selectedNode = null;
-                highlightedLink = null;
-                document.getElementById('node-details').classList.add('hidden');
-            }
-            
-            // Utility function: Debounce
-            function debounce(func, wait) {
-                let timeout;
-                return function() {
-                    const context = this;
-                    const args = arguments;
-                    clearTimeout(timeout);
-                    timeout = setTimeout(() => func.apply(context, args), wait);
+                // Filter the graph data
+                const filteredData = {
+                    nodes: graphData.nodes.filter(node => selectedNodeTypes.includes(node.type)),
+                    links: graphData.links.filter(link => {
+                        // Check if both source and target nodes are visible
+                        const sourceNode = graphData.nodes.find(n => n.id === link.source);
+                        const targetNode = graphData.nodes.find(n => n.id === link.target);
+                        
+                        const nodesVisible = sourceNode && targetNode && 
+                            selectedNodeTypes.includes(sourceNode.type) && 
+                            selectedNodeTypes.includes(targetNode.type);
+                        
+                        // Check if link type matches filter
+                        const linkTypeMatches = selectedLinkType === 'all' || link.label === selectedLinkType;
+                        
+                        return nodesVisible && linkTypeMatches;
+                    })
                 };
+                
+                // Update the graph
+                graph.graphData(filteredData);
+                
+                // Reset highlights
+                highlightNodes.clear();
+                highlightLinks.clear();
+                
+                // If we had a selected node, try to find it in the filtered data
+                if (selectedNode) {
+                    const stillExists = filteredData.nodes.find(n => n.id === selectedNode.id);
+                    if (!stillExists) {
+                        selectedNode = null;
+                        document.getElementById('node-details').classList.add('hidden');
+                    } else {
+                        // Update selected node reference to the one in the filtered data
+                        selectedNode = stillExists;
+                        updateHighlight();
+                    }
+                }
+                
+                // Update the graph appearance
+                graph
+                    .nodeColor(graph.nodeColor())
+                    .linkWidth(graph.linkWidth())
+                    .linkColor(graph.linkColor())
+                    .linkDirectionalParticles(graph.linkDirectionalParticles());
             }
         });
     </script>

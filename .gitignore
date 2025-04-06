@@ -1,5 +1,4 @@
-# Python bytecode
-*/__pycache__/
+*/__pycache__/*
 *.py[cod]
 *$py.class
 uploads/*
@@ -10,5 +9,6 @@ app/data/*
 app/uploads/*
 app/utils/__pycache__/*
 app/models/__pycache__/*
+app/routes/__pycache__/*
 app/__pycache__/*
 bin/*

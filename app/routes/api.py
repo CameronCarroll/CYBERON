@@ -34,7 +34,9 @@ def get_graph_data():
             nodes.append({
                 "id": node_id,
                 "label": attrs.get("label", node_id),
-                "type": attrs.get("type", "unknown")
+                "type": attrs.get("type", "unknown"),
+                "category": attrs.get("category", ""),
+                "description": attrs.get("description", "")
             })
         
         links = []

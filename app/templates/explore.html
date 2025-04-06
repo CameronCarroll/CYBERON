@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Explore Cybernetics - Digital Garden</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/cyberon.css') }}" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
 </head>
 <body class="bg-gray-100 min-h-screen">
@@ -461,13 +463,21 @@
                     
                     const nameEl = document.createElement('h3');
                     nameEl.className = 'text-2xl font-bold';
-                    nameEl.textContent = data.attributes.label || data.id;
+                    nameEl.textContent = data.label || data.id;
                     headerEl.appendChild(nameEl);
                     
                     const typeEl = document.createElement('div');
                     typeEl.className = 'text-gray-600';
-                    typeEl.textContent = `Type: ${data.attributes.type || 'Unknown'}`;
+                    typeEl.textContent = `Type: ${data.type || 'Unknown'}`;
                     headerEl.appendChild(typeEl);
+                    
+                    // Add description if available
+                    if (data.description) {
+                        const descEl = document.createElement('div');
+                        descEl.className = 'mt-2 text-gray-700';
+                        descEl.textContent = data.description;
+                        headerEl.appendChild(descEl);
+                    }
                     
                     detailsEl.appendChild(headerEl);
                     
