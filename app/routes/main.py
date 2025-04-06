@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, current_app, request, jsonify
+from werkzeug.utils import secure_filename
 import os
 import sys
 from app.utils.ontology_parser import extract_markdown_to_json, analyze_ontology_structure

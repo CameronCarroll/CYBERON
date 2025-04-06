@@ -1,4 +1,5 @@
 # Historical Evolution and Convergence
+Description: The overarching historical narrative of the relationship between cybernetics and AI.
 
 - Entity: CyberneticsAIConvergence
   Description: The historical and ongoing relationship, including periods of shared origins, divergence, and re-convergence, between the fields of cybernetics and artificial intelligence.
@@ -14,6 +15,9 @@
       Target: Cybernetics
     - Relationship: involves_field
       Target: ArtificialIntelligence
+
+## Early Convergence (1940s-1950s)
+Description: The initial period of shared origins and intellectual exchange.
 
 - Entity: EarlyCyberneticsAIConvergence
   Description: The initial period (approx. 1940s-1950s) characterized by shared origins, foundational figures, and intellectual exchange, notably at the Macy Conferences.
@@ -42,6 +46,53 @@
     - Relationship: central_to
       Target: EarlyCyberneticsAIConvergence
 
+- Entity: SharedIntellectualLineage
+  Description: Refers to the foundational thinkers whose work influenced both cybernetics and early AI.
+  Type: Concept
+  Relationships:
+    - Relationship: exemplified_by
+      Target: NorbertWiener
+    - Relationship: exemplified_by
+      Target: WarrenMcCulloch
+    - Relationship: exemplified_by
+      Target: JohnVonNeumann
+
+- Entity: ParallelInnovators
+  Description: Refers to key figures whose work in closely related fields like information theory and computation theory were crucial prerequisites or parallel developments for both cybernetics and AI.
+  Type: Concept
+  Relationships:
+    - Relationship: exemplified_by
+      Target: ClaudeShannon
+    - Relationship: exemplified_by
+      Target: AlanTuring
+
+- Entity: JohnVonNeumann
+  Description: Hungarian-American mathematician, physicist, computer scientist, engineer and polymath. Made major contributions to game theory, computer architecture (von Neumann architecture), cybernetics, and automata theory.
+  Type: Person
+  Relationships:
+    - Relationship: contributed_to
+      Target: ComputerScience
+    - Relationship: contributed_to
+      Target: Cybernetics
+    - Relationship: contributed_to
+      Target: GameTheory
+    - Relationship: part_of
+      Target: SharedIntellectualLineage
+
+- Entity: AlanTuring
+  Description: British mathematician, logician, cryptanalyst, and computer scientist, highly influential in the development of theoretical computer science (Turing machine, Turing test) and AI.
+  Type: Person
+  Relationships:
+    - Relationship: contributed_to
+      Target: ComputerScience
+    - Relationship: contributed_to
+      Target: ArtificialIntelligence
+    - Relationship: part_of
+      Target: ParallelInnovators
+
+## Divergence (1956-1980s)
+Description: The period where AI pursued paths separate from mainstream cybernetics.
+
 - Entity: CyberneticsAIDivergence
   Description: A period (approx. 1956-1980s) where AI, particularly symbolic AI, pursued paths largely separate from mainstream cybernetics.
   Type: HistoricalPeriod
@@ -65,6 +116,9 @@
     - Relationship: prominent_during
       Target: CyberneticsAIDivergence
 
+## Modern Re-convergence (1990s-Present)
+Description: The period of renewed interest and integration between the fields.
+
 - Entity: ModernCyberneticsAIRconvergence
   Description: A period (approx. 1990s-present) featuring renewed interest and integration, driven by advances in neural networks, machine learning, embodied cognition, and complex systems approaches.
   Type: HistoricalPeriod
@@ -79,31 +133,13 @@
     - Relationship: driven_by
       Target: NeuralNetworks
     - Relationship: driven_by
-      Target: Transformers
+      Target: Transformers # Assumed to be a driver, refine if needed
     - Relationship: driven_by
       Target: MachineLearning
     - Relationship: related_concept
       Target: EmbodiedCognition
 
-- Entity: SharedIntellectualLineage
-  Description: Refers to the foundational thinkers whose work influenced both cybernetics and early AI.
-  Type: Concept
-  Relationships:
-    - Relationship: exemplified_by
-      Target: NorbertWiener
-    - Relationship: exemplified_by
-      Target: WarrenMcCulloch
-    - Relationship: exemplified_by
-      Target: JohnVonNeumann
-
-- Entity: ParallelInnovators
-  Description: Refers to key figures whose work in closely related fields like information theory and computation theory were crucial prerequisites or parallel developments for both cybernetics and AI.
-  Type: Concept
-  Relationships:
-    - Relationship: exemplified_by
-      Target: ClaudeShannon
-    - Relationship: exemplified_by
-      Target: AlanTuring
+## Related Concepts & Figures in Convergence History
 
 - Entity: ContemporaryBridgingFigures
   Description: Modern researchers and thinkers working at the intersection of cybernetics, AI, cognitive science, and related fields, fostering re-convergence.
@@ -126,6 +162,7 @@
   Type: Concept
 
 # Foundations of Cybernetics
+Description: Core principles, historical development, and key figures of cybernetics.
 
 - Entity: Cybernetics
   Description: The transdisciplinary study of communication and control systems in living organisms, machines, and organizations, focusing on feedback, goals, and self-regulation.
@@ -166,66 +203,7 @@
     - Relationship: applied_in
       Target: CognitiveCybernetics
 
-- Entity: FirstOrderCybernetics
-  Description: Cybernetics focused on observing and controlling systems from an external perspective, typical of early engineering applications (approx. 1940s-1960s). The observer is considered separate from the observed system.
-  Type: CyberneticsPhase
-  Attributes:
-    - Attribute: TimePeriod
-      Value: 1940s-1960s
-  Relationships:
-    - Relationship: part_of
-      Target: CyberneticsHistoricalDevelopment
-    - Relationship: associated_figure
-      Target: NorbertWiener
-    - Relationship: associated_figure
-      Target: WRossAshby
-
-- Entity: SecondOrderCybernetics
-  Description: Cybernetics that includes the observer as part of the system being observed, emphasizing self-reference, epistemology, and the construction of reality (approx. 1970s-1990s).
-  Type: CyberneticsPhase
-  Attributes:
-    - Attribute: TimePeriod
-      Value: 1970s-1990s
-  Relationships:
-    - Relationship: part_of
-      Target: CyberneticsHistoricalDevelopment
-    - Relationship: pioneer_figure
-      Target: HeinzVonFoerster
-    - Relationship: associated_figure
-      Target: GregoryBateson
-    - Relationship: associated_figure
-      Target: MargaretMead
-    - Relationship: associated_figure
-      Target: HumbertoMaturana
-    - Relationship: associated_figure
-      Target: FranciscoVarela
-    - Relationship: related_concept
-      Target: Autopoiesis
-    - Relationship: related_concept
-      Target: Constructivism
-
-- Entity: ThirdOrderCybernetics
-  Description: An extension focusing on the social, ethical, and political implications of cybernetic systems, emphasizing responsibility, dialogue, and co-creation within complex social contexts (approx. 2000s-present).
-  Type: CyberneticsPhase
-  Attributes:
-    - Attribute: TimePeriod
-      Value: 2000s-Present
-  Relationships:
-    - Relationship: part_of
-      Target: CyberneticsHistoricalDevelopment
-    - Relationship: builds_on
-      Target: SecondOrderCybernetics
-
-- Entity: CyberneticsHistoricalDevelopment
-  Description: The evolution of cybernetic thought through distinct phases or 'orders'.
-  Type: Concept
-  Relationships:
-    - Relationship: includes
-      Target: FirstOrderCybernetics
-    - Relationship: includes
-      Target: SecondOrderCybernetics
-    - Relationship: includes
-      Target: ThirdOrderCybernetics
+## Key Figures in Cybernetics
 
 - Entity: NorbertWiener
   Description: American mathematician and philosopher considered the founder of cybernetics.
@@ -310,14 +288,70 @@
     - Relationship: developed
       Target: ViableSystemModel
 
-- Entity: ClaudeShannon
-  Description: American mathematician, electrical engineer, and cryptographer known as the 'father of information theory'.
-  Type: Person
+## Historical Development of Cybernetics
+
+- Entity: CyberneticsHistoricalDevelopment
+  Description: The evolution of cybernetic thought through distinct phases or 'orders'.
+  Type: Concept
   Relationships:
-    - Relationship: created
-      Target: InformationTheory
+    - Relationship: includes
+      Target: FirstOrderCybernetics
+    - Relationship: includes
+      Target: SecondOrderCybernetics
+    - Relationship: includes
+      Target: ThirdOrderCybernetics
+
+- Entity: FirstOrderCybernetics
+  Description: Cybernetics focused on observing and controlling systems from an external perspective, typical of early engineering applications (approx. 1940s-1960s). The observer is considered separate from the observed system.
+  Type: CyberneticsPhase
+  Attributes:
+    - Attribute: TimePeriod
+      Value: 1940s-1960s
+  Relationships:
     - Relationship: part_of
-      Target: ParallelInnovators
+      Target: CyberneticsHistoricalDevelopment
+    - Relationship: associated_figure
+      Target: NorbertWiener
+    - Relationship: associated_figure
+      Target: WRossAshby
+
+- Entity: SecondOrderCybernetics
+  Description: Cybernetics that includes the observer as part of the system being observed, emphasizing self-reference, epistemology, and the construction of reality (approx. 1970s-1990s).
+  Type: CyberneticsPhase
+  Attributes:
+    - Attribute: TimePeriod
+      Value: 1970s-1990s
+  Relationships:
+    - Relationship: part_of
+      Target: CyberneticsHistoricalDevelopment
+    - Relationship: pioneer_figure
+      Target: HeinzVonFoerster
+    - Relationship: associated_figure
+      Target: GregoryBateson
+    - Relationship: associated_figure
+      Target: MargaretMead
+    - Relationship: associated_figure
+      Target: HumbertoMaturana
+    - Relationship: associated_figure
+      Target: FranciscoVarela
+    - Relationship: related_concept
+      Target: Autopoiesis
+    - Relationship: related_concept
+      Target: Constructivism
+
+- Entity: ThirdOrderCybernetics
+  Description: An extension focusing on the social, ethical, and political implications of cybernetic systems, emphasizing responsibility, dialogue, and co-creation within complex social contexts (approx. 2000s-present).
+  Type: CyberneticsPhase
+  Attributes:
+    - Attribute: TimePeriod
+      Value: 2000s-Present
+  Relationships:
+    - Relationship: part_of
+      Target: CyberneticsHistoricalDevelopment
+    - Relationship: builds_on
+      Target: SecondOrderCybernetics
+
+## Core Principles and Concepts of Cybernetics
 
 - Entity: FeedbackLoops
   Description: A fundamental cybernetic principle where the output of a system influences its subsequent input, allowing for regulation and goal-seeking behavior. Can be negative (stabilizing) or positive (amplifying).
@@ -405,6 +439,7 @@
       Target: SelfOrganization
 
 # Information Theory: From Shannon to Transformers
+Description: The role of information theory from its foundations to its application in modern AI.
 
 - Entity: InformationTheory
   Description: A mathematical framework developed by Claude Shannon for quantifying information, communication, and the limits of signal processing operations such as data compression and reliable storage and communication.
@@ -428,6 +463,17 @@
       Target: Neuroscience
     - Relationship: influences
       Target: Linguistics
+
+## Foundational Concepts of Information Theory
+
+- Entity: ClaudeShannon
+  Description: American mathematician, electrical engineer, and cryptographer known as the 'father of information theory'.
+  Type: Person
+  Relationships:
+    - Relationship: created
+      Target: InformationTheory
+    - Relationship: part_of
+      Target: ParallelInnovators
 
 - Entity: MathematicalTheoryOfCommunication
   Description: Shannon's seminal 1948 paper that established the field of information theory.
@@ -466,6 +512,8 @@
       Target: Entropy
     - Relationship: related_to
       Target: BayesianInference
+
+## Biological Information Processing
 
 - Entity: BiologicalInformationProcessing
   Description: The study of how living organisms encode, transmit, filter, and utilize information.
@@ -506,6 +554,8 @@
       Target: BiologicalInformationProcessing
     - Relationship: enables
       Target: Homeostasis
+
+## Information Dynamics in AI
 
 - Entity: InformationDynamicsInAI
   Description: The application and study of information-theoretic principles within modern AI systems, particularly neural networks.
@@ -573,6 +623,7 @@
       Target: InformationDynamicsInAI
 
 # Systems Theory Integration
+Description: How systems theory relates to and integrates with cybernetics.
 
 - Entity: SystemsTheory
   Description: An interdisciplinary field that studies systems holistically, focusing on the principles governing their structure, behavior, and interactions within an environment.
@@ -586,6 +637,9 @@
       Target: ComplexAdaptiveSystems
     - Relationship: includes
       Target: ControlTheory
+
+## General Systems Theory (GST)
+Description: The framework aiming for universal principles applicable to all systems.
 
 - Entity: GeneralSystemsTheory
   Description: A framework aiming to identify universal principles applicable to all types of systems, founded largely by Ludwig von Bertalanffy.
@@ -636,7 +690,7 @@
     - Relationship: part_of
       Target: SystemsTheory
     - Relationship: defines_separation_between
-      Target: System
+      Target: System # Assuming a generic "System" entity exists conceptually
     - Relationship: defines_separation_between
       Target: SystemEnvironment
 
@@ -647,7 +701,17 @@
     - Relationship: part_of
       Target: SystemsTheory
     - Relationship: external_to
-      Target: System
+      Target: System # Assuming a generic "System" entity exists conceptually
+
+- Entity: EmergentProperties
+  Description: Properties of a system that arise from the interactions of its components and cannot be predicted or understood by examining the components in isolation. Synonym for Emergence.
+  Type: Property
+  Relationships:
+    - Relationship: same_as
+      Target: Emergence
+
+## Complex Adaptive Systems (CAS)
+Description: Systems composed of adaptive agents whose collective behavior emerges.
 
 - Entity: ComplexAdaptiveSystems
   Description: Systems composed of multiple interacting, adaptive agents whose collective behavior emerges from local interactions and learning, enabling adaptation to changing environments (e.g., ecosystems, economies, immune systems).
@@ -692,7 +756,7 @@
     - Relationship: relevant_to
       Target: SecondOrderCybernetics
     - Relationship: relevant_to
-      Target: SocialSystemsTheory
+      Target: SocialSystemsTheory # Refers to SocialSystemsTheoryLuhmann
 
 - Entity: HumbertoMaturana
   Description: Chilean biologist and philosopher who, with Varela, developed the concept of autopoiesis and contributed to second-order cybernetics and embodied cognition.
@@ -720,13 +784,6 @@
     - Relationship: contributed_to
       Target: SecondOrderCybernetics
 
-- Entity: EmergentProperties
-  Description: Properties of a system that arise from the interactions of its components and cannot be predicted or understood by examining the components in isolation. Synonym for Emergence.
-  Type: Property
-  Relationships:
-    - Relationship: same_as
-      Target: Emergence
-
 - Entity: Attractors
   Description: States or patterns of behavior towards which a dynamical system tends to evolve over time, regardless of the starting conditions (within a basin of attraction).
   Type: Concept
@@ -744,6 +801,9 @@
       Target: DynamicalSystems
     - Relationship: contains
       Target: Attractors
+
+## Control Theory
+Description: Designing controllers to modify system behavior, often using feedback.
 
 - Entity: ControlTheory
   Description: An interdisciplinary branch of engineering and mathematics dealing with the behavior of dynamical systems and designing controllers that modify system behavior in desired ways, often using feedback.
@@ -828,6 +888,7 @@
       Target: Robotics
 
 # Cognitive Cybernetics
+Description: Exploring cognition through the lens of cybernetics, information processing, and neuroscience.
 
 - Entity: CognitiveCybernetics
   Description: An area exploring the intersection of cybernetics, cognitive science, and neuroscience, viewing cognitive processes through the lens of information processing, feedback, control, and self-organization.
@@ -847,6 +908,9 @@
       Target: CyberneticMentalModels
     - Relationship: related_to
       Target: ConsciousnessStudies
+
+## Cybernetic Neural Models & Evolution
+Description: Early and modern neural models related to cybernetic principles.
 
 - Entity: CyberneticNeuralModels
   Description: Early and contemporary models of neural function inspired by or related to cybernetic principles, forming a basis for connectionism and modern neural networks.
@@ -883,7 +947,7 @@
     - Relationship: based_on
       Target: McCullochPittsNeuron
     - Relationship: developed_by
-      Target: FrankRosenblatt
+      Target: FrankRosenblatt # Figure not defined elsewhere, keep relation
 
 - Entity: EarlyNeuralNetworks
   Description: Pioneering computational models of neural processing from the 1940s to 1960s, including Perceptrons and Adaline.
@@ -901,7 +965,7 @@
     - Relationship: developed_by
       Target: WarrenMcCulloch
     - Relationship: developed_by
-      Target: WalterPitts
+      Target: WalterPitts # Figure not defined elsewhere, keep relation
     - Relationship: part_of
       Target: CyberneticNeuralModels
     - Relationship: basis_for
@@ -912,7 +976,7 @@
   Type: LearningRule
   Relationships:
     - Relationship: proposed_by
-      Target: DonaldHebb
+      Target: DonaldHebb # Figure not defined elsewhere, keep relation
     - Relationship: part_of
       Target: CyberneticNeuralModels
     - Relationship: used_in
@@ -927,7 +991,10 @@
     - Relationship: starts_with
       Target: CyberneticNeuralModels
     - Relationship: leads_to
-      Target: DeepLearning
+      Target: DeepLearning # Assumed entity, may need definition
+
+## Predictive Processing & Active Inference
+Description: Theories viewing the brain as a prediction engine minimizing error.
 
 - Entity: PredictiveProcessingFramework
   Description: A theoretical framework in cognitive science and neuroscience suggesting the brain constantly generates predictions about sensory input and updates these predictions based on prediction errors. Views the brain as a prediction engine.
@@ -997,6 +1064,15 @@
     - Relationship: related_to
       Target: Homeostasis
 
+- Entity: KarlFriston
+  Description: British neuroscientist known for the Free Energy Principle and Active Inference.
+  Type: Person
+  Relationships:
+    - Relationship: formulated
+      Target: ActiveInference
+    - Relationship: formulated
+      Target: FreeEnergyPrinciple
+
 - Entity: PredictiveProcessingInAI
   Description: The application of principles from the Predictive Processing Framework to design and understand AI systems, particularly in areas like reinforcement learning and generative models.
   Type: ApplicationArea
@@ -1005,6 +1081,9 @@
       Target: PredictiveProcessingFramework
     - Relationship: relevant_to
       Target: ArtificialIntelligence
+
+## Cybernetic Mental Models & Theories
+Description: Perspectives on mind and interaction influenced by cybernetics.
 
 - Entity: CyberneticMentalModels
   Description: Perspectives on how minds represent and interact with the world, influenced by cybernetic and systems thinking, emphasizing construction, embodiment, and interaction.
@@ -1030,7 +1109,7 @@
     - Relationship: associated_figure
       Target: HeinzVonFoerster
     - Relationship: associated_figure
-      Target: JeanPiaget # Requires external knowledge, standard association
+      Target: JeanPiaget # Figure not defined elsewhere, keep relation
 
 - Entity: EmbodiedCognition
   Description: A perspective in cognitive science asserting that cognitive processes are deeply rooted in and shaped by the body's physical structure, sensory-motor experiences, and interactions with the environment.
@@ -1065,6 +1144,9 @@
     - Relationship: related_to
       Target: ArtificialIntelligence
 
+## Consciousness Studies Interface
+Description: Connecting cybernetics to the study of consciousness.
+
 - Entity: ConsciousnessStudies
   Description: The interdisciplinary scientific and philosophical study of the nature, function, and neural correlates of consciousness.
   Type: Field
@@ -1089,7 +1171,14 @@
     - Relationship: proposed_by
       Target: GiulioTononi
     - Relationship: focuses_on
-      Target: InformationIntegration
+      Target: InformationIntegration # Assumed concept
+
+- Entity: GiulioTononi
+  Description: Neuroscientist and psychiatrist known for Integrated Information Theory (IIT).
+  Type: Person
+  Relationships:
+    - Relationship: proposed
+      Target: IntegratedInformationTheory
 
 - Entity: GlobalWorkspaceTheory
   Description: (GWT) A theory proposed by Bernard Baars suggesting consciousness acts like a central 'workspace' or 'stage' where information from various specialized processors is globally broadcast, enabling coordination and control.
@@ -1099,6 +1188,13 @@
       Target: ConsciousnessStudies
     - Relationship: proposed_by
       Target: BernardBaars
+
+- Entity: BernardBaars
+  Description: Neuroscientist known for Global Workspace Theory (GWT).
+  Type: Person
+  Relationships:
+    - Relationship: proposed
+      Target: GlobalWorkspaceTheory
 
 - Entity: CyberneticApproachesToConsciousness
   Description: Attempts to understand consciousness using cybernetic concepts like feedback, control loops, self-representation, and system dynamics.
@@ -1121,6 +1217,7 @@
       Target: ArtificialGeneralIntelligence
 
 # AI Through a Cybernetic Lens
+Description: Applying cybernetic principles to understand AI systems.
 
 - Entity: AIThroughCyberneticLens
   Description: Viewing AI concepts, architectures, and paradigms through the principles and perspectives of cybernetics (feedback, control, self-regulation, systems thinking).
@@ -1139,8 +1236,10 @@
     - Relationship: informs
       Target: AGIPerspectives
 
+## Machine Learning Paradigms through Cybernetics
+
 - Entity: MachineLearningParadigms
-  Description: Major categories of machine learning algorithms.
+  Description: Major categories of machine learning algorithms viewed cybernetically.
   Type: Concept
   Relationships:
     - Relationship: includes
@@ -1159,7 +1258,7 @@
     - Relationship: utilizes
       Target: ErrorMinimization
     - Relationship: analogous_to
-      Target: GoalDirectedFeedback
+      Target: GoalDirectedFeedback # Assumed concept
 
 - Entity: ReinforcementLearning
   Description: ML paradigm where agents learn to make sequences of decisions by trying to maximize a cumulative reward signal received through interaction with an environment. Viewed cybernetically as a control process.
@@ -1168,7 +1267,7 @@
     - Relationship: utilizes
       Target: FeedbackLoops
     - Relationship: analogous_to
-      Target: CyberneticControl
+      Target: CyberneticControl # Assumed concept
     - Relationship: related_to
       Target: ControlTheory
 
@@ -1179,7 +1278,7 @@
     - Relationship: related_to
       Target: SelfOrganization
     - Relationship: finds
-      Target: PatternsInData
+      Target: PatternsInData # Assumed concept
 
 - Entity: FeedbackLoopsInAlgorithmicLearning
   Description: The explicit or implicit feedback mechanisms inherent in various machine learning algorithms (e.g., error correction, reward signals, gradient updates).
@@ -1188,14 +1287,16 @@
     - Relationship: type_of
       Target: FeedbackLoops
     - Relationship: essential_to
-      Target: MachineLearning
+      Target: MachineLearning # Assumed entity
+
+## Transformer Architecture through Cybernetics
 
 - Entity: TransformerArchitecture
   Description: A type of deep learning model introduced in 2017, heavily reliant on self-attention mechanisms, which has become dominant in natural language processing and other domains. Can be viewed as a complex cybernetic system.
   Type: NeuralNetworkArchitecture
   Relationships:
     - Relationship: type_of
-      Target: DeepLearning
+      Target: DeepLearning # Assumed entity
     - Relationship: uses
       Target: AttentionMechanisms
     - Relationship: uses
@@ -1225,7 +1326,7 @@
     - Relationship: used_in
       Target: TransformerArchitecture
     - Relationship: acts_as
-      Target: InformationFiltering
+      Target: InformationFiltering # Assumed concept
 
 - Entity: PositionalEncoding
   Description: Techniques used in Transformers to inject information about the relative or absolute position of tokens in a sequence, providing systemic context as they lack inherent recurrence.
@@ -1234,7 +1335,7 @@
     - Relationship: used_in
       Target: TransformerArchitecture
     - Relationship: provides
-      Target: SystemicContext
+      Target: SystemicContext # Assumed concept
 
 - Entity: TransformerFeedbackMechanisms
   Description: The complex flow of information, including residual connections and layer normalization, within Transformer architectures that can be analyzed as internal feedback loops influencing computation.
@@ -1245,6 +1346,8 @@
     - Relationship: related_to
       Target: FeedbackLoops
 
+## Large Language Models (LLMs) through Cybernetics
+
 - Entity: LargeLanguageModels
   Description: (LLMs) Very large deep learning models, typically based on the Transformer architecture, trained on vast amounts of text data to understand and generate human-like language.
   Type: AIModelType
@@ -1252,7 +1355,7 @@
     - Relationship: based_on
       Target: TransformerArchitecture
     - Relationship: type_of
-      Target: DeepLearning
+      Target: DeepLearning # Assumed entity
     - Relationship: can_be_viewed_as
       Target: LLMsAsStochasticControllers
     - Relationship: performs
@@ -1289,7 +1392,7 @@
     - Relationship: related_to
       Target: Emergence
     - Relationship: related_to
-      Target: SystemComplexity
+      Target: SystemComplexity # Assumed concept, could be Complexity entity
 
 - Entity: NextTokenPredictionAsPredictiveProcessing
   Description: Connecting the next-token prediction mechanism in LLMs to the Predictive Processing Framework, where the model predicts upcoming 'sensory data' (text) and learns by minimizing prediction error.
@@ -1299,6 +1402,8 @@
       Target: LargeLanguageModels
     - Relationship: connects_to
       Target: PredictiveProcessingFramework
+
+## Artificial General Intelligence (AGI) Perspectives through Cybernetics
 
 - Entity: AGIPerspectives
   Description: Viewpoints and approaches concerning Artificial General Intelligence (AGI), or AI with human-like cognitive abilities across a wide range of tasks.
@@ -1336,7 +1441,7 @@
   Type: Concept
   Relationships:
     - Relationship: goal_of
-      Target: HumanAI Symbiosis
+      Target: HumanAISymbiosis
     - Relationship: contrasts_with
       Target: ArtificialGeneralIntelligence
 
@@ -1372,7 +1477,7 @@
       Target: AIAlignmentAndSafety
     - Relationship: addressed_by
       Target: AlignmentAsCyberneticControlProblem
-    - Relationship: method_for
+    - Relationship: method_for # RLHF is one method for alignment
       Target: RLHF
 
 - Entity: CapabilitiesVsControlDebate
@@ -1385,6 +1490,7 @@
       Target: AIAlignmentAndSafety
 
 # Cybernetic Perspectives on AI Alignment and Safety
+Description: Applying cybernetic concepts to ensure AI systems operate safely and align with human values.
 
 - Entity: AIAlignmentAndSafety
   Description: The field dedicated to ensuring artificial intelligence systems are aligned with human values and operate safely and reliably, especially as capabilities increase. Viewed here through a cybernetic lens.
@@ -1411,6 +1517,8 @@
   Relationships:
     - Relationship: part_of
       Target: AIAlignmentAndSafety
+
+## Control Systems Approaches to Alignment & Safety
 
 - Entity: ControlSystemsForAIAlignment
   Description: Designing AI alignment solutions using principles from control theory and cybernetics, focusing on feedback, stability, and robustness.
@@ -1454,7 +1562,7 @@
     - Relationship: type_of
       Target: ReinforcementLearning
     - Relationship: uses
-      Target: HumanFeedback
+      Target: HumanFeedback # Assumed concept
     - Relationship: used_for
       Target: AIAlignment
     - Relationship: can_be_viewed_as
@@ -1486,6 +1594,8 @@
   Relationships:
     - Relationship: related_to
       Target: ControlTheory
+
+## Homeostasis and Boundaries in AI Safety
 
 - Entity: HomeostasisAndSystemBoundariesForAI
   Description: Applying concepts of homeostasis (maintaining stable states) and system boundaries to AI safety, defining safe operating envelopes and managing interactions.
@@ -1534,6 +1644,8 @@
       Target: ReinforcementLearning
     - Relationship: related_to
       Target: AISafety
+
+## Requisite Variety Considerations in AI Safety
 
 - Entity: RequisiteVarietyInAISafety
   Description: Applying Ashby's Law of Requisite Variety to AI safety, suggesting that safety mechanisms and alignment strategies must possess sufficient complexity ('variety') to handle the complexity of the AI and its environment.
@@ -1586,6 +1698,8 @@
 - Entity: AIAdaptation
   Description: The process by which AI systems adjust their behavior or internal models in response to changes in their environment or task.
   Type: Process
+
+## Emergent Risk in Complex AI Systems
 
 - Entity: EmergentRiskInComplexAI
   Description: Risks arising from unforeseen behaviors, interactions, or cascading failures in complex AI systems, which are difficult to predict from analysing individual components.
@@ -1641,6 +1755,7 @@
       Target: AISafety
 
 # Embodied Cybernetics
+Description: Applying cybernetic principles to physically embodied systems interacting with the real world.
 
 - Entity: EmbodiedCybernetics
   Description: The application and study of cybernetic principles in systems that are physically embodied and interact with the real world, including robotics, human-machine interfaces, and synthetic biology.
@@ -1656,6 +1771,8 @@
       Target: HumanMachineInterfaces
     - Relationship: includes_area
       Target: SyntheticBiology
+
+## Robotics
 
 - Entity: Robotics
   Description: The field concerned with the design, construction, operation, and application of robots, often drawing heavily on cybernetics and control theory.
@@ -1696,7 +1813,7 @@
     - Relationship: emphasizes
       Target: SensorimotorCoupling
     - Relationship: related_to
-      Target: BehaviorBasedRobotics
+      Target: BehaviorBasedRobotics # Assumed concept
 
 - Entity: RodneyBrooks
   Description: Australian roboticist known for behavior-based robotics, the subsumption architecture, and contributions to embodied AI. Co-founder of iRobot and Rethink Robotics.
@@ -1727,7 +1844,7 @@
     - Relationship: related_to
       Target: MorphologicalComputation
     - Relationship: inspired_by
-      Target: Biology
+      Target: Biology # Assumed concept
 
 - Entity: MorphologicalComputation
   Description: The idea that computation or information processing can be 'offloaded' to the physical structure (morphology) of a system (e.g., a robot's body), reducing the burden on explicit control systems.
@@ -1737,6 +1854,8 @@
       Target: SoftRobotics
     - Relationship: related_to
       Target: EmbodiedCognition
+
+## Human-Machine Interfaces (HMIs)
 
 - Entity: HumanMachineInterfaces
   Description: (HMIs) Technologies and systems that enable communication and interaction between humans and machines. Cybernetics plays a role in designing effective feedback and control within these interfaces.
@@ -1762,9 +1881,9 @@
     - Relationship: part_of
       Target: HumanMachineInterfaces
     - Relationship: connects
-      Target: Brain
+      Target: Brain # Assumed concept/entity
     - Relationship: connects
-      Target: Computer
+      Target: Computer # Assumed concept/entity
 
 - Entity: ExtendedMindThesis
   Description: A philosophical concept (Clark & Chalmers) arguing that cognitive processes can extend beyond the brain and body into the environment, including tools and technologies.
@@ -1794,6 +1913,15 @@
       Target: Transhumanism
     - Relationship: associated_figure
       Target: DonnaHaraway
+
+- Entity: DonnaHaraway
+  Description: American professor known for work in science and technology studies, feminist theory, and posthumanism, notably 'A Cyborg Manifesto'.
+  Type: Person
+  Relationships:
+    - Relationship: associated_with
+      Target: CyborgTheory
+
+## Synthetic Biology
 
 - Entity: SyntheticBiology
   Description: An interdisciplinary field combining biology and engineering to design and construct new biological parts, devices, and systems, or redesign existing natural biological systems for useful purposes. Applies control and feedback principles.
@@ -1840,6 +1968,7 @@
       Target: BiologicalFeedbackLoops
 
 # Social Cybernetics
+Description: Applying cybernetic principles to social systems, organizations, and communication.
 
 - Entity: SocialCybernetics
   Description: The application of cybernetic principles to understand and influence social systems, organizations, communication, and networks.
@@ -1853,6 +1982,8 @@
       Target: SocialSystemsTheoryApplication
     - Relationship: related_to
       Target: NetworkScienceApplication
+
+## Organizational Cybernetics
 
 - Entity: OrganizationalCybernetics
   Description: Applying cybernetics to the study and design of organizations, focusing on communication, control, viability, and adaptation.
@@ -1907,6 +2038,8 @@
     - Relationship: utilizes
       Target: FeedbackLoops
 
+## Social Systems Theory Application (Luhmann)
+
 - Entity: SocialSystemsTheoryApplication
   Description: Applying theories of social systems, particularly Luhmann's, within a cybernetic framework to understand communication and societal dynamics.
   Type: ApplicationArea
@@ -1953,6 +2086,8 @@
   Relationships:
     - Relationship: part_of
       Target: SocialSystemsTheoryLuhmann
+
+## Network Science Application in Social Systems
 
 - Entity: NetworkScienceApplication
   Description: Applying network science concepts to understand the structure and dynamics of social systems, information flow, and collective behavior, often revealing cybernetic feedback patterns.
@@ -2027,6 +2162,7 @@
       Target: DigitalSocialNetworks
 
 # Ecological Cybernetics
+Description: Applying cybernetics and systems thinking to ecosystems and environmental sustainability.
 
 - Entity: EcologicalCybernetics
   Description: Applying cybernetics and systems thinking to understand ecosystems, environmental feedback processes, stability, resilience, and sustainable design.
@@ -2042,6 +2178,8 @@
       Target: SustainableDesign
     - Relationship: relates_to
       Target: AIInEnvironmentalManagement
+
+## Environmental Feedback Systems
 
 - Entity: EnvironmentalFeedbackSystems
   Description: Natural feedback loops operating at various scales within the Earth system, regulating climate, ecosystems, and biogeochemical cycles.
@@ -2078,6 +2216,20 @@
     - Relationship: related_to
       Target: Homeostasis
 
+- Entity: JamesLovelock
+  Description: Independent scientist and environmentalist known for proposing the Gaia hypothesis.
+  Type: Person
+  Relationships:
+    - Relationship: proposed
+      Target: GaiaHypothesis
+
+- Entity: LynnMargulis
+  Description: American evolutionary theorist and biologist known for her work on endosymbiosis and contributions to the Gaia hypothesis.
+  Type: Person
+  Relationships:
+    - Relationship: proposed
+      Target: GaiaHypothesis
+
 - Entity: ClimateFeedbackLoops
   Description: Processes within the climate system that can amplify (positive feedback) or dampen (negative feedback) initial warming or cooling effects (e.g., ice-albedo feedback, cloud feedback).
   Type: Process
@@ -2087,7 +2239,7 @@
     - Relationship: type_of
       Target: FeedbackLoops
     - Relationship: affects
-      Target: ClimateChange
+      Target: ClimateChange # Assumed concept
 
 - Entity: EcosystemStability
   Description: The ability of an ecosystem to persist, resist disturbance, and maintain its structure and function over time. Related to resilience.
@@ -2106,6 +2258,8 @@
   Relationships:
     - Relationship: related_to
       Target: EcosystemStability
+
+## Sustainable Design
 
 - Entity: SustainableDesign
   Description: Designing products, processes, services, and systems that minimize negative environmental impacts and promote ecological balance and social equity, often inspired by natural cybernetic systems.
@@ -2129,7 +2283,7 @@
     - Relationship: part_of
       Target: SustainableDesign
     - Relationship: contrasts_with
-      Target: LinearEconomy
+      Target: LinearEconomy # Assumed concept
 
 - Entity: Biomimicry
   Description: A design approach that seeks sustainable solutions by emulating nature's time-tested patterns and strategies. Learning from and mimicking natural forms, processes, and ecosystems.
@@ -2138,7 +2292,7 @@
     - Relationship: part_of
       Target: SustainableDesign
     - Relationship: inspired_by
-      Target: Nature
+      Target: Nature # Assumed concept
 
 - Entity: RegenerativeDesign
   Description: A design philosophy and practice focused on creating systems that co-evolve with nature, restoring and enhancing ecosystem health and resilience, rather than just minimizing harm.
@@ -2147,7 +2301,7 @@
     - Relationship: part_of
       Target: SustainableDesign
     - Relationship: aims_to_restore
-      Target: EcosystemHealth
+      Target: EcosystemHealth # Assumed concept
 
 - Entity: Permacomputing
   Description: An approach to computing focused on extreme energy efficiency, longevity, repairability, and use of recycled/minimal resources, inspired by permaculture principles and aiming for ecological sustainability.
@@ -2164,6 +2318,8 @@
   Relationships:
     - Relationship: related_to
       Target: Permacomputing
+
+## AI in Environmental Management
 
 - Entity: AIInEnvironmentalManagement
   Description: Using artificial intelligence techniques to model ecological systems, manage resources based on feedback, improve climate prediction, and support environmental decision-making.
@@ -2189,7 +2345,7 @@
     - Relationship: applies
       Target: ArtificialIntelligence
     - Relationship: applies_to
-      Target: EcologicalSystems
+      Target: EcologicalSystems # Assumed entity
 
 - Entity: FeedbackDrivenResourceManagement
   Description: Managing natural resources (water, forests, fisheries) using adaptive strategies informed by real-time data and feedback on the state of the resource and ecosystem. AI can enhance this process.
@@ -2211,11 +2367,12 @@
     - Relationship: applies
       Target: ArtificialIntelligence
     - Relationship: applies_to
-      Target: ClimateModeling
+      Target: ClimateModeling # Assumed concept
     - Relationship: relates_to
       Target: ClimateFeedbackLoops
 
 # Computational Cybernetics
+Description: The intersection of cybernetics with computer science, information theory, and computational modeling.
 
 - Entity: ComputationalCybernetics
   Description: The intersection of cybernetics with computer science, information theory, and computational modeling, focusing on information processing as control, complex systems simulation, and cybersecurity.
@@ -2224,13 +2381,15 @@
     - Relationship: combines
       Target: Cybernetics
     - Relationship: combines
-      Target: ComputerScience
+      Target: ComputerScience # Assumed entity
     - Relationship: includes_area
       Target: InformationProcessingAsControl
     - Relationship: includes_area
       Target: ComplexSystemsSimulation
     - Relationship: includes_area
       Target: CyberneticCybersecurity
+
+## Information Processing as Control
 
 - Entity: InformationProcessingAsControl
   Description: Viewing computation and information processing fundamentally as control processes that manipulate information according to rules or feedback to achieve goals.
@@ -2239,7 +2398,7 @@
     - Relationship: part_of
       Target: ComputationalCybernetics
     - Relationship: relates
-      Target: InformationProcessing
+      Target: InformationProcessing # Assumed concept
     - Relationship: relates
       Target: ControlTheory
     - Relationship: related_to
@@ -2259,7 +2418,7 @@
     - Relationship: related_to
       Target: InformationTheory
     - Relationship: related_to
-      Target: ComputabilityTheory
+      Target: ComputabilityTheory # Assumed concept
 
 - Entity: QuantumInformationTheory
   Description: Studies information processing using quantum mechanical systems, exploring concepts like qubits, entanglement, quantum entropy, and quantum communication channels.
@@ -2268,7 +2427,9 @@
     - Relationship: related_to
       Target: InformationTheory
     - Relationship: related_to
-      Target: QuantumComputing
+      Target: QuantumComputing # Assumed concept
+
+## Complex Systems Simulation
 
 - Entity: ComplexSystemsSimulation
   Description: Using computational methods to model and simulate the behavior of complex systems that are difficult to analyze analytically.
@@ -2277,7 +2438,7 @@
     - Relationship: part_of
       Target: ComputationalCybernetics
     - Relationship: models
-      Target: ComplexSystems
+      Target: ComplexSystems # Assumed entity
     - Relationship: includes_method
       Target: AgentBasedModeling
     - Relationship: includes_method
@@ -2325,9 +2486,9 @@
     - Relationship: part_of
       Target: ComplexSystemsSimulation
     - Relationship: utilizes
-      Target: Simulation
+      Target: Simulation # Assumed concept
     - Relationship: utilizes
-      Target: RealTimeData
+      Target: RealTimeData # Assumed concept
 
 - Entity: AIEnhancedComplexSystemsModeling
   Description: Using AI techniques (like machine learning) to build, calibrate, analyze, or accelerate complex systems simulations.
@@ -2337,6 +2498,8 @@
       Target: ComplexSystemsSimulation
     - Relationship: applies
       Target: ArtificialIntelligence
+
+## Cybernetic Cybersecurity
 
 - Entity: CyberneticCybersecurity
   Description: Applying cybernetic principles (feedback, control, adaptation, resilience, homeostasis) to the design and operation of secure computing systems and networks.
@@ -2379,9 +2542,9 @@
     - Relationship: part_of
       Target: CyberneticCybersecurity
     - Relationship: involves
-      Target: Attacker
+      Target: Attacker # Assumed role/concept
     - Relationship: involves
-      Target: Defender
+      Target: Defender # Assumed role/concept
 
 - Entity: RiskHomeostasisInSecurity
   Description: The theory suggesting that individuals or systems adjust their behavior in response to perceived levels of risk and safety measures, potentially offsetting the benefits of security controls. Applying risk homeostasis theory to cybersecurity.
@@ -2394,6 +2557,7 @@
 
 - Entity: RiskHomeostasisTheory
   Description: A theory stating that people tend to maintain a target level of perceived risk, adjusting behavior to compensate for changes in safety measures.
+  Type: Theory
 
 - Entity: AntiFragileComputing
   Description: Inspired by Nassim Taleb's concept of antifragility, designing computing systems that not only resist shocks and stresses but actually improve or benefit from them.
@@ -2420,6 +2584,7 @@
       Target: Cybersecurity
 
 # Philosophical Extensions
+Description: Broader philosophical implications of cybernetic and systems thinking.
 
 - Entity: PhilosophicalExtensionsOfCybernetics
   Description: Exploring the broader philosophical implications of cybernetic and systems thinking for epistemology, ethics, and metaphysics.
@@ -2433,6 +2598,9 @@
       Target: Ethics
     - Relationship: addresses
       Target: Metaphysics
+
+## Cybernetic Epistemology
+Description: Theories of knowledge influenced by cybernetics, emphasizing the observer's role.
 
 - Entity: CyberneticEpistemology
   Description: Approaches to the theory of knowledge influenced by cybernetics, emphasizing the role of the observer, feedback, interaction, and construction in the process of knowing.
@@ -2475,6 +2643,16 @@
       Target: ConstructivistEpistemology
     - Relationship: associated_figure
       Target: ErnstVonGlasersfeld
+
+- Entity: ErnstVonGlasersfeld
+  Description: Philosopher known as a major proponent of radical constructivism.
+  Type: Person
+  Relationships:
+    - Relationship: associated_with
+      Target: RadicalConstructivism
+
+## Cybernetic Ethics
+Description: Ethical considerations arising from cybernetic principles and complex systems.
 
 - Entity: CyberneticEthics
   Description: Ethical considerations arising from cybernetic principles, dealing with information, responsibility in complex systems, machine ethics, and human-AI interaction.
@@ -2538,6 +2716,9 @@
     - Relationship: related_to
       Target: HumanAISymbiosis
 
+## Cybernetic Metaphysics
+Description: Ontological perspectives focusing on process, relationship, and information.
+
 - Entity: CyberneticMetaphysics
   Description: Ontological perspectives influenced by cybernetics and systems theory, focusing on processes, relationships, information, and computation as fundamental aspects of reality.
   Type: MetaphysicalApproach
@@ -2590,6 +2771,7 @@
       Target: InformationTheory
 
 # Ethical and Societal Implications
+Description: Broader impacts of advanced AI and cybernetic systems on society.
 
 - Entity: EthicalAndSocietalImplicationsOfAICybernetics
   Description: The broader impacts of advanced AI and cybernetic systems on society, ethics, economy, and governance.
@@ -2603,6 +2785,8 @@
       Target: SocioeconomicImpactOfAI
     - Relationship: considers
       Target: GovernanceAndRegulationOfAI
+
+## Human-AI Symbiosis
 
 - Entity: HumanAISymbiosis
   Description: The potential for mutually beneficial, tightly integrated relationships between humans and artificial intelligence systems, impacting work, cognition, and society.
@@ -2641,6 +2825,8 @@
       Target: HumanAISymbiosis
     - Relationship: related_to
       Target: AIAlignmentAndSafety
+
+## Bias and Fairness in AI
 
 - Entity: BiasAndFairnessInAI
   Description: Concerns about AI systems perpetuating or amplifying societal biases present in data, leading to unfair or discriminatory outcomes. Analyzing this through systemic feedback loops.
@@ -2684,6 +2870,8 @@
     - Relationship: uses_framework
       Target: Cybernetics
 
+## Socioeconomic Impact of AI
+
 - Entity: SocioeconomicImpactOfAI
   Description: The effects of AI and automation on labor markets, wealth distribution, economic growth, and societal structures, including adaptive feedback mechanisms.
   Type: ImpactArea
@@ -2719,6 +2907,8 @@
       Target: SocioeconomicImpactOfAI
     - Relationship: involves
       Target: FeedbackLoops
+
+## Governance and Regulation of AI
 
 - Entity: GovernanceAndRegulationOfAI
   Description: Frameworks, policies, laws, and norms for overseeing the development and deployment of AI, potentially using adaptive, feedback-based approaches.
@@ -2763,6 +2953,7 @@
       Target: EmergentRiskInComplexAI
 
 # Applications & Case Studies
+Description: Specific domains where cybernetics and AI are applied.
 
 - Entity: ApplicationsOfCyberneticsAndAI
   Description: Specific domains and examples where cybernetic principles and AI technologies are applied, often in combination.
@@ -2776,6 +2967,8 @@
       Target: CyberneticsInUrbanSystems
     - Relationship: includes_area
       Target: CyberneticsInFinanceEconomics
+
+## Medicine & Healthcare
 
 - Entity: CyberneticsInMedicineHealthcare
   Description: Applying cybernetic concepts like homeostasis, feedback control, and systems modeling to understand health, disease, and develop treatments.
@@ -2838,6 +3031,8 @@
     - Relationship: applies
       Target: ControlTheory
 
+## Education
+
 - Entity: CyberneticsInEducation
   Description: Applying cybernetic principles to learning, teaching, knowledge management, and educational systems design.
   Type: ApplicationArea
@@ -2873,6 +3068,13 @@
     - Relationship: associated_figure
       Target: GordonPask
 
+- Entity: GordonPask
+  Description: English author, inventor, educational theorist, cybernetician, and psychologist known for Conversation Theory and work in educational cybernetics.
+  Type: Person
+  Relationships:
+    - Relationship: associated_with
+      Target: EducationalCyberneticsConcept
+
 - Entity: AdaptiveLearningSystems
   Description: Educational technologies that dynamically adjust the presentation of material and learning path based on student performance and needs, implementing feedback control.
   Type: Technology
@@ -2892,6 +3094,8 @@
       Target: CyberneticsInEducation
     - Relationship: related_to
       Target: OrganizationalCybernetics
+
+## Urban Systems
 
 - Entity: CyberneticsInUrbanSystems
   Description: Applying cybernetics and systems thinking to understand and manage complex urban systems like traffic, infrastructure, resource flows, and city planning.
@@ -2919,7 +3123,7 @@
     - Relationship: related_to
       Target: CyberneticsInUrbanSystems
     - Relationship: utilizes
-      Target: DataCollection
+      Target: DataCollection # Assumed concept
     - Relationship: utilizes
       Target: FeedbackLoops
 
@@ -2932,7 +3136,7 @@
     - Relationship: related_to
       Target: SelfOrganization
     - Relationship: related_to
-      Target: ComplexSystems
+      Target: ComplexSystems # Assumed entity
 
 - Entity: UrbanMetabolism
   Description: A model viewing cities as ecosystems that consume resources (energy, water, materials) and produce waste, analyzing these flows and their feedback effects.
@@ -2943,7 +3147,7 @@
     - Relationship: related_to
       Target: SystemsTheory
     - Relationship: related_to
-      Target: IndustrialEcology
+      Target: IndustrialEcology # Assumed field
 
 - Entity: ResilientInfrastructure
   Description: Designing urban infrastructure (transport, energy, water, communication) to withstand disruptions, adapt to changing conditions, and recover quickly, applying principles of resilience and potentially cybernetic control.
@@ -2953,6 +3157,8 @@
       Target: CyberneticsInUrbanSystems
     - Relationship: related_to
       Target: SystemResilience
+
+## Finance & Economics
 
 - Entity: CyberneticsInFinanceEconomics
   Description: Applying cybernetics and systems dynamics to model market behavior, financial feedback loops, economic regulation, and stability.
@@ -3001,6 +3207,7 @@
       Target: FeedbackLoops
 
 # Future Directions
+Description: Potential future developments and research areas at the intersection of cybernetics and AI.
 
 - Entity: FutureDirectionsCyberneticsAI
   Description: Potential future developments and research areas at the intersection of cybernetics, AI, and related fields.
@@ -3015,6 +3222,8 @@
     - Relationship: includes
       Target: PostHumanCybernetics
 
+## Quantum Cybernetics
+
 - Entity: QuantumCybernetics
   Description: Exploring the intersection of quantum mechanics, quantum computing, and cybernetics, including quantum control and feedback.
   Type: EmergingField
@@ -3022,7 +3231,7 @@
     - Relationship: part_of
       Target: FutureDirectionsCyberneticsAI
     - Relationship: combines
-      Target: QuantumMechanics
+      Target: QuantumMechanics # Assumed field
     - Relationship: combines
       Target: Cybernetics
     - Relationship: includes
@@ -3041,7 +3250,7 @@
     - Relationship: applies
       Target: ControlTheory
     - Relationship: applied_to
-      Target: QuantumSystems
+      Target: QuantumSystems # Assumed entity
 
 - Entity: QuantumNeuralNetworks
   Description: Theoretical models or potential implementations of neural networks using quantum computation principles (qubits, superposition, entanglement).
@@ -3050,9 +3259,9 @@
     - Relationship: part_of
       Target: QuantumCybernetics
     - Relationship: combines
-      Target: QuantumComputing
+      Target: QuantumComputing # Assumed concept
     - Relationship: combines
-      Target: NeuralNetworks
+      Target: NeuralNetworks # Assumed entity
 
 - Entity: QuantumFeedback
   Description: Investigating feedback control mechanisms operating at the quantum level, considering measurement back-action and quantum information constraints.
@@ -3063,7 +3272,9 @@
     - Relationship: applies
       Target: FeedbackLoops
     - Relationship: applied_to
-      Target: QuantumSystems
+      Target: QuantumSystems # Assumed entity
+
+## Neuro-Inspired Computing
 
 - Entity: NeuroInspiredComputing
   Description: Developing novel computing architectures and algorithms inspired by the structure and function of biological nervous systems, beyond traditional deep learning.
@@ -3087,7 +3298,7 @@
     - Relationship: part_of
       Target: NeuroInspiredComputing
     - Relationship: inspired_by
-      Target: BrainArchitecture
+      Target: BrainArchitecture # Assumed concept
 
 - Entity: ReservoirComputing
   Description: A framework for computation using fixed, non-linear recurrent neural networks (the 'reservoir') where only the readout connections are trained. Exploits the complex dynamics of the reservoir.
@@ -3096,7 +3307,7 @@
     - Relationship: part_of
       Target: NeuroInspiredComputing
     - Relationship: utilizes
-      Target: RecurrentNeuralNetworks
+      Target: RecurrentNeuralNetworks # Assumed entity
     - Relationship: utilizes
       Target: DynamicalSystems
 
@@ -3108,6 +3319,8 @@
       Target: NeuroInspiredComputing
     - Relationship: related_to
       Target: MorphologicalComputation
+
+## Advanced AI-Cybernetics Convergence
 
 - Entity: AdvancedAICyberneticsConvergence
   Description: Deeper integration of cybernetic principles (especially control, feedback, self-regulation) into the design and understanding of advanced AI, particularly AGI.
@@ -3159,6 +3372,8 @@
     - Relationship: applied_to
       Target: IntelligenceAugmentation
 
+## Post-Human Cybernetics (Speculative)
+
 - Entity: PostHumanCybernetics
   Description: Speculative future directions involving the application of cybernetics to transcend biological limitations, merging humans with technology, and exploring distributed or artificial consciousness.
   Type: SpeculativeArea
@@ -3205,29 +3420,3 @@
       Target: PostHumanCybernetics
     - Relationship: related_to
       Target: Transhumanism
-
-# Foundational Figures (Consolidated)
-
-- Entity: AlanTuring
-  Description: British mathematician, logician, cryptanalyst, and computer scientist, highly influential in the development of theoretical computer science (Turing machine, Turing test) and AI.
-  Type: Person
-  Relationships:
-    - Relationship: contributed_to
-      Target: ComputerScience
-    - Relationship: contributed_to
-      Target: ArtificialIntelligence
-    - Relationship: part_of
-      Target: ParallelInnovators
-
-- Entity: JohnVonNeumann
-  Description: Hungarian-American mathematician, physicist, computer scientist, engineer and polymath. Made major contributions to game theory, computer architecture (von Neumann architecture), cybernetics, and automata theory.
-  Type: Person
-  Relationships:
-    - Relationship: contributed_to
-      Target: ComputerScience
-    - Relationship: contributed_to
-      Target: Cybernetics
-    - Relationship: contributed_to
-      Target: GameTheory
-    - Relationship: part_of
-      Target: SharedIntellectualLineage
