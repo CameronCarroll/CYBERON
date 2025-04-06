@@ -1,153 +1,179 @@
-# Cybernetics Digital Garden - Technical Architecture
+# CYBERON (Cybernetic Ontology) Technical Architecture
 
-## Overview
+**Table of Contents**
 
-A Flask-based web application for interactive visualization and exploration of cybernetics concepts using a knowledge graph. It includes a Model Context Protocol (MCP) server for standardized API access for LLMs and other clients.
+1.  [Overview](#overview)
+2.  [Core loop data flow](#core-loop-data-flow)
+    * [Interface for humans](#interface-for-humans)
+    * [Interface for bots](#interface-for-bots)
+    * [REST API](#rest-api)
+3.  [Data model details](#data-model-details)
+4.  [QueryEngine](#queryengine)
+5.  [Flask web app (human interface) details](#flask-web-app-human-interface-details)
+    * [UI Components](#ui-components)
+    * [Core Views](#core-views)
+6.  [MCP server/client details](#mcp-serverclient-details)
+7.  [MCP Methods](#mcp-methods)
+8.  [Handler System](#handler-system)
+    * [Core Handlers](#core-handlers)
+    * [Query Handlers](#query-handlers)
+    * [Resource Handlers](#resource-handlers)
+    * [Tool Handlers](#tool-handlers)
+    * [Prompt Handlers](#prompt-handlers)
+9.  [Resources System](#resources-system)
+10. [Tools System](#tools-system)
+11. [Prompts System](#prompts-system)
+12. [REST API Details](#rest-api-details)
 
-## Core Architecture
+---
 
-### Application Structure
+## 1. Overview <a name="overview"></a>
 
-#### Flask Application Factory Pattern
-- Modular structure with blueprints
-- Blueprints:
-  - `main`: Core routes and query engine
-  - `api`: RESTful endpoints
-  - `visualization`: Graph visualization
+A junkyard of tools & interfaces wrapped around a graph engine.
 
-#### MCP Server Integration
-- Core MCP server integrated with Flask
-- JSON-RPC 2.0 message format
+## 2. Core loop data flow <a name="core-loop-data-flow"></a>
 
-### Data Processing Pipeline
+Start with unstructured text (research article, deep research report, your AI boyfriend's message history, etc)
+Extract unstructured text into markdown intermediate format, consisting of categories and entities with defined attributes and relationships.
+Parse markdown into directed graph (NetworkX),
+New graph case --> save as node-link JSON file (break) Update graph case --> ...
+Compare the input graph against the existing graph to produce a diff
+Present diff to user for review, Reject --> Some rework process Accept --> Commit updated graph to file (or version control?)
 
-#### Ontology Parsing
-- `ontology_parser.py` extracts structured information and URLs
-- Knowledge Graph Construction:
-  - Nodes (concepts, people, domains)
-  - Edges (relationships)
-- NetworkX Integration: `nx.DiGraph` for graph analysis
+### Interface for humans <a name="interface-for-humans"></a>
 
-### Query Engine
+* Flask-based web app to visualize and explore knowledge graphs.
+* Blueprints:
+    * `main`: Core routes and query engine
+    * `api`: RESTful endpoints
+    * `visualization`: Graph visualization
 
-#### CyberneticsQueryEngine
-- Knowledge graph construction
-- Entity and relationship queries
-- Path finding
-- Centrality analysis
-- Concept evolution tracing
+### Interface for bots <a name="interface-for-bots"></a>
 
-## MCP Server Architecture
+* Model Context Protocol (MCP) server+client allowing LLM / client access.
+* STDIO transport by default, local communication only. Warning, no authentication / authorization / security effort is built into the MCP server based on the design intent of local use only.
+* JSON-RPC 2.0 message format.
+* LLM application runs client, which runs server, which accesses the graph model. (Server is not persistent.)
+* There's also a named pipe transport for if we wanted a persistent server for some reason I guess.
 
-### Transport Layer
+### REST API <a name="rest-api"></a>
 
-- **Transport Interface**: Abstract communication protocol
-- **STDIO Transport**: Standard input/output communication
-- **Message Handling**: JSON-RPC 2.0 parsing and formatting
+Simple API allowing flask interface and other internal tools to access the query engine. JSON structure, REST status conventions.
+* Entity Endpoints: CRUD operations for entities (nodes)
+* Relationship Endpoints: CRUD operations for relationships (edges)
+* Graph Endpoints: Operations on the graph structure (paths, centrality, etc.)
 
-### Handler System
+## 3. Data model details <a name="data-model-details"></a>
 
-1. **Core Handlers**
-   - Initialization and capability negotiation
+## 4. QueryEngine <a name="queryengine"></a>
 
-2. **Query Handlers**
-   - Entity search
-   - Information retrieval
-   - Path finding
+* Knowledge graph construction
+* Entity and relationship queries
+* Path finding
+* Centrality analysis
+* Concept evolution tracing
 
-3. **Resource Handlers**
-   - Resource listing
-   - Templates
-   - Reading
-   - Subscriptions
+## 5. Flask web app (human interface) details <a name="flask-web-app-human-interface-details"></a>
 
-4. **Tool Handlers**
-   - Tool discovery
-   - Schema retrieval
-   - Execution
+### UI Components <a name="ui-components"></a>
 
-5. **Prompt Handlers**
-   - Prompt template management
-   - Generation
+* Template-Based UI: Jinja2 templates with TailwindCSS
+* Interactive Visualization:
+    * Force-directed graph (Force-Graph, D3.js)
+    * Client-side filtering and node interaction
+    * For detailed explanations, attributes may have links to external content.
 
-### Resources System
+### Core Views <a name="core-views"></a>
 
-- **URI Scheme**: `cyberon:///` for resource access
-- **Resource Types**:
-  - Entities
-  - Relationships
-  - Sections
-  - Types
-- **Resource Templates**: Dynamic URI construction
+* Interactive visualization
+* Concept browser
+* There's some kind of explorer / search thing that isn't working well after data formats were reworked.
 
-### Tools System
+## 6. MCP server/client details <a name="mcp-serverclient-details"></a>
 
-- **Tool Registry**: Centralized registry with schemas
-- **Basic Tools**:
-  - Search
-  - Entity analysis
-  - Comparison
-  - Central entities
-- **Advanced Tools**:
-  - Concept hierarchy
-  - Related concepts
-  - Evolution tracing
-- **Parameter Validation**: JSON Schema
+See MCP\_README.md for details on usage and formatting for requests and responses.
 
-### Prompts System
+## 7. MCP Methods <a name="mcp-methods"></a>
 
-- **Prompt Templates**: Natural language for ontology exploration
-- **Context Generation**: Rich context for LLMs
-- **Specialized Prompts**:
-  - Entity analysis
-  - Comparison
-  - Hierarchy
+* `initialize`: MCP connection initialization
+* `cyberon/search`: Entity search
+* `cyberon/entity`: Entity details
+* `cyberon/paths`: Path finding
+* `resources/list`: Resource listing
+* `resources/read`: Resource reading
+* `tools/list`: Tool listing
+* `tools/execute`: Tool execution
+* `prompts/list`: Prompt listing
+* `prompts/get`: Prompt retrieval
 
-## Frontend Architecture
+## 8. Handler System <a name="handler-system"></a>
 
-### UI Components
-- **Template-Based UI**: Jinja2 templates with TailwindCSS
-- **Interactive Visualizations**:
-  - Force-directed graph (Force-Graph, D3.js)
-  - Client-side filtering and node interaction
-  - External content linking
+### Core Handlers <a name="core-handlers"></a>
 
-### Core Views
-- Ontology visualization
-- Concept explorer
-- Structured ontology browser
-- External content access
+* Initialization and capability negotiation
 
-## Data Flow
+### Query Handlers <a name="query-handlers"></a>
 
-1. User uploads ontology or LLM connects via MCP
-2. Server processes file to JSON using `extract_text_to_json()`
-3. JSON loaded into CyberneticsQueryEngine
-4. API endpoints provide graph data (web UI)
-5. MCP handlers provide ontology access (LLMs/clients)
-6. Client-side JavaScript renders visualizations (web UI)
-7. MCP clients process responses (LLM integration)
+* Entity search
+* Information retrieval
+* Path finding
 
-## API and Protocol Interfaces
+### Resource Handlers <a name="resource-handlers"></a>
 
-### REST API Endpoints
+* Resource listing
+* Templates
+* Reading
+* Subscriptions
 
-- `/api/graph-data`: Graph nodes and edges
-- `/api/entity/<entity_id>`: Entity details
-- `/api/search`: Text search
-- `/api/paths`: Path finding
-- `/api/concepts/central`: Central concepts
-- `/api/concepts/evolution`: Evolution chains
+### Tool Handlers <a name="tool-handlers"></a>
 
-### MCP Methods
+* Tool discovery
+* Schema retrieval
+* Execution
 
-1. `initialize`: MCP connection initialization
-2. `cyberon/search`: Entity search
-3. `cyberon/entity`: Entity details
-4. `cyberon/paths`: Path finding
-5. `resources/list`: Resource listing
-6. `resources/read`: Resource reading
-7. `tools/list`: Tool listing
-8. `tools/execute`: Tool execution
-9. `prompts/list`: Prompt listing
-10. `prompts/get`: Prompt retrieval
+### Prompt Handlers <a name="prompt-handlers"></a>
+
+* Prompt template management
+* Generation
+
+## 9. Resources System <a name="resources-system"></a>
+
+* URI Scheme: `cyberon:///` for resource access
+* Resource Types:
+    * Entities
+    * Relationships
+    * Sections
+    * Types
+* Resource Templates: Dynamic URI construction
+
+## 10. Tools System <a name="tools-system"></a>
+
+* Tool Registry: Centralized registry with schemas
+* Basic Tools:
+    * Search
+    * Entity analysis
+    * Comparison
+    * Central entities
+* Advanced Tools:
+    * Concept hierarchy
+    * Related concepts
+    * Evolution tracing
+* Parameter Validation: JSON Schema
+
+## 11. Prompts System <a name="prompts-system"></a>
+
+* Prompt Templates: Natural language for ontology exploration
+* Context Generation: Rich context for LLMs
+* Specialized Prompts:
+    * Entity analysis
+    * Comparison
+    * Hierarchy
+
+## 12. REST API Details <a name="rest-api-details"></a>
+
+* `/api/graph-data`: Graph nodes and edges
+* `/api/entity/<entity_id>`: Entity details
+* `/api/search`: Text search
+* `/api/paths`: Path finding
+* `/api/concepts/central`: Central concepts
+* `/api/concepts/evolution`: Evolution chains

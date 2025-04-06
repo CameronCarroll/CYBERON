@@ -8,7 +8,10 @@ Graph & query engine underneath for managing, querying and reasoning over struct
 
 ## Documentation
 
-- See API reference at `/API_README.md`
+- *within program* API reference `/docs/API_README.md`
+- *external MCP* API reference `/docs/MCP_README.md`
+- System architecture `/docs/architecture.md`
+- Data shape descriptions `/docs/data_format.md`
 
 ## Features
 
@@ -40,8 +43,6 @@ This application includes a Model Context Protocol server that allows LLMs and o
 
 ## Installation
 
-*Wait we're not using named pipes anymore, it's STDIN, also the MCP client boots the MCP server which loads up the CYBERON data access module. So there's also no systemd configuration because the server is not persistent. This is a note to myself to go undo that configuration and update the instructions... later.*
-
 1. Clone the repository:
    ```bash
    git clone [https://github.com/CameronCarroll/cyberon.git](https://github.com/CameronCarroll/cyberon.git)
@@ -52,63 +53,6 @@ This application includes a Model Context Protocol server that allows LLMs and o
    ```bash
    pip install -r requirements.txt
    ```
-
-3. Create the directory for named pipes:
-   ```bash
-   sudo mkdir -p /run/cyberon
-   ```
-
-4. Create the named pipes:
-   ```bash
-   sudo mkfifo /run/cyberon/mcp_in.pipe
-   sudo mkfifo /run/cyberon/mcp_out.pipe
-   ```
-
-5. Set appropriate permissions (replace `yourusername` with your actual username):
-   ```bash
-   sudo chown yourusername:yourusername /run/cyberon/mcp_in.pipe
-   sudo chown yourusername:yourusername /run/cyberon/mcp_out.pipe
-   sudo chmod 660 /run/cyberon/mcp_in.pipe
-   sudo chmod 660 /run/cyberon/mcp_out.pipe
-   ```
-
-6. Create the systemd service file:
-   ```bash
-   sudo nano /etc/systemd/system/cyberon-mcp.service
-   ```
-
-7. Add the following content to the service file (adjust paths and username as needed):
-   ```
-   [Unit]
-   Description=CYBERON MCP Server Stdio
-   After=network.target
-
-   [Service]
-   Type=simple
-   User=yourusername
-   Group=yourusername
-   WorkingDirectory=/path/to/cyberon/
-   ExecStart=/bin/sh -c 'exec /usr/bin/python /path/to/cyberon/mcp_server.py --data-file=/path/to/cyberon/data_template.json < /run/cyberon/mcp_in.pipe > /run/cyberon/mcp_out.pipe'
-   Restart=on-failure
-   RestartSec=5
-   StandardError=journal
-
-   [Install]
-   WantedBy=multi-user.target
-   ```
-
-8. Reload systemd, enable and start the service:
-   ```bash
-   sudo systemctl daemon-reload
-   sudo systemctl enable cyberon-mcp.service
-   sudo systemctl start cyberon-mcp.service
-   ```
-
-9. Verify the service is running:
-   ```bash
-   sudo systemctl status cyberon-mcp.service
-   ```
-
 ## Using the Web Interface
 
 1. Start the Flask web server:

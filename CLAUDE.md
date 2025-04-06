@@ -1,6 +1,6 @@
 # Cyberon Project Guide
 
-When working with Crystal code (for the client application), refer to CLAUDE_CRYSTAL.md
+When working with Crystal code (.cr files, for the client application), refer to CLAUDE_CRYSTAL.md for coding practices.
 
 ## Test Commands
 - Run all tests: `pytest`
